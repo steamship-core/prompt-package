@@ -15,6 +15,27 @@ test('Test Parse', async (t) => {
   t.is(e1.docs[0].sentences[0].tokens[0].lemma, 'this')
 })
 
+test('Test Parse Options', async (t) => {
+  const nludb = nludb_client();
+  const e1 = await nludb.parse({
+    docs: ['Ted likes to drink coffee'],
+    includeTokens: false
+  });
+  t.is(e1.docs.length, 1)
+  t.is(e1.docs[0].sentences.length, 1)
+  t.is(e1.docs[0].sentences[0].tokens.length, 0)
+})
+
+test('Test Entities', async (t) => {
+  const nludb = nludb_client();
+  const e1 = await nludb.parse({
+    docs: ['Ted likes to drink coffee'],
+  });
+  t.is(e1.docs.length, 1)
+  t.is(e1.docs[0].sentences.length, 1)
+  t.is(e1.docs[0].entities?.length, 1)
+})
+
 test('Test Token Matcher', async (t) => {
   const nludb = nludb_client();
 

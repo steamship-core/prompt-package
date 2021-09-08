@@ -1,41 +1,41 @@
 export interface Token {
-  text: string;
-  textWithWs: string;
-  whitespace: string;
-  head: string;
-  headI: number;
-  leftEdge: string;
-  rightEdge: string;
-  entType: string;
-  entIob: string;
-  lemma: string;
-  normalized: string;
-  shape: string;
-  prefix: string;
-  suffix: string;
-  isAlpha: boolean;
-  isAscii: boolean;
-  isDigit: boolean;
-  isTitle: boolean;
-  isPunct: boolean;
-  isLeftPunct: boolean;
-  isRightPunct: boolean;
-  isSpace: boolean;
-  isBracket: boolean;
-  isQuote: boolean;
-  isCurrency: boolean;
-  likeUrl: boolean;
-  likeNum: boolean;
-  likeEmail: boolean;
-  isOov: boolean;
-  isStop: boolean;
-  pos: string;
-  tag: string;
-  dep: string;
-  lang: string;
-  prob: number;
-  charIndex: number;
-  tokenIndex: number;
+  text?: string;
+  textWithWs?: string;
+  whitespace?: string;
+  head?: string;
+  headI?: number;
+  leftEdge?: string;
+  rightEdge?: string;
+  entType?: string;
+  entIob?: string;
+  lemma?: string;
+  normalized?: string;
+  shape?: string;
+  prefix?: string;
+  suffix?: string;
+  isAlpha?: boolean;
+  isAscii?: boolean;
+  isDigit?: boolean;
+  isTitle?: boolean;
+  isPunct?: boolean;
+  isLeftPunct?: boolean;
+  isRightPunct?: boolean;
+  isSpace?: boolean;
+  isBracket?: boolean;
+  isQuote?: boolean;
+  isCurrency?: boolean;
+  likeUrl?: boolean;
+  likeNum?: boolean;
+  likeEmail?: boolean;
+  isOov?: boolean;
+  isStop?: boolean;
+  pos?: string;
+  tag?: string;
+  dep?: string;
+  lang?: string;
+  prob?: number;
+  charIndex?: number;
+  tokenIndex?: number;
 }
 
 
@@ -77,6 +77,7 @@ export interface Doc {
   model: string;
   lang: string;
   sentiment: number;
+  entities?: Entity[]
 }
 
 export interface ParseResponse {
@@ -109,4 +110,10 @@ export interface ParseRequest{
   tokenMatchers?: TokenMatcher[];
   phraseMatchers?: PhraseMatcher[];
   dependencyMatchers?: DependencyMatcher[];
+
+  includeTokens?: boolean;
+  includeParseData?: boolean;
+  includeEntities?: boolean;
+
+  metadata?: unknown
 }

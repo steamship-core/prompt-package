@@ -8,6 +8,13 @@
   "repository": "https://github.com/nludb/typescript-client",
   "license": "MIT",
   "keywords": [],
+  "contributors": [
+    {
+      "name" : "Edward Benson",
+      "email" : "ted@nludb.com",
+      "url" : "https://www.edwardbenson.com/"
+    }
+  ],
   "scripts": {
     "build": "run-p build:*",
     "_build:main_": "tsc -p tsconfig.json",
