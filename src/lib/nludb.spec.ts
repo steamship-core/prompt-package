@@ -1,7 +1,6 @@
 import test from 'ava';
 
-import { nludb_client } from './helper.spec';
-import { EmbeddingModel } from './types/embedding_model';
+import { nludb_client, qa_model, sim_model } from './helper.spec';
 
 test('Create NLUDB Client', (t) => {
   t.notThrows(() => {
@@ -13,40 +12,40 @@ test('Test Embeddings', async (t) => {
   const nludb = nludb_client();
   const e1 = await nludb.embed({
     texts: ['This is a test'],
-    model: EmbeddingModel.QA,
+    model: qa_model(),
   });
   const e1b = await nludb.embed({
     texts: ['Banana'],
-    model: EmbeddingModel.QA,
+    model: qa_model(),
   });
   const e2 = await nludb.embed({
     texts: ['This is a test'],
-    model: EmbeddingModel.QA,
+    model: qa_model(),
   });
   const e3 = await nludb.embed({
     texts: ['This is a test'],
-    model: EmbeddingModel.SIMILARITY,
+    model: sim_model(),
   });
   const e3b = await nludb.embed({
     texts: ['Banana'],
-    model: EmbeddingModel.SIMILARITY,
+    model: sim_model(),
   });
   const e4 = await nludb.embed({
     texts: ['This is a test'],
-    model: EmbeddingModel.SIMILARITY,
+    model: sim_model(),
   });
-  const e5 = await nludb.embed({
-    texts: ['This is a test'],
-    model: EmbeddingModel.PARAPHRASE,
-  });
-  const e5b = await nludb.embed({
-    texts: ['Banana'],
-    model: EmbeddingModel.PARAPHRASE,
-  });
-  const e6 = await nludb.embed({
-    texts: ['This is a test'],
-    model: EmbeddingModel.PARAPHRASE,
-  });
+  // const e5 = await nludb.embed({
+  //   texts: ['This is a test'],
+  //   model: EmbeddingModel.PARAPHRASE,
+  // });
+  // const e5b = await nludb.embed({
+  //   texts: ['Banana'],
+  //   model: EmbeddingModel.PARAPHRASE,
+  // });
+  // const e6 = await nludb.embed({
+  //   texts: ['This is a test'],
+  //   model: EmbeddingModel.PARAPHRASE,
+  // });
 
   t.is(e1.embeddings.length, 1);
   t.is(e1.embeddings[0].length, 768);
@@ -56,17 +55,17 @@ test('Test Embeddings', async (t) => {
   t.is(e3.embeddings[0].length, 768);
   t.notDeepEqual(e3.embeddings[0], e3b.embeddings[0]);
 
-  t.is(e5.embeddings.length, 1);
-  t.is(e5.embeddings[0].length, 768);
-  t.notDeepEqual(e3.embeddings[0], e5b.embeddings[0]);
+  // t.is(e5.embeddings.length, 1);
+  // t.is(e5.embeddings[0].length, 768);
+  // t.notDeepEqual(e3.embeddings[0], e5b.embeddings[0]);
 
   t.notDeepEqual(e1.embeddings[0], e3b.embeddings[0]);
-  t.notDeepEqual(e1.embeddings[0], e5b.embeddings[0]);
-  t.notDeepEqual(e3.embeddings[0], e5b.embeddings[0]);
+  // t.notDeepEqual(e1.embeddings[0], e5b.embeddings[0]);
+  // t.notDeepEqual(e3.embeddings[0], e5b.embeddings[0]);
 
   t.deepEqual(e1.embeddings[0], e2.embeddings[0]);
   t.deepEqual(e3.embeddings[0], e4.embeddings[0]);
-  t.deepEqual(e5.embeddings[0], e6.embeddings[0]);
+  // t.deepEqual(e5.embeddings[0], e6.embeddings[0]);
 });
 
 test('Test Embedding Search', async (t) => {
@@ -82,7 +81,7 @@ test('Test Embedding Search', async (t) => {
   const results = await nludb.embedAndSearch({
     query: query,
     docs: docs,
-    model: EmbeddingModel.QA,
+    model: qa_model(),
     k: 1,
   });
 

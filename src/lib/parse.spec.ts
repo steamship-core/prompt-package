@@ -30,6 +30,7 @@ test('Test Entities', async (t) => {
   const nludb = nludb_client();
   const e1 = await nludb.parse({
     docs: ['Ted likes to drink coffee'],
+    includeEntities: true
   });
   t.is(e1.docs.length, 1)
   t.is(e1.docs[0].sentences.length, 1)
@@ -59,7 +60,6 @@ test('Test Token Matcher', async (t) => {
     tokenMatchers: [matcher, matcher_b]
   });
 
-  console.log(JSON.stringify(e1, undefined, 2))
   const spans = e1.docs[0].spans;
   t.is(spans.length, 3);
 

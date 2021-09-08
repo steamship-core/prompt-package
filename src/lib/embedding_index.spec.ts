@@ -1,9 +1,8 @@
 import test from 'ava';
 
-import { nludb_client, random_name } from './helper.spec';
+import { nludb_client, qa_model, random_name } from './helper.spec';
 import { NludbTaskStatus } from './types/base'
 import { CreateIndexRequest } from './types/embedding';
-import { EmbeddingModel } from './types/embedding_model';
 
 test('Test Index Create', async (t) => {
   const nludb = nludb_client();
@@ -15,19 +14,19 @@ test('Test Index Create', async (t) => {
 
   t.throwsAsync(async () => {
     // Missing name
-    await nludb.createIndex({ model: EmbeddingModel.QA } as CreateIndexRequest);
+    await nludb.createIndex({ model: qa_model() } as CreateIndexRequest);
   });
 
   const index = await nludb.createIndex({
     name: random_name(),
-    model: EmbeddingModel.QA,
+    model: qa_model(),
   });
 
   t.throwsAsync(async () => {
     // Upsert false!
     await nludb.createIndex({
       name: index.name,
-      model: EmbeddingModel.QA,
+      model: qa_model(),
     });
   });
 
@@ -40,14 +39,14 @@ test('Test Index Delete', async (t) => {
   const name = random_name();
   const index = await nludb.createIndex({
     name: name,
-    model: EmbeddingModel.QA,
+    model: qa_model(),
   });
   t.is(index.name, name);
   t.not(index.id, null);
 
   const index2 = await nludb.createIndex({
     name: name,
-    model: EmbeddingModel.QA,
+    model: qa_model(),
     upsert: true,
   });
   t.is(index2.name, name);
@@ -57,7 +56,7 @@ test('Test Index Delete', async (t) => {
 
   const index3 = await nludb.createIndex({
     name: name,
-    model: EmbeddingModel.QA,
+    model: qa_model(),
     upsert: true,
   });
   t.is(index3.name, name);
@@ -70,7 +69,7 @@ test('Test Index Embed Task', async (t) => {
   const name = random_name();
   const index = await nludb.createIndex({
     name: name,
-    model: EmbeddingModel.QA,
+    model: qa_model(),
   });
 
   index.insert({
@@ -99,7 +98,7 @@ test('Test Index Usage', async (t) => {
   const name = random_name();
   const index = await nludb.createIndex({
     name: name,
-    model: EmbeddingModel.QA,
+    model: qa_model(),
   });
 
   // Test for supressed reindexing
@@ -170,17 +169,22 @@ test('Test Multiple Queries', async (t) => {
   const name = random_name();
   const index = await nludb.createIndex({
     name: name,
-    model: EmbeddingModel.QA,
+    model: qa_model(),
   });
 
   const A1 = "Ted can eat an entire block of cheese."
   const A2 = "Joe can drink an entire glass of water."
   await index.insert({value: A1});
   await index.insert({value: A2});
-  await index.embed()
+  await (await index.embed()).wait();
 
   const QS1 = ["Who can eat the most cheese", "Who can run the fastest?"]
-  let search_results = await index.search({queries: QS1})
+  let search_results = await index.search({query: QS1[0]})
+  t.is(search_results.hits.length, 1)
+  t.is(search_results.hits[0].value, A1)
+  t.is(search_results.hits[0].query, QS1[0])
+
+  search_results = await index.search({queries: QS1})
   t.is(search_results.hits.length, 1)
   t.is(search_results.hits[0].value, A1)
   t.is(search_results.hits[0].query, QS1[0])
