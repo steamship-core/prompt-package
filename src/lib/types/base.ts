@@ -18,6 +18,7 @@ export interface SearchHit {
   externalId?: string;
   externalType?: string;
   metadata?: unknown;
+  query?: string;
 }
 
 export interface ConnectionParams {

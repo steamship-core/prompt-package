@@ -164,3 +164,32 @@ test('Test Index Usage', async (t) => {
 
   await index.delete();
 });
+
+test('Test Multiple Queries', async (t) => {
+  const nludb = nludb_client();
+  const name = random_name();
+  const index = await nludb.createIndex({
+    name: name,
+    model: EmbeddingModel.QA,
+  });
+
+  const A1 = "Ted can eat an entire block of cheese."
+  const A2 = "Joe can drink an entire glass of water."
+  await index.insert({value: A1});
+  await index.insert({value: A2});
+  await index.embed()
+
+  const QS1 = ["Who can eat the most cheese", "Who can run the fastest?"]
+  let search_results = await index.search({queries: QS1})
+  t.is(search_results.hits.length, 1)
+  t.is(search_results.hits[0].value, A1)
+  t.is(search_results.hits[0].query, QS1[0])
+
+  const QS2 = ["Who can tie a shoe?", "Who can drink the most water?"]
+  search_results = await index.search({queries: QS2})
+  t.is(search_results.hits.length, 1)
+  t.is(search_results.hits[0].value, A2)
+  t.is(search_results.hits[0].query, QS2[1])
+
+  await index.delete();
+});

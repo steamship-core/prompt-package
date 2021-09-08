@@ -32,7 +32,8 @@ export interface CreateIndexResult {
 }
 
 export interface SearchRequest {
-  query: string;
+  query?: string;
+  queries?: string[];
   k?: number;
   includeMetadata?: boolean;
 }
