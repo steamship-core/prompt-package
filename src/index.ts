@@ -14,6 +14,10 @@ export type {
 export { Classifier } from './lib/classifier';
 export { ClassifierModel } from './lib/types/classifier_model';
 
+export type {
+  ParseRequest,
+  ParseResponse
+} from './lib/types/parsing'
 export { ParsingModel } from './lib/types/parsing_model';
 
 export type { ConnectionParams, SearchHit } from './lib/types/base'
