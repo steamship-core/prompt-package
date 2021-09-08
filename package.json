@@ -1,6 +1,6 @@
 {
   "name": "@nludb/client",
-  "version": "1.0.25",
+  "version": "1.0.27",
   "description": "NLUDB is a cloud-hosted database that helps developers get work done with natural language content.",
   "main": "build/main/index.js",
   "typings": "build/module/index.d.ts",
