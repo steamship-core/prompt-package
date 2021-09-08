@@ -60,10 +60,6 @@ export class NLUDB extends NludbApiBase {
   }
 
   async parse(params: ParseRequest): Promise<ParseResponse> {
-    if (typeof params.metadata == 'object') {
-      params.metadata = JSON.stringify(params.metadata);
-    }
-
     return await this.post(
       'parser/parse',
       {
