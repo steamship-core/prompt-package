@@ -7,7 +7,7 @@ test('Test Model Create', async (t) => {
   const nludb = nludb_client();
 
   const modelsOrig = await nludb.models.listPrivate();
-  const origCount = modelsOrig.data?.models.length;
+  const origCount = modelsOrig.data?.models.length || 0;
 
   await t.throwsAsync(async () => {
     await nludb.models.create({
@@ -82,7 +82,7 @@ test('Test Model Create', async (t) => {
   })).data
 
   const models2 = await nludb.models.listPrivate();
-  t.is(models2.data?.models.length, (origCount || -33) + 1);
+  t.is(models2.data?.models.length, origCount + 1);
 
   // Upsert
   await t.throwsAsync(async () => {
@@ -109,7 +109,7 @@ test('Test Model Create', async (t) => {
   t.is(model2?.id, model?.id)
 
   const models3 = (await nludb.models.listPrivate()).data
-  t.is(models3?.models.length, (origCount || -33) + 1)
+  t.is(models3?.models.length, origCount + 1)
   t.is(models2?.data?.models[0].id, models3?.models[0].id)
   // Upsert really doesn't update yet. Just retrieves old one.
   // t.is(models3.models[0].description, models.models[0].description)

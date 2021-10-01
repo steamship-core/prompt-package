@@ -164,7 +164,25 @@ export class NludbApiBase {
       },
     };
 
-    const resp = await axios.post(url, payload, config);
+    let resp = null;
+    try {
+      resp = await axios.post(url, payload, config);
+    } catch (error) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        throw new NLUDBError(`[${error.response.status}] ${JSON.stringify(error.response.data)}`);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        throw new NLUDBError(`A request was made to ${url} but no response was received`);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        throw new NLUDBError(`The request to ${url} could not be configured. Message: ${error.mesage}`);
+      }
+      throw new NLUDBError("An unexpected error happened during your request.")
+    }
 
     if (!resp) {
       throw new NLUDBError('No response.');

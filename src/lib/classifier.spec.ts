@@ -54,7 +54,6 @@ test('Test Zero Shot', async (t) => {
   t.is(r3.hits.length, 1);
   t.is(r3.hits[0].length, 2);
   t.is(r3.hits[0][0].value, "Food");
-  t.is(r3.hits[0][1].value, "City");
 
   const r4 = (await c1.classify({
     docs: ["Banana"],

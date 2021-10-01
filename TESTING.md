@@ -15,7 +15,7 @@ Set the following environment variables for testing:
 1. **Your NLUDB API Domain**. If you are using `nludb.com`, this step is not necessary. If you have a private NLUDB installation, use the API domain you normally use.
 
 ```
-export NLUDB_DOMAIN=http://api.nludb.yourcompany.com/api/v1/
+export NLUDB_DOMAIN=http://api.nludb.yourcompany.com/
 ```
 
 2. **Your NLUDB API key**.
