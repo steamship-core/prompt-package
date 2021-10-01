@@ -1,6 +1,6 @@
-import { NludbApiBase } from './api_base';
+import { NludbApiBase, NludbResponse } from './api_base';
 import { NLUDBError } from './nludb_error';
-import { ClassifyRequest, ClassifyResult, DeleteClassifierResult, InsertLabelRequest, InsertLabelResult } from './types/classifier';
+import { ClassifyRequest, ClassifyResult } from './types/classifier';
 
 export class Classifier {
   id?: string;
@@ -23,7 +23,7 @@ export class Classifier {
     this.labels = labels;
   }
 
-  async classify(params: ClassifyRequest): Promise<ClassifyResult> {
+  async classify(params: ClassifyRequest): Promise<NludbResponse<ClassifyResult>> {
     // There are two cases: an ID and no labels (assumption: saved classifier) or a model and labels (zero shot)
     if ((! this.id) && (! this.model)) {
       throw new NLUDBError(
@@ -46,15 +46,19 @@ export class Classifier {
       ...params,
       model: this.model,
       classifierId: this.id,
-    })) as ClassifyResult;
-    if (typeof res.hits == 'undefined') {
-      res.hits = [];
+    })) as NludbResponse<ClassifyResult>;
+
+    if (typeof res.data == 'undefined') {
+      res.data = {} as ClassifyResult
     }
-    for (let i = 0; i < res.hits.length; i++) {
-      for (let j = 0; j < res.hits[i].length; j++) {
+    if (typeof res.data.hits == 'undefined') {
+      res.data.hits = [];
+    }
+    for (let i = 0; i < res.data.hits.length; i++) {
+      for (let j = 0; j < res.data.hits[i].length; j++) {
         try {
-          if (res.hits[i][j].metadata) {
-            res.hits[i][j].metadata = JSON.parse(res.hits[i][j].metadata as string);
+          if (res.data.hits[i][j].metadata) {
+            res.data.hits[i][j].metadata = JSON.parse(res.data.hits[i][j].metadata as string);
           }
         } catch {
           // pass
@@ -64,25 +68,25 @@ export class Classifier {
     return res;
   }
 
-  async insertLabel(params: InsertLabelRequest): Promise<InsertLabelResult> {
-    throw new NLUDBError(
-      'Feature not yet supported'
-    );
-    if (typeof params.metadata == 'object') {
-      params.metadata = JSON.stringify(params.metadata);
-    }
-    return (await this.nludb.post('classifier/insert', {
-      ...params,
-      classifierId: this.id,
-    })) as InsertLabelResult;
-  }
+  // async insertLabel(params: InsertLabelRequest): Promise<NludbResponse<InsertLabelResult>> {
+  //   throw new NLUDBError(
+  //     'Feature not yet supported'
+  //   );
+  //   if (typeof params.metadata == 'object') {
+  //     params.metadata = JSON.stringify(params.metadata);
+  //   }
+  //   return (await this.nludb.post('classifier/insert', {
+  //     ...params,
+  //     classifierId: this.id,
+  //   })) as NludbResponse<InsertLabelResult>;
+  // }
 
-  async delete(): Promise<DeleteClassifierResult> {
-    throw new NLUDBError(
-      'Feature not yet supported'
-    );
-    return (await this.nludb.post('classifier/delete', {
-      classifierId: this.id,
-    })) as DeleteClassifierResult;
-  }
+  // async delete(): Promise<NludbResponse<DeleteClassifierResult>> {
+  //   throw new NLUDBError(
+  //     'Feature not yet supported'
+  //   );
+  //   return (await this.nludb.post('classifier/delete', {
+  //     classifierId: this.id,
+  //   })) as NludbResponse<DeleteClassifierResult>;
+  // }
 }

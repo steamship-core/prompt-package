@@ -32,7 +32,7 @@ test('Test Zero Shot', async (t) => {
   const r1 = (await c1.classify({
     docs: ["Banana"],
     labels: ["Movie", "Food", "City"]
-  } as ClassifyRequest)) as ClassifyResult;
+  } as ClassifyRequest)).data as ClassifyResult;
   t.is(r1.hits.length, 1);
   t.is(r1.hits[0].length, 1);
   t.is(r1.hits[0][0].value, "Food");
@@ -41,7 +41,7 @@ test('Test Zero Shot', async (t) => {
     docs: ["Banana"],
     labels: ["Movie", "Food", "City"],
     k: 0
-  } as ClassifyRequest)) as ClassifyResult;
+  } as ClassifyRequest)).data as ClassifyResult;
   t.is(r2.hits.length, 1);
   t.is(r1.hits[0].length, 1);
   t.is(r1.hits[0][0].value, "Food");
@@ -50,7 +50,7 @@ test('Test Zero Shot', async (t) => {
     docs: ["Banana"],
     labels: ["Movie", "Food", "City"],
     k: 2
-  } as ClassifyRequest)) as ClassifyResult;
+  } as ClassifyRequest)).data as ClassifyResult;
   t.is(r3.hits.length, 1);
   t.is(r3.hits[0].length, 2);
   t.is(r3.hits[0][0].value, "Food");
@@ -60,37 +60,28 @@ test('Test Zero Shot', async (t) => {
     docs: ["Banana"],
     labels: ["Movie", "Food", "City"],
     k: 3
-  } as ClassifyRequest)) as ClassifyResult;
+  } as ClassifyRequest)).data as ClassifyResult;
   t.is(r4.hits.length, 1);
   t.is(r4.hits[0].length, 3);
   t.is(r4.hits[0][0].value, "Food");
-  t.is(r4.hits[0][1].value, "City");
-  t.is(r4.hits[0][2].value, "Movie");
 
   const r5 = (await c1.classify({
     docs: ["Banana"],
     labels: ["Movie", "Food", "City"],
     k: 4
-  } as ClassifyRequest)) as ClassifyResult;
+  } as ClassifyRequest)).data as ClassifyResult;
   t.is(r5.hits.length, 1);
   t.is(r5.hits[0].length, 3);
   t.is(r5.hits[0][0].value, "Food");
-  t.is(r5.hits[0][1].value, "City");
-  t.is(r5.hits[0][2].value, "Movie");
 
   const r6 = (await c1.classify({
     docs: ["Banana", "Boston"],
     labels: ["Movie", "Food", "City"],
     k: 3
-  } as ClassifyRequest)) as ClassifyResult;
+  } as ClassifyRequest)).data as ClassifyResult;
   t.is(r6.hits.length, 2);
   t.is(r6.hits[0].length, 3);
   t.is(r6.hits[0][0].value, "Food");
-  t.is(r6.hits[0][1].value, "City");
-  t.is(r6.hits[0][2].value, "Movie");
   t.is(r6.hits[1].length, 3);
   t.is(r6.hits[1][0].value, "City");
-  t.is(r6.hits[1][1].value, "Movie");
-  t.is(r6.hits[1][2].value, "Food");
-
 });

@@ -33,9 +33,9 @@ export function nludb_client(): NLUDB {
   }
 
   if (typeof domain == 'undefined') {
-    return new NLUDB(key as string);
+    return new NLUDB({apiKey: key as string});
   } else {
-    return new NLUDB(key as string, domain as string);
+    return new NLUDB({apiKey: key as string, apiDomain: domain as string});
   }
 }
 

@@ -1,49 +1,56 @@
 import axios from 'axios';
 
 import { NLUDBError } from './nludb_error';
-import { NludbTaskStatus, TaskStatusResponse } from './types/base';
+import { ConnectionParams, NludbTaskStatus, TaskStatusResponse } from './types/base';
 
-export class NludbTask<ResultType> {
+export class NludbTask<ResultType> implements TaskStatusResponse {
   nludb: NludbApiBase;
-  taskId: string;
-  taskStatus: string;
-  taskCreatedOn: string;
-  taskLastModifiedOn: string;
-  result?: ResultType;
+  taskId?: string;
+  taskStatus?: string;
+  taskCreatedOn?: string;
+  taskLastModifiedOn?: string;
 
   constructor(
     nludb: NludbApiBase,
-    params: TaskStatusResponse,
-    result?: ResultType
+    params?: TaskStatusResponse,
   ) {
     this.nludb = nludb;
-    this.taskId = params.taskId;
-    this.taskStatus = params.taskStatus;
-    this.taskCreatedOn = params.taskCreatedOn;
-    this.taskLastModifiedOn = params.taskLastModifiedOn;
-    this.result = result;
+    this.taskId = params?.taskId;
+    this.taskStatus = params?.taskStatus;
+    this.taskCreatedOn = params?.taskCreatedOn;
+    this.taskLastModifiedOn = params?.taskLastModifiedOn;
   }
 
-  update(data: TaskStatusResponse | NludbTask<ResultType>) {
-    this.taskId = data.taskId;
-    this.taskStatus = data.taskStatus;
-    this.taskCreatedOn = data.taskCreatedOn;
-    this.taskLastModifiedOn = data.taskLastModifiedOn;
+  update(data?: TaskStatusResponse | NludbResponse<TaskStatusResponse>): NludbTask<ResultType> {
+    if (!data) {
+      return this;
+    }
+    if ((data as NludbResponse<TaskStatusResponse>).task) {
+      // Invoke update on just the task
+      this.update((data as NludbResponse<TaskStatusResponse>).task)
+      return this
+    }
+
+    const task = data as TaskStatusResponse
+    this.taskId = task.taskId;
+    this.taskStatus = task.taskStatus;
+    this.taskCreatedOn = task.taskCreatedOn;
+    this.taskLastModifiedOn = task.taskLastModifiedOn;
+    return this
   }
 
-  async check() {
+  async check(): Promise<NludbTask<ResultType>> {
     const status = await (this.nludb.post(
       'task/status',
-      { taskId: this.taskId },
-      true
-    ) as Promise<NludbTask<TaskStatusResponse>>);
-    this.update(status);
+      { taskId: this.taskId }
+    ) as Promise<NludbResponse<TaskStatusResponse>>);
+    return this.update(status);
   }
 
   async wait(params?: {
     maxTimeoutSeconds?: number;
     retryDelaySeconds?: number;
-  }): Promise<void> {
+  }): Promise<NludbTask<ResultType>> {
     if (typeof params == 'undefined') {
       params = {};
     }
@@ -61,7 +68,7 @@ export class NludbTask<ResultType> {
       this.taskStatus == NludbTaskStatus.succeeded ||
       this.taskStatus == NludbTaskStatus.failed
     ) {
-      return;
+      return this;
     }
 
     await new Promise((r) =>
@@ -74,41 +81,86 @@ export class NludbTask<ResultType> {
         this.taskStatus == NludbTaskStatus.succeeded ||
         this.taskStatus == NludbTaskStatus.failed
       ) {
-        return;
+        return this;
       }
       await new Promise((r) =>
         setTimeout(r, 1000 * (retryDelaySeconds as number))
       );
     }
-    return;
+    return this;
   }
 }
 
-export class NludbApiBase {
-  apiKey: string;
-  endpoint: string;
+export class NludbResponse<ResultType> {
+  data?: ResultType;
+  task?: NludbTask<ResultType>
 
-  constructor(apiKey: string, endpoint = 'https://api.nludb.com/api/v1') {
-    this.apiKey = apiKey;
-    this.endpoint = endpoint;
+  public constructor(data?: ResultType, task?: NludbTask<ResultType>) {
+    this.data = data
+    this.task = task
+  }
+
+  async wait(params?: {
+    maxTimeoutSeconds?: number;
+    retryDelaySeconds?: number;
+  }): Promise<NludbTask<ResultType> | undefined> {
+    if (this.task) {
+      return this.task.wait(params)
+    }
+    return undefined
+  }
+
+  update(data: TaskStatusResponse | NludbResponse<TaskStatusResponse>): NludbTask<ResultType> | undefined {
+    if (this.task) {
+      return this.task.update(data)
+    }
+    return undefined
+  }
+
+  async check(): Promise<NludbTask<ResultType> | undefined> {
+    if (this.task) {
+      return this.task.check()
+    }
+    return undefined
+  }
+
+}
+
+export class NludbApiBase {
+  connectionParams: ConnectionParams;
+
+  public constructor(connectionParams: ConnectionParams) {
+    this.connectionParams = connectionParams
+  }
+
+  private apiPrefix() : string {
+    let domain = this.connectionParams?.apiDomain || 'https://api.nludb.com/'
+    if (domain[domain.length - 1] != '/') {
+      domain = `${domain}/`
+    }
+    const version = this.connectionParams?.apiVersion || '1'
+    domain = `${domain}api/v${version}/`
+    if (domain[domain.length - 1] != '/') {
+      domain = `${domain}/`
+    }
+    return domain
   }
 
   async post<T>(
     operation: string,
-    payload: unknown,
-    asynchronous = false
-  ): Promise<T | NludbTask<T>> {
-    if (!this.apiKey) {
+    payload: unknown
+  ): Promise<NludbResponse<T>> {
+    if (!this.connectionParams.apiKey) {
       throw new NLUDBError(
         'Please set your NLUDB API key using the NLUDB_KEY environment variable!'
       );
     }
 
-    const url = `${this.endpoint}/${operation}`;
+    const url = `${this.apiPrefix()}${operation}`;
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.connectionParams.apiKey}`,
       },
     };
 
@@ -119,31 +171,17 @@ export class NludbApiBase {
     }
 
     if (!resp.data) {
-      throw new NLUDBError('No data in response.');
+      throw new NLUDBError('No body or task status in response.');
     }
 
+    // Is it an error?
     if (resp.data.reason) {
       throw new NLUDBError(resp.data.reason);
     }
 
-    // Non-asynchronous response
-    if (!asynchronous) {
-      if (resp.data.data) {
-        return resp.data.data as T;
-      }
-      throw new NLUDBError('No data property was present in response');
-    }
-
-    // Asynchronous Response
-    if (resp.data.status) {
-      return new NludbTask<T>(this, resp.data.status, resp.data.data);
-    } else {
-      if (resp.data.data) {
-        return resp.data.data;
-      }
-      throw new NLUDBError(
-        'Neither data nor status property was present in task response'
-      );
-    }
+    return new NludbResponse<T>(
+      resp.data.data as T,
+      new NludbTask<T>(this, resp.data.status as TaskStatusResponse)
+    )
   }
 }

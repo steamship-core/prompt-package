@@ -47,25 +47,25 @@ test('Test Embeddings', async (t) => {
   //   model: EmbeddingModel.PARAPHRASE,
   // });
 
-  t.is(e1.embeddings.length, 1);
-  t.is(e1.embeddings[0].length, 768);
-  t.notDeepEqual(e1.embeddings[0], e1b.embeddings[0]);
+  t.is(e1.data?.embeddings.length, 1);
+  t.is(e1.data?.embeddings[0].length, 768);
+  t.notDeepEqual(e1.data?.embeddings[0], e1b.data?.embeddings[0]);
 
-  t.is(e3.embeddings.length, 1);
-  t.is(e3.embeddings[0].length, 768);
-  t.notDeepEqual(e3.embeddings[0], e3b.embeddings[0]);
+  t.is(e3.data?.embeddings.length, 1);
+  t.is(e3.data?.embeddings[0].length, 768);
+  t.notDeepEqual(e3.data?.embeddings[0], e3b.data?.embeddings[0]);
 
-  // t.is(e5.embeddings.length, 1);
-  // t.is(e5.embeddings[0].length, 768);
-  // t.notDeepEqual(e3.embeddings[0], e5b.embeddings[0]);
+  // t.is(e5.data?.embeddings.length, 1);
+  // t.is(e5.data?.embeddings[0].length, 768);
+  // t.notDeepEqual(e3.data?.embeddings[0], e5b.data?.embeddings[0]);
 
-  t.notDeepEqual(e1.embeddings[0], e3b.embeddings[0]);
-  // t.notDeepEqual(e1.embeddings[0], e5b.embeddings[0]);
-  // t.notDeepEqual(e3.embeddings[0], e5b.embeddings[0]);
+  t.notDeepEqual(e1.data?.embeddings[0], e3b.data?.embeddings[0]);
+  // t.notDeepEqual(e1.data?.embeddings[0], e5b.data?.embeddings[0]);
+  // t.notDeepEqual(e3.data?.embeddings[0], e5b.data?.embeddings[0]);
 
-  t.deepEqual(e1.embeddings[0], e2.embeddings[0]);
-  t.deepEqual(e3.embeddings[0], e4.embeddings[0]);
-  // t.deepEqual(e5.embeddings[0], e6.embeddings[0]);
+  t.deepEqual(e1.data?.embeddings[0], e2.data?.embeddings[0]);
+  t.deepEqual(e3.data?.embeddings[0], e4.data?.embeddings[0]);
+  // t.deepEqual(e5.data?.embeddings[0], e6.data?.embeddings[0]);
 });
 
 test('Test Embedding Search', async (t) => {
@@ -85,9 +85,9 @@ test('Test Embedding Search', async (t) => {
     k: 1,
   });
 
-  t.is(results.hits.length, 1);
+  t.is(results.data?.hits.length, 1);
   t.is(
-    results.hits[0].value,
+    results.data?.hits[0].value,
     'Jonathan can help you with new employee onboarding'
   );
 });
