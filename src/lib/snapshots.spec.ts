@@ -26,6 +26,7 @@ test('Test Snapshots', async (t) => {
   await task.wait();
 
   search_results = await index.search({query: QS1[0]})
+
   t.is(search_results.data?.hits.length, 1)
   t.is(search_results.data?.hits[0].value, A1)
   t.is(search_results.data?.hits[0].query, QS1[0])

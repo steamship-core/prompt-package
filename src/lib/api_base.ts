@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import { NLUDBError } from './nludb_error';
 import { ConnectionParams, NludbTaskStatus, TaskStatusResponse } from './types/base';
+import { AddTaskCommentRequest, DeleteTaskCommentRequest, ListTaskCommentResponse, TaskCommentResponse } from './types/task_comment';
 
 export class NludbTask<ResultType> implements TaskStatusResponse {
   nludb: NludbApiBase;
@@ -89,6 +90,27 @@ export class NludbTask<ResultType> implements TaskStatusResponse {
     }
     return this;
   }
+
+  async addComment(params: AddTaskCommentRequest): Promise<NludbResponse<TaskCommentResponse>> {
+    if (typeof params.metadata == 'object') {
+      params.metadata = JSON.stringify(params.metadata);
+    }
+    return (await this.nludb.post('task/comment/create', {
+      taskId: this.taskId,
+      ...params,
+    })) as NludbResponse<TaskCommentResponse>;
+  }
+
+  async listComments(): Promise<NludbResponse<ListTaskCommentResponse>> {
+    return (await this.nludb.post('task/comment/list', {
+      taskId: this.taskId,
+    })) as NludbResponse<ListTaskCommentResponse>;
+  }
+
+  async deleteComment(params: DeleteTaskCommentRequest): Promise<NludbResponse<TaskCommentResponse>> {
+    return (await this.nludb.post('task/comment/delete', params)) as NludbResponse<TaskCommentResponse>;
+  }
+
 }
 
 export class NludbResponse<ResultType> {
@@ -122,6 +144,21 @@ export class NludbResponse<ResultType> {
       return this.task.check()
     }
     return undefined
+  }
+
+  async addComment(params: AddTaskCommentRequest): Promise<NludbResponse<TaskCommentResponse>> {
+    if (!this.task) throw new NLUDBError("Can't add comment: no saved task was found for this item.")
+    return this.task.addComment(params)
+  }
+
+  async listComments(): Promise<NludbResponse<ListTaskCommentResponse>> {
+    if (!this.task) throw new NLUDBError("Can't list comments: no saved task was found for this item.")
+    return this.task.listComments()
+  }
+
+  async deleteComment(params: DeleteTaskCommentRequest): Promise<NludbResponse<TaskCommentResponse>> {
+    if (!this.task) throw new NLUDBError("Can't delete comment: no saved task was found for this item.")
+    return this.task.deleteComment(params)
   }
 
 }

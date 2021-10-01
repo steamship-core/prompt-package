@@ -31,3 +31,5 @@ export interface ConnectionParams {
   apiVersion?:string; // e.g. 1
   apiKey?:string;
 }
+
+export type Metadata = unknown

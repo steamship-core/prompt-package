@@ -3,6 +3,7 @@ import { Classifier } from './classifier';
 import { EmbeddingIndex } from './embedding_index';
 import { Models } from './models';
 import { NLUDBError } from './nludb_error';
+import { Tasks } from './tasks';
 import { ConnectionParams } from './types/base'
 import { CreateClassifierRequest } from './types/classifier';
 import {
@@ -18,10 +19,12 @@ import { ParsingModel } from './types/parsing_model'
 
 export class NLUDB extends NludbApiBase {
   models: Models;
+  tasks: Tasks;
 
   public constructor(connectionParams: ConnectionParams) {
     super(connectionParams);
     this.models = new Models(this);
+    this.tasks = new Tasks(this);
   }
 
   async embed(params: EmbedRequest): Promise<NludbResponse<EmbedResult>> {

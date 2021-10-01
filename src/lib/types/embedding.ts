@@ -1,4 +1,4 @@
-import { SearchHit } from './base'
+import { Metadata, SearchHit } from './base'
 
 export interface CreateIndexRequest {
   name: string;
@@ -46,7 +46,7 @@ export interface InsertRequest {
   value: string;
   externalId?: string;
   externalType?: string;
-  metadata?: unknown;
+  metadata?: Metadata;
   reindex?: boolean;
 }
 
