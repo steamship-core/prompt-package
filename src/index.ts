@@ -1,5 +1,5 @@
 export { NLUDB } from './lib/nludb';
-export { NLUDBError } from './lib/nludb_error';
+export { RemoteError } from './lib/nludb_error';
 
 // Embedding
 export { EmbeddingIndex } from './lib/embedding_index';
@@ -40,7 +40,7 @@ export type {
 
 export {
   NludbTask,
-  NludbResponse
+  Response
 } from './lib/api_base'
 
 export type {

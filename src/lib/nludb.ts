@@ -1,8 +1,8 @@
-import { NludbApiBase, NludbResponse } from './api_base';
+import { ApiBase, Response } from './api_base';
 import { Classifier } from './classifier';
 import { EmbeddingIndex } from './embedding_index';
 import { Models } from './models';
-import { NLUDBError } from './nludb_error';
+import { RemoteError } from './nludb_error';
 import { Tasks } from './tasks';
 import { ConnectionParams } from './types/base'
 import { CreateClassifierRequest } from './types/classifier';
@@ -17,7 +17,7 @@ import {
 import { ParseRequest, ParseResponse } from './types/parsing';
 import { ParsingModel } from './types/parsing_model'
 
-export class NLUDB extends NludbApiBase {
+export class NLUDB extends ApiBase {
   models: Models;
   tasks: Tasks;
 
@@ -27,26 +27,26 @@ export class NLUDB extends NludbApiBase {
     this.tasks = new Tasks(this);
   }
 
-  async embed(params: EmbedRequest): Promise<NludbResponse<EmbedResult>> {
-    return this.post('embedding/create', params) as Promise<NludbResponse<EmbedResult>>;
+  async embed(params: EmbedRequest): Promise<Response<EmbedResult>> {
+    return this.post('embedding/create', params) as Promise<Response<EmbedResult>>;
   }
 
   async embedAndSearch(
     params: EmbedAndSearchRequest
-  ): Promise<NludbResponse<EmbedAndSearchResult>> {
+  ): Promise<Response<EmbedAndSearchResult>> {
     return this.post(
       'embedding/search',
       params
-    ) as Promise<NludbResponse<EmbedAndSearchResult>>;
+    ) as Promise<Response<EmbedAndSearchResult>>;
   }
 
   async createIndex(params: CreateIndexRequest): Promise<EmbeddingIndex> {
     const res = (await this.post(
       'embedding-index/create',
       params
-    )) as NludbResponse<CreateIndexResult>;
+    )) as Response<CreateIndexResult>;
     if (!res.data?.id) {
-      throw new NLUDBError("createIndex did not result in an Index ID");
+      throw new RemoteError("createIndex did not result in an Index ID");
     }
     return new EmbeddingIndex(this, params.name, params.model, res.data.id);
   }
@@ -55,18 +55,18 @@ export class NLUDB extends NludbApiBase {
     if (params.save === false) {
       return new Classifier(this, params.name, params.model, undefined, params.labels)
     } else {
-      throw new NLUDBError(
+      throw new RemoteError(
         'Feature not yet supported'
       );
       // const res = (await this.post(
       //   'classifier/create',
       //   params
-      // )) as NludbResponse<CreateClassifierResult>;
+      // )) as Response<CreateClassifierResult>;
       // return new Classifier(this, params.name, params.model, res.data?.classifierId);
     }
   }
 
-  async parse(params: ParseRequest): Promise<NludbResponse<ParseResponse>> {
+  async parse(params: ParseRequest): Promise<Response<ParseResponse>> {
     return await this.post(
       'parser/parse',
       {
@@ -76,6 +76,6 @@ export class NLUDB extends NludbApiBase {
         includeEntities: false,
         ...params
       }
-    ) as NludbResponse<ParseResponse>;
+    ) as Response<ParseResponse>;
   }
 }

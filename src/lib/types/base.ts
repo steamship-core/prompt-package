@@ -30,6 +30,8 @@ export interface ConnectionParams {
   apiDomain?:string; // e.g. https://api.nludb.com/
   apiVersion?:string; // e.g. 1
   apiKey?:string;
+  spaceId?: string;
+  spaceHandle?: string;
 }
 
 export type Metadata = unknown

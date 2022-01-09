@@ -1,4 +1,4 @@
-import { NludbApiBase, NludbResponse } from './api_base';
+import { ApiBase, Response } from './api_base';
 import {
   DeleteResult,
   DeleteSnapshotsResponse,
@@ -15,20 +15,20 @@ export class EmbeddingIndex {
   id: string;
   name: string;
   model: string;
-  nludb: NludbApiBase;
+  nludb: ApiBase;
 
-  constructor(nludb: NludbApiBase, name: string, model: string, id: string) {
+  constructor(nludb: ApiBase, name: string, model: string, id: string) {
     this.name = name;
     this.model = model;
     this.id = id;
     this.nludb = nludb;
   }
 
-  async search(params: SearchRequest): Promise<NludbResponse<SearchResult>> {
+  async search(params: SearchRequest): Promise<Response<SearchResult>> {
     const res = (await this.nludb.post('embedding-index/search', {
       indexId: this.id,
       ...params,
-    })) as NludbResponse<SearchResult>;
+    })) as Response<SearchResult>;
     if (typeof res.data == 'undefined') {
       res.data = {} as SearchResult
     }
@@ -47,50 +47,50 @@ export class EmbeddingIndex {
     return res;
   }
 
-  async insert(params: InsertRequest): Promise<NludbResponse<InsertResult>> {
+  async insert(params: InsertRequest): Promise<Response<InsertResult>> {
     if (typeof params.metadata == 'object') {
       params.metadata = JSON.stringify(params.metadata);
     }
     return (await this.nludb.post('embedding-index/insert', {
       indexId: this.id,
       ...params,
-    })) as NludbResponse<InsertResult>;
+    })) as Response<InsertResult>;
   }
 
-  async delete(): Promise<NludbResponse<DeleteResult>> {
+  async delete(): Promise<Response<DeleteResult>> {
     return (await this.nludb.post('embedding-index/delete', {
       indexId: this.id,
-    })) as NludbResponse<DeleteResult>;
+    })) as Response<DeleteResult>;
   }
 
-  async embed(): Promise<NludbResponse<EmbedIndexResult>> {
+  async embed(): Promise<Response<EmbedIndexResult>> {
     return (await this.nludb.post(
       'embedding-index/embed',
       {
         indexId: this.id,
       }
-    )) as NludbResponse<EmbedIndexResult>;
+    )) as Response<EmbedIndexResult>;
   }
 
-  async createSnapshot(): Promise<NludbResponse<IndexSnapshotResponse>> {
+  async createSnapshot(): Promise<Response<IndexSnapshotResponse>> {
     return (await this.nludb.post(
       'embedding-index/snapshot/create',
       {
         indexId: this.id,
       }
-    )) as NludbResponse<IndexSnapshotResponse>;
+    )) as Response<IndexSnapshotResponse>;
   }
 
-  async listSnapshots(): Promise<NludbResponse<ListSnapshotsResponse>> {
+  async listSnapshots(): Promise<Response<ListSnapshotsResponse>> {
     return (await this.nludb.post('embedding-index/snapshot/list', {
       indexId: this.id,
-    })) as NludbResponse<ListSnapshotsResponse>;
+    })) as Response<ListSnapshotsResponse>;
   }
 
-  async deleteSnapshot(snapshotId: string): Promise<NludbResponse<DeleteSnapshotsResponse>> {
+  async deleteSnapshot(snapshotId: string): Promise<Response<DeleteSnapshotsResponse>> {
     return (await this.nludb.post('embedding-index/snapshot/delete', {
       snapshotId: snapshotId,
-    })) as NludbResponse<DeleteSnapshotsResponse>;
+    })) as Response<DeleteSnapshotsResponse>;
   }
 
 }

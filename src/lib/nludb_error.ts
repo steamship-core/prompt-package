@@ -1,7 +1,7 @@
-export class NLUDBError extends Error {
+export class RemoteError extends Error {
   constructor(message: string) {
     super(message);
     // Set the prototype explicitly.
-    Object.setPrototypeOf(this, NLUDBError.prototype);
+    Object.setPrototypeOf(this, RemoteError.prototype);
   }
 }
