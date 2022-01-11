@@ -1,4 +1,4 @@
-import { Metadata } from "./base";
+import { Metadata } from './base';
 
 export interface AddTaskCommentRequest {
   taskId?: string;
@@ -12,7 +12,6 @@ export interface AddTaskCommentRequest {
 export interface DeleteTaskCommentRequest {
   taskCommentId?: string;
 }
-
 
 export interface ListTaskCommentRequest {
   taskId?: string;

@@ -1,15 +1,14 @@
-
 export enum ModelType {
-  embedder = "embedder",
-  parser = "parser",
-  classifier = "classifier"
+  embedder = 'embedder',
+  parser = 'parser',
+  classifier = 'classifier',
 }
 
 export enum ModelAdapterType {
-  nludbDocker = "nludbDocker",
-  nludbSagemaker = "nludbSagemaker",
-  huggingface = "huggingface",
-  openai = "openai"
+  nludbDocker = 'nludbDocker',
+  nludbSagemaker = 'nludbSagemaker',
+  huggingface = 'huggingface',
+  openai = 'openai',
 }
 
 export enum LimitUnit {
@@ -19,36 +18,36 @@ export enum LimitUnit {
 }
 
 export interface Model {
-  id: string
-  name: string
-  modelType: string
-  url: string
-  adapterType: string
-  isPublic: boolean
-  handle: string
-  description: string
-  dimensionality: number
-  limitAmount: number
-  limitUnit: string
-  apiKey: string
-  metadata: string
+  id: string;
+  name: string;
+  modelType: string;
+  url: string;
+  adapterType: string;
+  isPublic: boolean;
+  handle: string;
+  description: string;
+  dimensionality: number;
+  limitAmount: number;
+  limitUnit: string;
+  apiKey: string;
+  metadata: string;
 }
 
 export interface CreateModelRequest {
-  id?: string
-  name: string
-  modelType: string
-  url: string
-  adapterType: string
-  isPublic: boolean
-  handle?: string
-  description: string
-  dimensionality?: number
-  limitAmount?: number
-  limitUnit?: string
-  apiKey?: string
-  metadata?: string
-  upsert?: boolean
+  id?: string;
+  name: string;
+  modelType: string;
+  url: string;
+  adapterType: string;
+  isPublic: boolean;
+  handle?: string;
+  description: string;
+  dimensionality?: number;
+  limitAmount?: number;
+  limitUnit?: string;
+  apiKey?: string;
+  metadata?: string;
+  upsert?: boolean;
 }
 
 export interface DeleteModelRequest {

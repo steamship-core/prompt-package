@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { nludb_client, qa_model, sim_model } from './helper.spec';
+import { nludb_client, qa_model, sim_model } from './helper.test';
 
 test('Create NLUDB Client', (t) => {
   t.notThrows(() => {
@@ -91,4 +91,3 @@ test('Test Embedding Search', async (t) => {
     'Jonathan can help you with new employee onboarding'
   );
 });
-

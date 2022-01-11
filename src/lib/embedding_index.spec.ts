@@ -1,7 +1,7 @@
 import test from 'ava';
 
-import { nludb_client, qa_model, random_name } from './helper.spec';
-import { NludbTaskStatus } from './types/base'
+import { nludb_client, qa_model, random_name } from './helper.test';
+import { NludbTaskStatus } from './types/base';
 import { CreateIndexRequest } from './types/embedding';
 
 test('Test Index Create', async (t) => {
@@ -172,28 +172,28 @@ test('Test Multiple Queries', async (t) => {
     model: qa_model(),
   });
 
-  const A1 = "Ted can eat an entire block of cheese."
-  const A2 = "Joe can drink an entire glass of water."
-  await index.insert({value: A1});
-  await index.insert({value: A2});
+  const A1 = 'Ted can eat an entire block of cheese.';
+  const A2 = 'Joe can drink an entire glass of water.';
+  await index.insert({ value: A1 });
+  await index.insert({ value: A2 });
   await (await index.embed()).wait();
 
-  const QS1 = ["Who can eat the most cheese", "Who can run the fastest?"]
-  let search_results = await index.search({query: QS1[0]})
-  t.is(search_results.data?.hits.length, 1)
-  t.is(search_results.data?.hits[0].value, A1)
-  t.is(search_results.data?.hits[0].query, QS1[0])
+  const QS1 = ['Who can eat the most cheese', 'Who can run the fastest?'];
+  let search_results = await index.search({ query: QS1[0] });
+  t.is(search_results.data?.hits.length, 1);
+  t.is(search_results.data?.hits[0].value, A1);
+  t.is(search_results.data?.hits[0].query, QS1[0]);
 
-  search_results = await index.search({queries: QS1})
-  t.is(search_results.data?.hits.length, 1)
-  t.is(search_results.data?.hits[0].value, A1)
-  t.is(search_results.data?.hits[0].query, QS1[0])
+  search_results = await index.search({ queries: QS1 });
+  t.is(search_results.data?.hits.length, 1);
+  t.is(search_results.data?.hits[0].value, A1);
+  t.is(search_results.data?.hits[0].query, QS1[0]);
 
-  const QS2 = ["Who can tie a shoe?", "Who can drink the most water?"]
-  search_results = await index.search({queries: QS2})
-  t.is(search_results.data?.hits.length, 1)
-  t.is(search_results.data?.hits[0].value, A2)
-  t.is(search_results.data?.hits[0].query, QS2[1])
+  const QS2 = ['Who can tie a shoe?', 'Who can drink the most water?'];
+  search_results = await index.search({ queries: QS2 });
+  t.is(search_results.data?.hits.length, 1);
+  t.is(search_results.data?.hits[0].value, A2);
+  t.is(search_results.data?.hits[0].query, QS2[1]);
 
   await index.delete();
 });

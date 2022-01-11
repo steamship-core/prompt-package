@@ -1,7 +1,6 @@
 import test from 'ava';
 
-import { nludb_client, qa_model, random_name } from './helper.spec';
-
+import { nludb_client, qa_model, random_name } from './helper.test';
 
 test('Test Snapshots', async (t) => {
   const nludb = nludb_client();
@@ -11,52 +10,52 @@ test('Test Snapshots', async (t) => {
     model: qa_model(),
   });
 
-  const A1 = "Ted can eat an entire block of cheese."
-  await index.insert({value: A1});
+  const A1 = 'Ted can eat an entire block of cheese.';
+  await index.insert({ value: A1 });
   let task = await index.embed();
   await task.wait();
-  const QS1 = ["Who can eat the most cheese", "Who can drink water?"]
-  let search_results = await index.search({query: QS1[0]})
-  t.is(search_results.data?.hits.length, 1)
-  t.is(search_results.data?.hits[0].value, A1)
-  t.is(search_results.data?.hits[0].query, QS1[0])
-  t.is(search_results.data?.hits[0].indexSource, "index")
+  const QS1 = ['Who can eat the most cheese', 'Who can drink water?'];
+  let search_results = await index.search({ query: QS1[0] });
+  t.is(search_results.data?.hits.length, 1);
+  t.is(search_results.data?.hits[0].value, A1);
+  t.is(search_results.data?.hits[0].query, QS1[0]);
+  t.is(search_results.data?.hits[0].indexSource, 'index');
 
-  task = await index.createSnapshot()
+  task = await index.createSnapshot();
   await task.wait();
 
-  search_results = await index.search({query: QS1[0]})
+  search_results = await index.search({ query: QS1[0] });
 
-  t.is(search_results.data?.hits.length, 1)
-  t.is(search_results.data?.hits[0].value, A1)
-  t.is(search_results.data?.hits[0].query, QS1[0])
-  t.is(search_results.data?.hits[0].indexSource, "snapshot")
+  t.is(search_results.data?.hits.length, 1);
+  t.is(search_results.data?.hits[0].value, A1);
+  t.is(search_results.data?.hits[0].query, QS1[0]);
+  t.is(search_results.data?.hits[0].indexSource, 'snapshot');
 
-  const A2 = "Joe can drink an entire glass of water."
-  await index.insert({value: A2});
+  const A2 = 'Joe can drink an entire glass of water.';
+  await index.insert({ value: A2 });
   task = await index.embed();
   await task.wait();
 
-  search_results = await index.search({query: QS1[0]})
-  t.is(search_results.data?.hits.length, 1)
-  t.is(search_results.data?.hits[0].value, A1)
-  t.is(search_results.data?.hits[0].query, QS1[0])
-  t.is(search_results.data?.hits[0].indexSource, "snapshot")
+  search_results = await index.search({ query: QS1[0] });
+  t.is(search_results.data?.hits.length, 1);
+  t.is(search_results.data?.hits[0].value, A1);
+  t.is(search_results.data?.hits[0].query, QS1[0]);
+  t.is(search_results.data?.hits[0].indexSource, 'snapshot');
 
-  search_results = await index.search({query: QS1[1]})
-  t.is(search_results.data?.hits.length, 1)
-  t.is(search_results.data?.hits[0].value, A2)
-  t.is(search_results.data?.hits[0].query, QS1[1])
-  t.is(search_results.data?.hits[0].indexSource, "index")
+  search_results = await index.search({ query: QS1[1] });
+  t.is(search_results.data?.hits.length, 1);
+  t.is(search_results.data?.hits[0].value, A2);
+  t.is(search_results.data?.hits[0].query, QS1[1]);
+  t.is(search_results.data?.hits[0].indexSource, 'index');
 
-  task = await index.createSnapshot()
+  task = await index.createSnapshot();
   await task.wait();
 
-  search_results = await index.search({query: QS1[1]})
-  t.is(search_results.data?.hits.length, 1)
-  t.is(search_results.data?.hits[0].value, A2)
-  t.is(search_results.data?.hits[0].query, QS1[1])
-  t.is(search_results.data?.hits[0].indexSource, "snapshot")
+  search_results = await index.search({ query: QS1[1] });
+  t.is(search_results.data?.hits.length, 1);
+  t.is(search_results.data?.hits[0].value, A2);
+  t.is(search_results.data?.hits[0].query, QS1[1]);
+  t.is(search_results.data?.hits[0].indexSource, 'snapshot');
 
   await index.delete();
 });

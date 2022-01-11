@@ -38,7 +38,6 @@ export interface Token {
   tokenIndex?: number;
 }
 
-
 export interface Entity {
   text: string;
   textWithWs: string;
@@ -77,18 +76,18 @@ export interface Doc {
   model: string;
   lang: string;
   sentiment: number;
-  entities?: Entity[]
+  entities?: Entity[];
 }
 
 export interface ParseResponse {
   docs: Doc[];
 }
 
-export type MatcherClause = Record<string, unknown>
-export type Matcher = MatcherClause[]
+export type MatcherClause = Record<string, unknown>;
+export type Matcher = MatcherClause[];
 
 export interface TokenMatcher {
-  label: string
+  label: string;
   patterns: Matcher[];
 }
 
@@ -104,7 +103,7 @@ export interface DependencyMatcher {
   patterns: Matcher[];
 }
 
-export interface ParseRequest{
+export interface ParseRequest {
   docs: string[];
   model?: string;
   tokenMatchers?: TokenMatcher[];
@@ -115,5 +114,5 @@ export interface ParseRequest{
   includeParseData?: boolean;
   includeEntities?: boolean;
 
-  metadata?: unknown
+  metadata?: unknown;
 }

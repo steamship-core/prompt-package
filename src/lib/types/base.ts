@@ -23,15 +23,4 @@ export interface SearchHit {
   query?: string;
 }
 
-export interface ConnectionParams {
-  // The full NLUDB base endpoint, including the version number
-  // For example:
-  // https://api.nludb.com/api/v1
-  apiDomain?:string; // e.g. https://api.nludb.com/
-  apiVersion?:string; // e.g. 1
-  apiKey?:string;
-  spaceId?: string;
-  spaceHandle?: string;
-}
-
-export type Metadata = unknown
+export type Metadata = unknown;

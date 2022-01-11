@@ -1,4 +1,4 @@
-import { SearchHit } from './base'
+import { SearchHit } from './base';
 
 export interface CreateClassifierRequest {
   model: string;
@@ -39,5 +39,5 @@ export interface InsertLabelResult {
 }
 
 export interface DeleteClassifierResult {
-  classifierId: string
+  classifierId: string;
 }

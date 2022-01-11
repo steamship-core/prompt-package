@@ -1,4 +1,4 @@
-import { Metadata, SearchHit } from './base'
+import { Metadata, SearchHit } from './base';
 
 export interface CreateIndexRequest {
   name: string;
@@ -63,26 +63,26 @@ export interface EmbedIndexResult {
   indexId: string;
 }
 
-export interface  IndexSnapshotRequest {
-  indexId: string
+export interface IndexSnapshotRequest {
+  indexId: string;
 }
 
 export interface IndexSnapshotResponse {
-  indexId: string
-  snapshotId: string
-}
-
-export interface  ListSnapshotsRequest {
-  indexId: string
-}
-
-export interface  ListSnapshotsResponse  {
-  snapshots: IndexSnapshotResponse[]
-}
-
-export interface  DeleteSnapshotsRequest {
+  indexId: string;
   snapshotId: string;
 }
-export interface  DeleteSnapshotsResponse {
+
+export interface ListSnapshotsRequest {
+  indexId: string;
+}
+
+export interface ListSnapshotsResponse {
+  snapshots: IndexSnapshotResponse[];
+}
+
+export interface DeleteSnapshotsRequest {
+  snapshotId: string;
+}
+export interface DeleteSnapshotsResponse {
   snapshotId: string;
 }

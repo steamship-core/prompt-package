@@ -7,41 +7,45 @@ export class Classifier {
   name?: string;
   model?: string;
   labels?: string[];
-  nludb: ApiBase;
+  client: ApiBase;
 
-  constructor(nludb: ApiBase, name?: string, model?: string, id?: string, labels?: string[]) {
-    if ((! id) && (! model)) {
-      throw new RemoteError(
-        'Either an ID or a model must be provided'
-      );
+  constructor(
+    client: ApiBase,
+    name?: string,
+    model?: string,
+    id?: string,
+    labels?: string[]
+  ) {
+    if (!id && !model) {
+      throw new RemoteError('Either an ID or a model must be provided');
     }
 
     this.name = name;
     this.model = model;
     this.id = id;
-    this.nludb = nludb;
+    this.client = client;
     this.labels = labels;
   }
 
   async classify(params: ClassifyRequest): Promise<Response<ClassifyResult>> {
     // There are two cases: an ID and no labels (assumption: saved classifier) or a model and labels (zero shot)
-    if ((! this.id) && (! this.model)) {
+    if (!this.id && !this.model) {
       throw new RemoteError(
         'Neither an ID nor a model was found on the classifier object. Please reinitialize with one or the other.'
       );
     }
-    if ((! this.id) && (! params.labels) && (! this.labels)) {
+    if (!this.id && !params.labels && !this.labels) {
       throw new RemoteError(
         'Since you are calling a stateless classifier, please include output labels in your classify request.'
       );
     }
-    if ((this.id) && (params.labels)) {
+    if (this.id && params.labels) {
       throw new RemoteError(
         'Since you are calling a stateful classifier, you can not include in-line labels in your classify request. Please add them first.'
       );
     }
 
-    const res = (await this.nludb.post('classifier/classify', {
+    const res = (await this.client.post('classifier/classify', {
       labels: this.labels,
       ...params,
       model: this.model,
@@ -49,7 +53,7 @@ export class Classifier {
     })) as Response<ClassifyResult>;
 
     if (typeof res.data == 'undefined') {
-      res.data = {} as ClassifyResult
+      res.data = {} as ClassifyResult;
     }
     if (typeof res.data.hits == 'undefined') {
       res.data.hits = [];
@@ -58,7 +62,9 @@ export class Classifier {
       for (let j = 0; j < res.data.hits[i].length; j++) {
         try {
           if (res.data.hits[i][j].metadata) {
-            res.data.hits[i][j].metadata = JSON.parse(res.data.hits[i][j].metadata as string);
+            res.data.hits[i][j].metadata = JSON.parse(
+              res.data.hits[i][j].metadata as string
+            );
           }
         } catch {
           // pass
@@ -75,7 +81,7 @@ export class Classifier {
   //   if (typeof params.metadata == 'object') {
   //     params.metadata = JSON.stringify(params.metadata);
   //   }
-  //   return (await this.nludb.post('classifier/insert', {
+  //   return (await this.client.post('classifier/insert', {
   //     ...params,
   //     classifierId: this.id,
   //   })) as Response<InsertLabelResult>;
@@ -85,7 +91,7 @@ export class Classifier {
   //   throw new RemoteError(
   //     'Feature not yet supported'
   //   );
-  //   return (await this.nludb.post('classifier/delete', {
+  //   return (await this.client.post('classifier/delete', {
   //     classifierId: this.id,
   //   })) as Response<DeleteClassifierResult>;
   // }

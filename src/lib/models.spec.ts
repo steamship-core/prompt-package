@@ -1,7 +1,11 @@
 import test from 'ava';
 
-import { nludb_client, random_name } from './helper.spec';
-import { CreateModelRequest, ModelAdapterType, ModelType } from './types/models';
+import { nludb_client, random_name } from './helper.test';
+import {
+  CreateModelRequest,
+  ModelAdapterType,
+  ModelType,
+} from './types/models';
 
 test('Test Model Create', async (t) => {
   const nludb = nludb_client();
@@ -11,75 +15,77 @@ test('Test Model Create', async (t) => {
 
   await t.throwsAsync(async () => {
     await nludb.models.create({
-      description: "This is just for test",
+      description: 'This is just for test',
       modelType: ModelType.embedder,
-      url: "http://foo",
+      url: 'http://foo',
       adapterType: ModelAdapterType.nludbDocker,
-      isPublic: false
-    } as CreateModelRequest)
+      isPublic: false,
+    } as CreateModelRequest);
   });
 
   await t.throwsAsync(async () => {
     await nludb.models.create({
       name: random_name(),
       modelType: ModelType.embedder,
-      url: "http://foo",
+      url: 'http://foo',
       adapterType: ModelAdapterType.nludbDocker,
-      isPublic: false
-    } as CreateModelRequest)
+      isPublic: false,
+    } as CreateModelRequest);
   });
 
   await t.throwsAsync(async () => {
     await nludb.models.create({
       name: random_name(),
-      description: "This is just for test",
-      url: "http://foo",
+      description: 'This is just for test',
+      url: 'http://foo',
       adapterType: ModelAdapterType.nludbDocker,
-      isPublic: false
-    } as CreateModelRequest)
+      isPublic: false,
+    } as CreateModelRequest);
   });
 
   await t.throwsAsync(async () => {
     await nludb.models.create({
       name: random_name(),
-      description: "This is just for test",
+      description: 'This is just for test',
       modelType: ModelType.embedder,
       adapterType: ModelAdapterType.nludbDocker,
-      isPublic: false
-    } as CreateModelRequest)
+      isPublic: false,
+    } as CreateModelRequest);
   });
 
   await t.throwsAsync(async () => {
     await nludb.models.create({
       name: random_name(),
-      description: "This is just for test",
+      description: 'This is just for test',
       modelType: ModelType.embedder,
-      url: "http://foo",
-      isPublic: false
-    } as CreateModelRequest)
+      url: 'http://foo',
+      isPublic: false,
+    } as CreateModelRequest);
   });
 
   await t.throwsAsync(async () => {
     await nludb.models.create({
       name: random_name(),
-      description: "This is just for test",
+      description: 'This is just for test',
       modelType: ModelType.embedder,
-      url: "http://foo",
+      url: 'http://foo',
       adapterType: ModelAdapterType.nludbDocker,
-    } as CreateModelRequest)
+    } as CreateModelRequest);
   });
 
   const models = await nludb.models.listPrivate();
   t.is(models.data?.models.length, origCount);
 
-  const model = (await nludb.models.create({
-    name: random_name(),
-    description: "This is just for test",
-    modelType: ModelType.embedder,
-    url: "http://foo",
-    adapterType: ModelAdapterType.nludbDocker,
-    isPublic: false
-  })).data
+  const model = (
+    await nludb.models.create({
+      name: random_name(),
+      description: 'This is just for test',
+      modelType: ModelType.embedder,
+      url: 'http://foo',
+      adapterType: ModelAdapterType.nludbDocker,
+      isPublic: false,
+    })
+  ).data;
 
   const models2 = await nludb.models.listPrivate();
   t.is(models2.data?.models.length, origCount + 1);
@@ -87,49 +93,50 @@ test('Test Model Create', async (t) => {
   // Upsert
   await t.throwsAsync(async () => {
     await nludb.models.create({
-      name: model?.name || "F",
-      description: "This is just for test",
+      name: model?.name || 'F',
+      description: 'This is just for test',
       modelType: ModelType.embedder,
-      url: "http://foo",
+      url: 'http://foo',
       adapterType: ModelAdapterType.nludbDocker,
-      isPublic: false
-    })
+      isPublic: false,
+    });
   });
 
-  const model2 = (await nludb.models.create({
-    name: model?.name || "F",
-    description: "This is just for test 2",
-    modelType: ModelType.embedder,
-    url: "http://foo",
-    adapterType: ModelAdapterType.nludbDocker,
-    isPublic: false,
-    upsert: true
-  })).data
+  const model2 = (
+    await nludb.models.create({
+      name: model?.name || 'F',
+      description: 'This is just for test 2',
+      modelType: ModelType.embedder,
+      url: 'http://foo',
+      adapterType: ModelAdapterType.nludbDocker,
+      isPublic: false,
+      upsert: true,
+    })
+  ).data;
 
-  t.is(model2?.id, model?.id)
+  t.is(model2?.id, model?.id);
 
-  const models3 = (await nludb.models.listPrivate()).data
-  t.is(models3?.models.length, origCount + 1)
-  t.is(models2?.data?.models[0].id, models3?.models[0].id)
+  const models3 = (await nludb.models.listPrivate()).data;
+  t.is(models3?.models.length, origCount + 1);
+  t.is(models2?.data?.models[0].id, models3?.models[0].id);
   // Upsert really doesn't update yet. Just retrieves old one.
   // t.is(models3.models[0].description, models.models[0].description)
 
-  await nludb.models.delete({modelId: model?.id || ""})
+  await nludb.models.delete({ modelId: model?.id || '' });
 
-  const models4 = (await nludb.models.listPrivate()).data
-  t.is(models4?.models.length, origCount)
+  const models4 = (await nludb.models.listPrivate()).data;
+  t.is(models4?.models.length, origCount);
 });
-
 
 test('Test Public Models', async (t) => {
   const nludb = nludb_client();
 
-  const modelsOrig = (await nludb.models.listPublic()).data
-  const origCount = modelsOrig?.models.length || 0
+  const modelsOrig = (await nludb.models.listPublic()).data;
+  const origCount = modelsOrig?.models.length || 0;
   t.is(origCount > 0, true);
 
   // It can't be deleted
   await t.throwsAsync(async () => {
-    await nludb.models.delete({modelId: modelsOrig?.models[0].id || ""})
-  })
-})
+    await nludb.models.delete({ modelId: modelsOrig?.models[0].id || '' });
+  });
+});

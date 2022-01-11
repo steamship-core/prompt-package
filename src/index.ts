@@ -1,4 +1,4 @@
-export { NLUDB } from './lib/nludb';
+export { Client } from './lib/nludb';
 export { RemoteError } from './lib/nludb_error';
 
 // Embedding
@@ -11,37 +11,36 @@ export type {
   InsertRequest,
   InsertResult,
   IndexSnapshotRequest,
-  IndexSnapshotResponse
-} from './lib/types/embedding'
+  IndexSnapshotResponse,
+} from './lib/types/embedding';
 
 // Classifiers
 export { Classifier } from './lib/classifier';
 export { ClassifierModel } from './lib/types/classifier_model';
 export type {
   CreateClassifierRequest,
-  CreateClassifierResult
-} from './lib/types/classifier'
+  CreateClassifierResult,
+} from './lib/types/classifier';
 
 export { ParsingModel } from './lib/types/parsing_model';
-export type {
-  ParseRequest,
-  ParseResponse
-} from './lib/types/parsing'
+export type { ParseRequest, ParseResponse } from './lib/types/parsing';
 
-export type { ConnectionParams, SearchHit, NludbTaskStatus, TaskStatusResponse, Metadata } from './lib/types/base'
+export type {
+  SearchHit,
+  NludbTaskStatus,
+  TaskStatusResponse,
+  Metadata,
+} from './lib/types/base';
 
 export type {
   AddTaskCommentRequest,
   TaskCommentResponse,
   ListTaskCommentRequest,
   ListTaskCommentResponse,
-  DeleteTaskCommentRequest
-} from './lib/types/task_comment'
+  DeleteTaskCommentRequest,
+} from './lib/types/task_comment';
 
-export {
-  NludbTask,
-  Response
-} from './lib/api_base'
+export { NludbTask, Response } from './lib/api_base';
 
 export type {
   CreateModelRequest,
@@ -51,5 +50,5 @@ export type {
   ListModelsResponse,
   ListPrivateModelsRequest,
   ListPublicModelsRequest,
-  DeleteModelRequest
-} from './lib/types/Models'
+  DeleteModelRequest,
+} from './lib/types/Models';

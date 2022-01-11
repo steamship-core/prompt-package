@@ -1,50 +1,58 @@
 import axios from 'axios';
 
 import { RemoteError } from './nludb_error';
-import { ConnectionParams, NludbTaskStatus, TaskStatusResponse } from './types/base';
-import { AddTaskCommentRequest, DeleteTaskCommentRequest, ListTaskCommentResponse, TaskCommentResponse } from './types/task_comment';
+import {
+  Configuration,
+  LoadConfigParams,
+  loadConfiguration,
+} from './shared/Configuration';
+import { NludbTaskStatus, TaskStatusResponse } from './types/base';
+import {
+  AddTaskCommentRequest,
+  DeleteTaskCommentRequest,
+  ListTaskCommentResponse,
+  TaskCommentResponse,
+} from './types/task_comment';
 
 export class NludbTask<ResultType> implements TaskStatusResponse {
-  nludb: ApiBase;
+  client: ApiBase;
   taskId?: string;
   taskStatus?: string;
   taskCreatedOn?: string;
   taskLastModifiedOn?: string;
 
-  constructor(
-    nludb: ApiBase,
-    params?: TaskStatusResponse,
-  ) {
-    this.nludb = nludb;
+  constructor(client: ApiBase, params?: TaskStatusResponse) {
+    this.client = client;
     this.taskId = params?.taskId;
     this.taskStatus = params?.taskStatus;
     this.taskCreatedOn = params?.taskCreatedOn;
     this.taskLastModifiedOn = params?.taskLastModifiedOn;
   }
 
-  update(data?: TaskStatusResponse | Response<TaskStatusResponse>): NludbTask<ResultType> {
+  update(
+    data?: TaskStatusResponse | Response<TaskStatusResponse>
+  ): NludbTask<ResultType> {
     if (!data) {
       return this;
     }
     if ((data as Response<TaskStatusResponse>).task) {
       // Invoke update on just the task
-      this.update((data as Response<TaskStatusResponse>).task)
-      return this
+      this.update((data as Response<TaskStatusResponse>).task);
+      return this;
     }
 
-    const task = data as TaskStatusResponse
+    const task = data as TaskStatusResponse;
     this.taskId = task.taskId;
     this.taskStatus = task.taskStatus;
     this.taskCreatedOn = task.taskCreatedOn;
     this.taskLastModifiedOn = task.taskLastModifiedOn;
-    return this
+    return this;
   }
 
   async check(): Promise<NludbTask<ResultType>> {
-    const status = await (this.nludb.post(
-      'task/status',
-      { taskId: this.taskId }
-    ) as Promise<Response<TaskStatusResponse>>);
+    const status = await (this.client.post('task/status', {
+      taskId: this.taskId,
+    }) as Promise<Response<TaskStatusResponse>>);
     return this.update(status);
   }
 
@@ -91,35 +99,41 @@ export class NludbTask<ResultType> implements TaskStatusResponse {
     return this;
   }
 
-  async addComment(params: AddTaskCommentRequest): Promise<Response<TaskCommentResponse>> {
+  async addComment(
+    params: AddTaskCommentRequest
+  ): Promise<Response<TaskCommentResponse>> {
     if (typeof params.metadata == 'object') {
       params.metadata = JSON.stringify(params.metadata);
     }
-    return (await this.nludb.post('task/comment/create', {
+    return (await this.client.post('task/comment/create', {
       taskId: this.taskId,
       ...params,
     })) as Response<TaskCommentResponse>;
   }
 
   async listComments(): Promise<Response<ListTaskCommentResponse>> {
-    return (await this.nludb.post('task/comment/list', {
+    return (await this.client.post('task/comment/list', {
       taskId: this.taskId,
     })) as Response<ListTaskCommentResponse>;
   }
 
-  async deleteComment(params: DeleteTaskCommentRequest): Promise<Response<TaskCommentResponse>> {
-    return (await this.nludb.post('task/comment/delete', params)) as Response<TaskCommentResponse>;
+  async deleteComment(
+    params: DeleteTaskCommentRequest
+  ): Promise<Response<TaskCommentResponse>> {
+    return (await this.client.post(
+      'task/comment/delete',
+      params
+    )) as Response<TaskCommentResponse>;
   }
-
 }
 
 export class Response<ResultType> {
   data?: ResultType;
-  task?: NludbTask<ResultType>
+  task?: NludbTask<ResultType>;
 
   public constructor(data?: ResultType, task?: NludbTask<ResultType>) {
-    this.data = data
-    this.task = task
+    this.data = data;
+    this.task = task;
   }
 
   async wait(params?: {
@@ -127,115 +141,128 @@ export class Response<ResultType> {
     retryDelaySeconds?: number;
   }): Promise<NludbTask<ResultType> | undefined> {
     if (this.task) {
-      return this.task.wait(params)
+      return this.task.wait(params);
     }
-    return undefined
+    return undefined;
   }
 
-  update(data: TaskStatusResponse | Response<TaskStatusResponse>): NludbTask<ResultType> | undefined {
+  update(
+    data: TaskStatusResponse | Response<TaskStatusResponse>
+  ): NludbTask<ResultType> | undefined {
     if (this.task) {
-      return this.task.update(data)
+      return this.task.update(data);
     }
-    return undefined
+    return undefined;
   }
 
   async check(): Promise<NludbTask<ResultType> | undefined> {
     if (this.task) {
-      return this.task.check()
+      return this.task.check();
     }
-    return undefined
+    return undefined;
   }
 
-  async addComment(params: AddTaskCommentRequest): Promise<Response<TaskCommentResponse>> {
-    if (!this.task) throw new RemoteError("Can't add comment: no saved task was found for this item.")
-    return this.task.addComment(params)
+  async addComment(
+    params: AddTaskCommentRequest
+  ): Promise<Response<TaskCommentResponse>> {
+    if (!this.task)
+      throw new RemoteError(
+        "Can't add comment: no saved task was found for this item."
+      );
+    return this.task.addComment(params);
   }
 
   async listComments(): Promise<Response<ListTaskCommentResponse>> {
-    if (!this.task) throw new RemoteError("Can't list comments: no saved task was found for this item.")
-    return this.task.listComments()
+    if (!this.task)
+      throw new RemoteError(
+        "Can't list comments: no saved task was found for this item."
+      );
+    return this.task.listComments();
   }
 
-  async deleteComment(params: DeleteTaskCommentRequest): Promise<Response<TaskCommentResponse>> {
-    if (!this.task) throw new RemoteError("Can't delete comment: no saved task was found for this item.")
-    return this.task.deleteComment(params)
+  async deleteComment(
+    params: DeleteTaskCommentRequest
+  ): Promise<Response<TaskCommentResponse>> {
+    if (!this.task)
+      throw new RemoteError(
+        "Can't delete comment: no saved task was found for this item."
+      );
+    return this.task.deleteComment(params);
   }
-
 }
 
 export class ApiBase {
-  connectionParams: ConnectionParams;
+  config: Promise<Configuration>;
 
-  public constructor(connectionParams: ConnectionParams) {
-    this.connectionParams = connectionParams
+  public constructor(params?: LoadConfigParams) {
+    this.config = loadConfiguration(params);
   }
 
-  private apiPrefix() : string {
-    let domain = this.connectionParams?.apiDomain || 'https://api.nludb.com/'
-    if (domain[domain.length - 1] != '/') {
-      domain = `${domain}/`
-    }
-    const version = this.connectionParams?.apiVersion || '1'
-    domain = `${domain}api/v${version}/`
-    if (domain[domain.length - 1] != '/') {
-      domain = `${domain}/`
-    }
-    return domain
-  }
-
-  _headers(spaceId?: string, spaceHandle?: string): any {
-    let ret: any = {
+  _headers(
+    config: Configuration,
+    spaceId?: string,
+    spaceHandle?: string
+  ): { [name: string]: string } {
+    const ret: { [name: string]: string } = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.connectionParams.apiKey}`,
-    }
+      Authorization: `Bearer ${config.apiKey}`,
+    };
 
     if (spaceId) {
-      ret['X-Space-Id'] = spaceId
-    } else if (this.connectionParams.spaceId) {
-      ret['X-Space-Id'] = this.connectionParams.spaceId
+      ret['X-Space-Id'] = spaceId;
+    } else if (config.spaceId) {
+      ret['X-Space-Id'] = config.spaceId;
     } else if (spaceHandle) {
-      ret['X-Space-Handle'] = spaceHandle
-    } else if (this.connectionParams.spaceHandle) {
-      ret['X-Space-Handle'] = this.connectionParams.spaceHandle
+      ret['X-Space-Handle'] = spaceHandle;
+    } else if (config.spaceHandle) {
+      ret['X-Space-Handle'] = config.spaceHandle;
     }
-
-    return ret
+    return ret;
   }
 
   async post<T>(
     operation: string,
     payload: unknown,
-    options?: ConnectionParams,
+    config?: Configuration
   ): Promise<Response<T>> {
-    if (!this.connectionParams.apiKey) {
+    const baseConfig = await this.config;
+    if (!baseConfig.apiKey) {
       throw new RemoteError(
         'Please set your NLUDB API key using the NLUDB_KEY environment variable!'
       );
     }
 
-    const url = `${this.apiPrefix()}${operation}`;
-    const config = {
-      headers: this._headers(options?.spaceId, options?.spaceHandle)
+    const url = `${baseConfig.apiBase}${operation}`;
+    const reqConfig = {
+      headers: this._headers(baseConfig, config?.spaceId, config?.spaceHandle),
     };
 
     let resp = null;
     try {
-      resp = await axios.post(url, payload, config);
+      resp = await axios.post(url, payload, reqConfig);
     } catch (error) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        throw new RemoteError(`[${error.response.status}] ${JSON.stringify(error.response.data)}`);
+        throw new RemoteError(
+          `[${error.response.status}] ${JSON.stringify(error.response.data)}`
+        );
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        throw new RemoteError(`A request was made to ${url} but no response was received`);
+        throw new RemoteError(
+          `A request was made to ${url} but no response was received`
+        );
       } else {
         // Something happened in setting up the request that triggered an Error
-        throw new RemoteError(`The request to ${url} could not be configured. Message: ${error.mesage}`);
+        throw new RemoteError(
+          `The request to ${url} could not be configured. Message: ${error.mesage}`
+        );
       }
-      throw new RemoteError("An unexpected error happened during your request.")
+      throw new RemoteError(
+        'An unexpected error happened during your request.'
+      );
     }
 
     if (!resp) {
@@ -254,6 +281,6 @@ export class ApiBase {
     return new Response<T>(
       resp.data.data as T,
       new NludbTask<T>(this, resp.data.status as TaskStatusResponse)
-    )
+    );
   }
 }

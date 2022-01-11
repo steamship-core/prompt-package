@@ -1,4 +1,3 @@
-
 export interface AddFileParams {
   contentType: 'markdown' | 'text';
 }
