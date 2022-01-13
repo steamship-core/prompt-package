@@ -47,7 +47,7 @@ export class Client extends ApiBase {
       params
     )) as Response<CreateIndexResult>;
     if (!res.data?.id) {
-      throw new RemoteError('createIndex did not result in an Index ID');
+      throw new RemoteError({message: 'createIndex did not result in an Index ID'});
     }
     return new EmbeddingIndex(this, params.name, params.model, res.data.id);
   }
@@ -62,7 +62,7 @@ export class Client extends ApiBase {
         params.labels
       );
     } else {
-      throw new RemoteError('Feature not yet supported');
+      throw new RemoteError({message: 'Feature not yet supported'});
       // const res = (await this.post(
       //   'classifier/create',
       //   params

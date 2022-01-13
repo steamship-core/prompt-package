@@ -17,7 +17,7 @@ export class Classifier {
     labels?: string[]
   ) {
     if (!id && !model) {
-      throw new RemoteError('Either an ID or a model must be provided');
+      throw new RemoteError({message: 'Either an ID or a model must be provided'});
     }
 
     this.name = name;
@@ -30,19 +30,19 @@ export class Classifier {
   async classify(params: ClassifyRequest): Promise<Response<ClassifyResult>> {
     // There are two cases: an ID and no labels (assumption: saved classifier) or a model and labels (zero shot)
     if (!this.id && !this.model) {
-      throw new RemoteError(
-        'Neither an ID nor a model was found on the classifier object. Please reinitialize with one or the other.'
-      );
+      throw new RemoteError({
+        message: 'Neither an ID nor a model was found on the classifier object. Please reinitialize with one or the other.'
+      });
     }
     if (!this.id && !params.labels && !this.labels) {
-      throw new RemoteError(
-        'Since you are calling a stateless classifier, please include output labels in your classify request.'
-      );
+      throw new RemoteError({
+        message: 'Since you are calling a stateless classifier, please include output labels in your classify request.'
+      });
     }
     if (this.id && params.labels) {
-      throw new RemoteError(
-        'Since you are calling a stateful classifier, you can not include in-line labels in your classify request. Please add them first.'
-      );
+      throw new RemoteError({
+        message: 'Since you are calling a stateful classifier, you can not include in-line labels in your classify request. Please add them first.'
+      });
     }
 
     const res = (await this.client.post('classifier/classify', {

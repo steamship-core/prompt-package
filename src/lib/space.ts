@@ -1,11 +1,15 @@
 import { ApiBase, Response } from './api_base';
 import { Configuration } from './shared/Configuration';
-import { CreateParams } from './shared/CreateParams';
+import { CreateParams, GetParams } from './shared/Requests';
 
 export interface SpaceParams {
   id?: string;
-  name?: string;
   handle?: string;
+  name?: string;
+}
+
+const _EXPECT = (client: ApiBase, data: unknown) => { 
+  return new Space(client, data as SpaceParams) 
 }
 
 export class Space {
@@ -21,25 +25,50 @@ export class Space {
     this.handle = params.handle;
   }
 
-  async delete(configuration?: Configuration) {
+  async delete(
+    config?: Configuration) {
     return (await this.client.post(
       'space/delete',
       {
         id: this.id,
       },
-      configuration
-    )) as Response<SpaceParams>;
+      {
+        expect: _EXPECT,
+        responsePath: 'space',
+        ...config
+      }
+    )) as Response<Space>;
   }
 
   static async create(
     client: ApiBase,
-    params: CreateParams,
+    params?: CreateParams,
     config?: Configuration
-  ): Promise<Response<SpaceParams>> {
+  ): Promise<Response<Space>> {
     return (await client.post(
       'space/create',
-      params,
-      config
-    )) as Response<SpaceParams>;
+      {...params},
+      {
+        expect: _EXPECT,
+        responsePath: 'space',
+        ...config
+      },
+    )) as Response<Space>;
+  }
+
+  static async get(
+    client: ApiBase,
+    params?: GetParams,
+    config?: Configuration
+  ): Promise<Response<Space>> {
+    return (await client.post(
+      'space/get',
+      {...params},
+      {
+        expect: _EXPECT,
+        responsePath: 'space',
+        ...config
+      },
+    )) as Response<Space>;
   }
 }

@@ -14,6 +14,12 @@ import {
   TaskCommentResponse,
 } from './types/task_comment';
 
+
+export interface PostConfig<T> extends Configuration {
+  responsePath?: string,
+  expect?: (client: ApiBase, data: unknown) => T
+}
+
 export class NludbTask<ResultType> implements TaskStatusResponse {
   client: ApiBase;
   taskId?: string;
@@ -166,17 +172,17 @@ export class Response<ResultType> {
     params: AddTaskCommentRequest
   ): Promise<Response<TaskCommentResponse>> {
     if (!this.task)
-      throw new RemoteError(
-        "Can't add comment: no saved task was found for this item."
+      throw new RemoteError({
+        message: "Can't add comment: no saved task was found for this item."}
       );
     return this.task.addComment(params);
   }
 
   async listComments(): Promise<Response<ListTaskCommentResponse>> {
     if (!this.task)
-      throw new RemoteError(
-        "Can't list comments: no saved task was found for this item."
-      );
+      throw new RemoteError({
+        message: "Can't list comments: no saved task was found for this item."
+      });
     return this.task.listComments();
   }
 
@@ -184,8 +190,8 @@ export class Response<ResultType> {
     params: DeleteTaskCommentRequest
   ): Promise<Response<TaskCommentResponse>> {
     if (!this.task)
-      throw new RemoteError(
-        "Can't delete comment: no saved task was found for this item."
+      throw new RemoteError({
+        message: "Can't delete comment: no saved task was found for this item."}
       );
     return this.task.deleteComment(params);
   }
@@ -223,13 +229,15 @@ export class ApiBase {
   async post<T>(
     operation: string,
     payload: unknown,
-    config?: Configuration
+    config?: PostConfig<T>
   ): Promise<Response<T>> {
     const baseConfig = await this.config;
     if (!baseConfig.apiKey) {
-      throw new RemoteError(
-        'Please set your NLUDB API key using the NLUDB_KEY environment variable!'
-      );
+      throw new RemoteError({
+        code: "Authentication",
+        message: "API Key not found.",
+        suggestion: "Please see docs.nludb.com for a variety of ways to set your API key."
+      });
     }
 
     const url = `${baseConfig.apiBase}${operation}`;
@@ -244,42 +252,56 @@ export class ApiBase {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        throw new RemoteError(
-          `[${error.response.status}] ${JSON.stringify(error.response.data)}`
-        );
+        throw new RemoteError({
+          message: `[${error.response.status}] ${JSON.stringify(error.response.data)}`
+        });
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        throw new RemoteError(
-          `A request was made to ${url} but no response was received`
-        );
+        throw new RemoteError({
+          message: `A request was made to ${url} but no response was received`
+        });
       } else {
         // Something happened in setting up the request that triggered an Error
-        throw new RemoteError(
-          `The request to ${url} could not be configured. Message: ${error.message}`
-        );
+        throw new RemoteError({
+          message: `The request to ${url} could not be configured. Message: ${error.message}`
+        });
       }
-      throw new RemoteError(
-        'An unexpected error happened during your request.'
-      );
+      throw new RemoteError({
+        message: 'An unexpected error happened during your request.'
+      });
     }
 
     if (!resp) {
-      throw new RemoteError('No response.');
+      throw new RemoteError({message: 'No response.'});
     }
 
     if (!resp.data) {
-      throw new RemoteError('No body or task status in response.');
+      throw new RemoteError({message: 'No body or task status in response.'});
     }
 
     // Is it an error?
     if (resp.data.reason) {
-      throw new RemoteError(resp.data.reason);
+      throw new RemoteError({message: resp.data.reason});
+    }
+    if (resp.data.error) {
+      throw new RemoteError({...resp.data.error});
+    }
+
+    let data = resp.data.data;
+    if (config?.responsePath) {
+      if (data[config?.responsePath]) {
+        data = data[config?.responsePath]
+      }
+    }
+
+    if (config?.expect) {
+      data = config?.expect(this, data)
     }
 
     return new Response<T>(
-      resp.data.data as T,
+      data as T,
       new NludbTask<T>(this, resp.data.status as TaskStatusResponse)
     );
   }

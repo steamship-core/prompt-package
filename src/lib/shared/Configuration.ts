@@ -78,7 +78,9 @@ class ConfigLoader {
           let cwd = process.cwd();
           while (cwd.length > 0 && cwd != path.sep) {
             this._configSearchPath.push(path.join(cwd, CONFIG_FILENAME));
-            cwd = path.join(...cwd.split(path.sep)).trim();
+            const parts = cwd.split(path.sep)
+            parts.pop()
+            cwd = parts.join(path.sep).trim();
           }
         }
         // Try the home folder last.
@@ -222,7 +224,7 @@ class ConfigLoader {
 
     // Then load from a file if provided
     if (params?.configFile) {
-      let found = await this.loadFromFile(params?.configFile, this._config.profile)
+      const found = await this.loadFromFile(params?.configFile, this._config.profile)
       if (!found) {
         throw Error(
           `Configuration path provided by no configuration found there. ${params?.configFile}`
