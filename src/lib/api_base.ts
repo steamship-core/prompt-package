@@ -257,7 +257,7 @@ export class ApiBase {
       } else {
         // Something happened in setting up the request that triggered an Error
         throw new RemoteError(
-          `The request to ${url} could not be configured. Message: ${error.mesage}`
+          `The request to ${url} could not be configured. Message: ${error.message}`
         );
       }
       throw new RemoteError(

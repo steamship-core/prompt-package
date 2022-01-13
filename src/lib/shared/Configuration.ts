@@ -9,6 +9,7 @@ export interface Configuration {
   appBase?: string;
   spaceId?: string;
   spaceHandle?: string;
+  profile?: string;
   profiles?: { [name: string]: Configuration };
 }
 
@@ -18,7 +19,8 @@ export interface LoadConfigParams {
   appBase?: string; // https://nludb.run/api/v1
   spaceId?: string;
   spaceHandle?: string;
-  filename?: string; // config file on disk
+  profile?: string;
+  configFile?: string; // config file on disk
 }
 
 const defaultProdCredentials = {
@@ -47,6 +49,7 @@ class ConfigLoader {
 
   _readFile: undefined | ((filePath: string) => string | undefined) = undefined;
   _configSearchPath: string[] = [];
+  _config: Configuration = {}
 
   async prepare() {
     // Create the _readFile function
@@ -59,7 +62,7 @@ class ConfigLoader {
         return fs.readFileSync(filePath, 'utf8');
       };
     } catch {
-      // Runing from the browser
+      // Running from the browser
       this._readFile = (): string | undefined => {
         return undefined;
       };
@@ -86,7 +89,7 @@ class ConfigLoader {
     }
   }
 
-  async _read(filePath?: string): Promise<Configuration | undefined> {
+  async _read(filePath?: string, profile?: string): Promise<Configuration | undefined> {
     if (!filePath) {
       return undefined;
     }
@@ -104,7 +107,149 @@ class ConfigLoader {
     // Let the parsing error trickle up!
     // We want the user to know their config has a problem.
     const json = JSON.parse(str);
-    return json as Configuration;
+
+    if (profile) {
+      if (!json["profiles"]) {
+        return undefined
+      }
+      if (!json["profiles"][profile]) {
+        return undefined
+      }
+      return json["profiles"][profile] as Configuration
+    } else {
+      return json as Configuration;
+    }
+  }
+
+  clear() {
+    this._config = {
+      apiBase: defaultProdCredentials.apiBase,
+      appBase: defaultProdCredentials.appBase,
+    }
+  }
+
+  async loadFromFile(filename?: string, profile?: string): Promise<boolean> {
+    if (!filename) {
+      return false
+    }
+    const config = await this._read(filename, profile)
+    if (!config) {
+      return false
+    }
+    if (config.apiBase) {
+      this._config.apiBase = config.apiBase
+    }
+    if (config.appBase) {
+      this._config.appBase = config.appBase
+    }
+    if (config.apiKey) {
+      this._config.apiKey = config.apiKey
+    }
+    if (config.spaceId) {
+      this._config.spaceId = config.spaceId
+    }
+    if (config.spaceHandle) {
+      this._config.spaceHandle = config.spaceHandle
+    }
+    return true
+  }
+
+  async tryAutofindingFiles(profile?: string): Promise<boolean> {
+    for (const configPath of this._configSearchPath) {
+      const found = await this.loadFromFile(configPath, profile);
+      if (found) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async loadEnvVars() {
+    if (typeof process != 'undefined' && typeof process.env != 'undefined') {
+      try {
+        if (process.env['NLUDB_API_BASE']) {
+          this._config.apiBase = process.env['NLUDB_API_BASE'];
+        }
+        if (process.env['NLUDB_APP_BASE']) {
+          this._config.appBase = process.env['NLUDB_APP_BASE'];
+        }
+        if (process.env['NLUDB_API_KEY']) {
+          this._config.apiKey = process.env['NLUDB_API_KEY'];
+        }
+        if (process.env['NLUDB_SPACE_ID']) {
+          this._config.spaceId = process.env['NLUDB_SPACE_ID'];
+        }
+        if (process.env['NLUDB_SPACE_HANDLE']) {
+          this._config.spaceHandle = process.env['NLUDB_SPACE_HANDLE'];
+        }
+      } catch {
+        // pass
+      }
+    }
+  }
+
+  applyManualOverrides(params?: LoadConfigParams) {
+    if (params?.apiBase) {
+      this._config.apiBase = params?.apiBase;
+    }
+    if (params?.appBase) {
+      this._config.appBase = params?.appBase;
+    }
+    if (params?.apiKey) {
+      this._config.apiKey = params?.apiKey;
+    }
+    if (params?.spaceId) {
+      this._config.spaceId = params?.spaceId;
+    }
+    if (params?.spaceHandle) {
+      this._config.spaceHandle = params?.spaceHandle;
+    }
+  }
+
+  async load(params?: LoadConfigParams): Promise<Configuration> {
+    await this.prepare()
+    this.clear()
+
+    // First set the profile.
+    if (typeof process != 'undefined' && typeof process.env != 'undefined') {
+      if (process.env['NLUDB_PROFILE']) {
+        this._config.profile = process.env['NLUDB_PROFILE'];
+      }
+    }
+    if (params?.profile) {
+      this._config.profile = params?.profile
+    }
+
+    // Then load from a file if provided
+    if (params?.configFile) {
+      let found = await this.loadFromFile(params?.configFile, this._config.profile)
+      if (!found) {
+        throw Error(
+          `Configuration path provided by no configuration found there. ${params?.configFile}`
+        );
+      }
+    } else {
+      await this.tryAutofindingFiles(this._config.profile)
+    }
+
+    // Apply Env Variables
+    await this.loadEnvVars()
+
+    // Apply manual overrides
+    this.applyManualOverrides()
+
+    // Fix the base
+    if (this._config.apiBase) {
+      if (this._config.apiBase[this._config.apiBase.length - 1] != '/') {
+        this._config.apiBase = `${this._config.apiBase}/`;
+      }  
+    }
+    if (this._config.appBase) {
+      if (this._config.appBase[this._config.appBase.length - 1] != '/') {
+        this._config.appBase = `${this._config.appBase}/`;
+      }
+    }
+    return this._config;
   }
 }
 
@@ -112,124 +257,6 @@ export async function loadConfiguration(
   params?: LoadConfigParams
 ): Promise<Configuration> {
   // If a file is provided, that always gets
-  let ret: Configuration | undefined = undefined;
   const configLoader = new ConfigLoader();
-  await configLoader.prepare();
-
-  // First, we either use the filename (if provided) or try to find a file default.
-  if (params?.filename) {
-    ret = await configLoader._read(params?.filename);
-    if (!ret) {
-      throw Error(
-        `Configuration path provided by no configuration found there. ${params?.filename}`
-      );
-    }
-  } else {
-    // Try to walk through the default paths.
-    for (const configPath of configLoader._configSearchPath) {
-      const config = await configLoader._read(configPath);
-      if (config) {
-        ret = config;
-        break;
-      }
-    }
-  }
-
-  // Next, if we haven't been successful, we initialize a minimum viable config
-  if (!ret) {
-    // If there's still no
-    ret = {
-      apiBase: defaultProdCredentials.apiBase,
-      appBase: defaultProdCredentials.appBase,
-    };
-  }
-
-  // If a profile has been selected, use that
-  if (typeof process != 'undefined' && typeof process.env != 'undefined') {
-    try {
-      if (process.env['NLUDB_PROFILE']) {
-        const profile = process.env['NLUDB_PROFILE'] as string;
-        if (
-          typeof ret.profiles != 'undefined' &&
-          typeof ret.profiles[profile] != 'undefined'
-        ) {
-          const profileData = ret.profiles[profile];
-          if (profileData.apiBase) {
-            ret.apiBase = profileData.apiBase;
-          }
-          if (profileData.appBase) {
-            ret.appBase = profileData.appBase;
-          }
-          if (profileData.apiKey) {
-            ret.apiKey = profileData.apiKey;
-          }
-          if (profileData.spaceId) {
-            ret.spaceId = profileData.spaceId;
-          }
-          if (profileData.spaceHandle) {
-            ret.spaceHandle = profileData.spaceHandle;
-          }
-        }
-      }
-    } catch {
-      // pass
-    }
-  }
-
-  // If environment variables have been set, then we apply those.
-  if (typeof process != 'undefined' && typeof process.env != 'undefined') {
-    try {
-      if (process.env['NLUDB_API_BASE']) {
-        ret.apiBase = process.env['NLUDB_API_BASE'];
-      }
-      if (process.env['NLUDB_APP_BASE']) {
-        ret.appBase = process.env['NLUDB_APP_BASE'];
-      }
-      if (process.env['NLUDB_API_KEY']) {
-        ret.apiKey = process.env['NLUDB_API_KEY'];
-      }
-      if (process.env['NLUDB_SPACE_ID']) {
-        ret.spaceId = process.env['NLUDB_SPACE_ID'];
-      }
-      if (process.env['NLUDB_SPACE_HANDLE']) {
-        ret.spaceHandle = process.env['NLUDB_SPACE_HANDLE'];
-      }
-    } catch {
-      // pass
-    }
-  }
-
-  // Finally if manual overrides were requested, we apply those.
-  if (params?.apiBase) {
-    ret.apiBase = params?.apiBase;
-  }
-  if (params?.appBase) {
-    ret.appBase = params?.appBase;
-  }
-  if (params?.apiKey) {
-    ret.apiKey = params?.apiKey;
-  }
-  if (params?.spaceId) {
-    ret.spaceId = params?.spaceId;
-  }
-  if (params?.spaceHandle) {
-    ret.spaceHandle = params?.spaceHandle;
-  }
-
-  // Not needed; trim excess.
-  delete ret.profiles;
-
-  // Fix the base
-  if (params?.apiBase) {
-    if (params.apiBase[params.apiBase.length - 1] != '/') {
-      params.apiBase = `${params.apiBase}/`;
-    }
-  }
-  if (params?.appBase) {
-    if (params.appBase[params.appBase.length - 1] != '/') {
-      params.appBase = `${params.appBase}/`;
-    }
-  }
-
-  return ret;
+  return configLoader.load(params)
 }
