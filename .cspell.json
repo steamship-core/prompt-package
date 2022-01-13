@@ -3,6 +3,7 @@
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/master/cspell.schema.json",
   "language": "en",
   "words": [
+    "applicatino",
     "Autofinding",
     "bitauth",
     "bitjson",
@@ -15,6 +16,7 @@
     "distilroberta",
     "editorconfig",
     "embedder",
+    "EPUB",
     "esnext",
     "execa",
     "exponentiate",
@@ -27,9 +29,13 @@
     "mnli",
     "mpnet",
     "msmarco",
+    "msword",
     "nludb",
     "NLUDB",
+    "officedocument",
     "openai",
+    "openxmlformats",
+    "presentationml",
     "prettierignore",
     "Punct",
     "reindex",
@@ -41,7 +47,8 @@
     "transpiled",
     "typedoc",
     "untracked",
-    "upsert"
+    "upsert",
+    "wordprocessingml"
   ],
   "flagWords": [],
   "ignorePaths": [

@@ -6,11 +6,15 @@ import { Configuration } from './shared/Configuration';
 
 const readFile = util.promisify(fs.readFile);
 
+const _EXPECT = (client: ApiBase, data: unknown) => { 
+  return new File(client, data as FileParams) 
+}
+
 export interface FileParams {
   id?: string;
   name?: string;
   handle?: string;
-  format?: string;
+  mimeType?: string;
   corpusId?: string;
   spaceId?: string;
 }
@@ -21,7 +25,7 @@ export interface UploadParams {
 
   name?: string;
   handle?: string;
-  format?: string;
+  mimeType?: string;
   corpusId?: string;
   spaceId?: string;
 }
@@ -30,7 +34,7 @@ export class File {
   id?: string;
   name?: string;
   handle?: string;
-  format?: string;
+  mimeType?: string;
   corpusId?: string;
   spaceId?: string;
   client: ApiBase;
@@ -40,36 +44,44 @@ export class File {
     this.id = params.id;
     this.name = params.name;
     this.handle = params.handle;
-    this.format = params.format;
+    this.mimeType = params.mimeType;
     this.corpusId = params.corpusId;
     this.spaceId = params.spaceId;
   }
 
-  async delete(configuration?: Configuration) {
+  async delete(config?: Configuration): Promise<Response<File>> {
     return (await this.client.post(
       'file/delete',
       {
         id: this.id,
       },
-      configuration
-    )) as Response<FileParams>;
+      {
+        expect: _EXPECT,
+        responsePath: 'file',
+        ...config
+      }
+    )) as Response<File>;
   }
 
-  async clear(configuration?: Configuration) {
+  async clear(config?: Configuration): Promise<Response<File>> {
     return (await this.client.post(
       'file/clear',
       {
         id: this.id,
       },
-      configuration
-    )) as Response<FileParams>;
+      {
+        expect: _EXPECT,
+        responsePath: 'config',
+        ...config
+      }
+    )) as Response<File>;
   }
 
   static async upload(
     client: ApiBase,
     params: UploadParams,
-    configuration?: Configuration
-  ) {
+    config?: Configuration
+  ): Promise<Response<File>> {
     if (!params.filename && !params.name && !params.content) {
       throw Error('Either filename or name + content must be provided');
     }
@@ -83,11 +95,15 @@ export class File {
       {
         name: params.name,
         handle: params.handle,
-        format: params.format,
+        mimeType: params.mimeType,
         corpusId: params.corpusId,
         spaceId: params.spaceId,
       },
-      configuration
-    )) as Response<FileParams>;
+      {
+        expect: _EXPECT,
+        responsePath: 'file',
+        ...config
+      }
+    )) as Response<File>;
   }
 }
