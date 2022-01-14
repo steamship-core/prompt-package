@@ -3,7 +3,7 @@ import { ApiBase, Response } from './api_base';
 import { Configuration } from './shared/Configuration';
 
 
-async function _readFile(filename: string): Promise<Buffer> {
+export async function readFile(filename: string): Promise<Buffer> {
   const fs = await import('fs')
   const util = await import('util')
   const readFile = util.promisify(fs.readFile);
@@ -111,7 +111,7 @@ export class File {
         params.name = parts[parts.length - 1]
       }
       params.type = "file"
-      buffer = await _readFile(params.filename);
+      buffer = await readFile(params.filename);
     } else {
       params.type = "value"
     }

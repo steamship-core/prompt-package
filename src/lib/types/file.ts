@@ -13,5 +13,6 @@ export const MimeTypes = {
   DOCX: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   PPT: "applicatino/ms-powerpoint",
   PPTX: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-  RTF: "application/rtf"
+  RTF: "application/rtf",
+  ZIP: "application/zip"
 } 
