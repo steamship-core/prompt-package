@@ -50,7 +50,10 @@
     "node": ">=10"
   },
   "dependencies": {
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "form-data": "^4.0.0",
+    "multi-part": "^3.0.0",
+    "node": "^17.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.8",
@@ -60,7 +63,7 @@
     "@babel/preset-typescript": "^7.15.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/jest": "^27.4.0",
-    "@types/node": "^15.6.1",
+    "@types/node": "^15.14.9",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
     "codecov": "^3.5.0",

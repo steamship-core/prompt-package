@@ -17,6 +17,9 @@ import {
 
 export interface PostConfig<T> extends Configuration {
   responsePath?: string,
+  rawResponse?: boolean,
+  file?: Buffer,
+  filename?: string,
   expect?: (client: ApiBase, data: unknown) => T
 }
 
@@ -245,9 +248,30 @@ export class ApiBase {
       headers: this._headers(baseConfig, config?.spaceId, config?.spaceHandle),
     };
 
+    let finalPayload: undefined | unknown | {[key: string]: undefined} = undefined
+    if (config?.file) {
+      // Because on the server this isn't available (unlike the browser.)
+      // TODO: We might not be able to import this in the browser..
+      const FormData = await import('form-data');
+      const formData = new FormData.default()
+      formData.append('file', config?.file, {filename: config?.filename})
+      const pp = payload as {[key: string]: undefined}
+      for (const key of Object.keys(pp)) {
+        const value = pp[key]
+        if (value) {
+          formData.append(key, value)  
+        }
+      }
+      finalPayload = formData
+      const boundary = formData.getBoundary()
+      reqConfig.headers['Content-Type'] = `multipart/form-data; boundary=${boundary}`
+    } else {
+      finalPayload = payload
+    }
+
     let resp = null;
     try {
-      resp = await axios.post(url, payload, reqConfig);
+      resp = await axios.post(url, finalPayload, reqConfig);
     } catch (error) {
       if (error.response) {
         // The request was made and the server responded with a status code
@@ -288,6 +312,10 @@ export class ApiBase {
     if (resp.data.error) {
       throw new RemoteError({...resp.data.error});
     }
+
+    if (config?.rawResponse === true) {
+      return new Response<T>(resp.data)
+    } 
 
     let data = resp.data.data;
     if (config?.responsePath) {

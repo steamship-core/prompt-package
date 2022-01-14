@@ -4,5 +4,9 @@
   "editor.formatOnSave": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "jest.jestCommandLine": "node_modules/jest/bin/jest.js"
+  "jest.jestCommandLine": "node_modules/jest/bin/jest.js",
+  "jest.autoRun": {
+    "watch": false,
+    "onSave": "test-file"
+  }
 }

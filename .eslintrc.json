@@ -2,13 +2,15 @@
   "root": true,
   "parser": "@typescript-eslint/parser",
   "parserOptions": { 
-    "project": "./tsconfig.json" 
+    "file": ["*.ts", "*.tsx"],
+    "project": ["./tsconfig.json"]
   },
   "env": { "es6": true },
   "ignorePatterns": [
     "node_modules", 
     "build", 
-    "coverage"
+    "coverage",
+    "test"
   ],
   "plugins": ["import", "eslint-comments", "functional"],
   "extends": [
