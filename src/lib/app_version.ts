@@ -96,7 +96,7 @@ export class AppVersion {
     config?: Configuration
   ): Promise<Response<AppVersion>> {
     return (await client.post(
-      'app/get',
+      'app/version/get',
       {...params},
       {
         expect: _EXPECT,
