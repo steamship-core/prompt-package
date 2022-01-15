@@ -20,7 +20,9 @@ export interface PostConfig<T> extends Configuration {
   rawResponse?: boolean,
   file?: Buffer,
   filename?: string,
-  expect?: (client: ApiBase, data: unknown) => T
+  expect?: (client: ApiBase, data: unknown) => T,
+  appCall?: boolean
+  appOwner?: string
 }
 
 export class NludbTask<ResultType> implements TaskStatusResponse {
@@ -210,7 +212,9 @@ export class ApiBase {
   _headers(
     config: Configuration,
     spaceId?: string,
-    spaceHandle?: string
+    spaceHandle?: string,
+    appOwner?: string,
+    appCall?: boolean
   ): { [name: string]: string } {
     const ret: { [name: string]: string } = {
       'Content-Type': 'application/json',
@@ -226,10 +230,71 @@ export class ApiBase {
     } else if (config.spaceHandle) {
       ret['X-Space-Handle'] = config.spaceHandle;
     }
+    if ((appCall === true) && (appOwner)) {
+      ret['X-App-Owner'] = appOwner
+    }
     return ret;
   }
 
+  _url(
+    baseConfig: Configuration,
+    appCall?: boolean, 
+    appOwner?: string, 
+    appBase?: string, 
+    apiBase?: string, 
+    operation?: string): string {
+    if (appCall === true) {
+      if (!appOwner) {
+        throw new RemoteError({
+          code: "UserMissing",
+          message: "Can not invoke an app endpoint without the app owner's user handle.",
+          suggestion: "Provide the appOwner option, or initialize your app with a lookup."
+        })
+      }
+      const base = appBase || baseConfig.appBase
+      if (!base) {
+        throw new RemoteError({
+          code: "EndpointMissing",
+          message: "Can not invoke an app endpoint without the App Base variable set.",
+          suggestion: "This should automatically have a good default setting. Reach out to our NLUDB support."
+        })  
+      }
+      // We want to split the '//' part.
+      const parts = base.split('//')
+      if (parts.length < 2) {
+        throw new RemoteError({
+          code: "EndpointInvalid",
+          message: "You app base did not appear to begin with a valid HTTP or HTTPS protocol.",
+          suggestion: "Make sure you've provided an app base such as https://nludb.run, with the protocol."
+        })          
+      }
+      // Now we pre-pend the app-base to the first part!
+      parts[1] = `${appOwner}.${parts[1]}`
+      const newBase = parts.join('//')
+      return `${newBase}${operation}`
+    } else {
+      return `${apiBase || baseConfig.apiBase}${operation}`
+    }
+  }
+
   async post<T>(
+    operation: string,
+    payload: unknown,
+    config?: PostConfig<T>
+  ): Promise<Response<T>> {
+    return this.call("POST", operation, payload, config)
+  }
+
+  async get<T>(
+    operation: string,
+    payload: unknown,
+    config?: PostConfig<T>
+  ): Promise<Response<T>> {
+    return this.call("GET", operation, payload, config)
+  }
+
+  async call<T>(
+    verb: "POST" | "GET",
     operation: string,
     payload: unknown,
     config?: PostConfig<T>
@@ -243,13 +308,27 @@ export class ApiBase {
       });
     }
 
-    const url = `${baseConfig.apiBase}${operation}`;
+    const url = this._url(
+      baseConfig,
+      config?.appCall,
+      config?.appOwner,
+      config?.appBase,
+      config?.apiBase,
+      operation
+    )
+
     const reqConfig = {
-      headers: this._headers(baseConfig, config?.spaceId, config?.spaceHandle),
+      headers: this._headers(
+        baseConfig, 
+        config?.spaceId, 
+        config?.spaceHandle,
+        config?.appOwner,
+        config?.appCall
+        ),
     };
 
     let finalPayload: undefined | unknown | {[key: string]: undefined} = undefined
-    if (config?.file) {
+    if ((verb == "POST") && (config?.file)) {
       // Because on the server this isn't available (unlike the browser.)
       // TODO: We might not be able to import this in the browser..
       const FormData = await import('form-data');
@@ -271,7 +350,13 @@ export class ApiBase {
 
     let resp = null;
     try {
-      resp = await axios.post(url, finalPayload, reqConfig);
+      if (verb == "POST") {
+        resp = await axios.post(url, finalPayload, reqConfig);
+      } else if (verb == "GET") {
+        resp = await axios.get(url, {...reqConfig, params: finalPayload});
+      } else {
+        throw new RemoteError({message: `Unsupported HTTP Verb: ${verb}`})
+      }
     } catch (error) {
       if (error.response) {
         // The request was made and the server responded with a status code
