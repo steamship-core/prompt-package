@@ -1,10 +1,10 @@
-export enum NludbTaskStatus {
+export enum TaskStatus {
   waiting = 'waiting',
   running = 'running',
   succeeded = 'succeeded',
   failed = 'failed',
 }
-export interface TaskStatusResponse {
+export interface TaskParams {
   taskId?: string;
   taskStatus?: string;
   taskCreatedOn?: string;

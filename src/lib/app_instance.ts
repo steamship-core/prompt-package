@@ -11,8 +11,11 @@ export interface AppInstanceParams {
   id?: string;
   name?: string;
   handle?: string;
+  appId?: string;
   appInstanceId?: string;
   appVersionId?: string;
+  userId?: string;
+  userHandle?: string;
   spaceId?: string;
 }
 
@@ -20,7 +23,7 @@ export interface CreateAppInstance {
   id?: string;
   name?: string;
   handle?: string;
-  appInstanceId?: string;
+  appId?: string;
   appVersionId?: string;
   spaceId?: string;
   upsert?: boolean;
@@ -30,9 +33,11 @@ export class AppInstance {
   id?: string;
   name?: string;
   handle?: string;
-  appInstanceId?: string;
+  appId?: string;
   appVersionId?: string;
   spaceId?: string;
+  userId?: string;
+  userHandle?: string;
   client: ApiBase;
 
   constructor(client: ApiBase, params: AppInstanceParams) {
@@ -40,9 +45,11 @@ export class AppInstance {
     this.id = params.id;
     this.name = params.name;
     this.handle = params.handle;
-    this.appInstanceId = params.appInstanceId;
+    this.appId = params.appId;
     this.appVersionId = params.appVersionId;
     this.spaceId = params.appInstanceId;
+    this.userId = params.userId;
+    this.userHandle = params.userHandle;
   }
 
   async delete(config?: Configuration): Promise<Response<AppInstance>> {
@@ -81,13 +88,37 @@ export class AppInstance {
     config?: Configuration
   ): Promise<Response<AppInstance>> {
     return (await client.post(
-      'app/get',
+      'app/instance/get',
       {...params},
       {
         expect: _EXPECT,
-        responsePath: 'appVersion',
+        responsePath: 'appInstance',
         ...config
       },
     )) as Response<AppInstance>;
+  }
+
+  get(
+    path: string,
+    params?: Record<string, unknown>,
+    config?: Configuration
+  ): Promise<unknown> {
+    return this.client.get(
+      `/_/_/${path[0] == '/' ? path.slice(1) : path}`,
+      {...params},
+      {...config, appCall: true, appOwner: this.userHandle, appId: this.appId, appInstanceId: this.id},
+    )  
+  }
+
+  post(
+    path: string,
+    params?: Record<string, unknown>,
+    config?: Configuration
+  ): Promise<unknown> {
+    return this.client.post(
+      `/_/_/${path[0] == '/' ? path.slice(1) : path}`,
+      {...params},
+      {...config, appCall: true, appOwner: this.userHandle, appId: this.appId, appInstanceId: this.id},
+    )  
   }
 }

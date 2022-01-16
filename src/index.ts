@@ -27,8 +27,8 @@ export type { ParseRequest, ParseResponse } from './lib/types/parsing';
 
 export type {
   SearchHit,
-  NludbTaskStatus,
-  TaskStatusResponse,
+  TaskStatus,
+  TaskParams,
   Metadata,
 } from './lib/types/base';
 
@@ -40,7 +40,7 @@ export type {
   DeleteTaskCommentRequest,
 } from './lib/types/task_comment';
 
-export { NludbTask, Response } from './lib/api_base';
+export { Task, Response } from './lib/api_base';
 
 export type {
   CreateModelRequest,

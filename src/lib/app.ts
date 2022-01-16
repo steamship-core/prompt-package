@@ -1,6 +1,5 @@
 
 import { ApiBase, Response } from './api_base';
-import { RemoteError } from './nludb_error';
 import { Configuration } from './shared/Configuration';
 import { GetParams } from './shared/Requests';
 
@@ -12,13 +11,14 @@ export interface AppParams {
   id?: string;
   name?: string;
   handle?: string;
-  userHandle?: string;
+  userId?: string;
 }
 
 export class App {
   id?: string;
   name?: string;
   handle?: string;
+  userId?: string;
   userHandle?: string;
   client: ApiBase;
 
@@ -27,7 +27,7 @@ export class App {
     this.id = params.id;
     this.name = params.name;
     this.handle = params.handle;
-    this.userHandle = params.userHandle
+    this.userId = params.userId;
   }
 
   async delete(config?: Configuration): Promise<Response<App>> {
@@ -75,30 +75,4 @@ export class App {
       },
     )) as Response<App>;
   }
-
-  get(
-    path: string,
-    params?: Record<string, unknown>,
-    config?: Configuration
-  ): Promise<unknown> {
-    return this.client.get(
-      path,
-      {...params},
-      {...config, appCall: true, appOwner: this.userHandle},
-    )  
-  }
-
-  post(
-    path: string,
-    params?: Record<string, unknown>,
-    config?: Configuration
-  ): Promise<unknown> {
-    return this.client.post(
-      path,
-      {...params},
-      {...config, appCall: true, appOwner: this.userHandle},
-    )  
-  }
-
-
 }

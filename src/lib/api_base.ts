@@ -6,7 +6,7 @@ import {
   LoadConfigParams,
   loadConfiguration,
 } from './shared/Configuration';
-import { NludbTaskStatus, TaskStatusResponse } from './types/base';
+import { TaskParams, TaskStatus } from './types/base';
 import {
   AddTaskCommentRequest,
   DeleteTaskCommentRequest,
@@ -23,16 +23,18 @@ export interface PostConfig<T> extends Configuration {
   expect?: (client: ApiBase, data: unknown) => T,
   appCall?: boolean
   appOwner?: string
+  appId?: string
+  appInstanceId?: string
 }
 
-export class NludbTask<ResultType> implements TaskStatusResponse {
+export class Task<T> implements TaskParams {
   client: ApiBase;
   taskId?: string;
   taskStatus?: string;
   taskCreatedOn?: string;
   taskLastModifiedOn?: string;
 
-  constructor(client: ApiBase, params?: TaskStatusResponse) {
+  constructor(client: ApiBase, params?: TaskParams) {
     this.client = client;
     this.taskId = params?.taskId;
     this.taskStatus = params?.taskStatus;
@@ -40,74 +42,21 @@ export class NludbTask<ResultType> implements TaskStatusResponse {
     this.taskLastModifiedOn = params?.taskLastModifiedOn;
   }
 
-  update(
-    data?: TaskStatusResponse | Response<TaskStatusResponse>
-  ): NludbTask<ResultType> {
-    if (!data) {
-      return this;
+  update(task?: TaskParams): Task<T> {
+    if (task) {
+      this.taskId = task.taskId;
+      this.taskStatus = task.taskStatus;
+      this.taskCreatedOn = task.taskCreatedOn;
+      this.taskLastModifiedOn = task.taskLastModifiedOn;  
     }
-    if ((data as Response<TaskStatusResponse>).task) {
-      // Invoke update on just the task
-      this.update((data as Response<TaskStatusResponse>).task);
-      return this;
-    }
-
-    const task = data as TaskStatusResponse;
-    this.taskId = task.taskId;
-    this.taskStatus = task.taskStatus;
-    this.taskCreatedOn = task.taskCreatedOn;
-    this.taskLastModifiedOn = task.taskLastModifiedOn;
-    return this;
+    return this
   }
 
-  async check(): Promise<NludbTask<ResultType>> {
-    const status = await (this.client.post('task/status', {
-      taskId: this.taskId,
-    }) as Promise<Response<TaskStatusResponse>>);
-    return this.update(status);
-  }
-
-  async wait(params?: {
-    maxTimeoutSeconds?: number;
-    retryDelaySeconds?: number;
-  }): Promise<NludbTask<ResultType>> {
-    if (typeof params == 'undefined') {
-      params = {};
-    }
-    let { maxTimeoutSeconds, retryDelaySeconds } = params;
-    if (typeof maxTimeoutSeconds == 'undefined') {
-      maxTimeoutSeconds = 60;
-    }
-    if (typeof retryDelaySeconds == 'undefined') {
-      retryDelaySeconds = 1;
-    }
-
-    const start = Date.now(); // ms since epoch
-    await this.check();
-    if (
-      this.taskStatus == NludbTaskStatus.succeeded ||
-      this.taskStatus == NludbTaskStatus.failed
-    ) {
-      return this;
-    }
-
-    await new Promise((r) =>
-      setTimeout(r, 1000 * (retryDelaySeconds as number))
-    );
-
-    while ((Date.now() - start) / 1000.0 < maxTimeoutSeconds) {
-      await this.check();
-      if (
-        this.taskStatus == NludbTaskStatus.succeeded ||
-        this.taskStatus == NludbTaskStatus.failed
-      ) {
-        return this;
-      }
-      await new Promise((r) =>
-        setTimeout(r, 1000 * (retryDelaySeconds as number))
-      );
-    }
-    return this;
+  completed(): boolean {
+    return (
+      this.taskStatus == TaskStatus.succeeded ||
+      this.taskStatus == TaskStatus.failed
+    )
   }
 
   async addComment(
@@ -138,39 +87,103 @@ export class NludbTask<ResultType> implements TaskStatusResponse {
   }
 }
 
-export class Response<ResultType> {
-  data?: ResultType;
-  task?: NludbTask<ResultType>;
+export interface ResponseConfig<T> {
+  client: ApiBase;
+  responsePath?: string,
+  rawResponse?: boolean,
+  expect?: (client: ApiBase, data: unknown) => T,
+}
 
-  public constructor(data?: ResultType, task?: NludbTask<ResultType>) {
-    this.data = data;
+export class Response<T> {
+  data?: T;
+  task?: Task<T>;
+  config?: ResponseConfig<T>
+
+  public constructor(data?: unknown, task?: Task<T>, config?: ResponseConfig<T>) {
+    // This must come first because setData uses this.config!
+    this.config = config;
+    this.setData(data);
     this.task = task;
+  }
+
+  async setData(data: unknown) {
+    // All these casts in here are just to placate Typescript.
+    // `data` in this case could be just about anything from bytes to a string
+    // to a parsed json object.
+    if (!data) {
+      this.data = undefined
+      return
+    }
+
+    if (data && this.config?.responsePath) { 
+      if ((data as Record<string, unknown>)[this.config?.responsePath]) {
+        data = (data as Record<string, unknown>)[this.config?.responsePath]
+      }
+    }
+
+    if (data && this.config?.expect) {
+      this.data = this.config?.expect(this.config.client, data)
+    } else {
+      this.data = data as T
+    }
   }
 
   async wait(params?: {
     maxTimeoutSeconds?: number;
     retryDelaySeconds?: number;
-  }): Promise<NludbTask<ResultType> | undefined> {
-    if (this.task) {
-      return this.task.wait(params);
+  }): Promise<Response<T>> {
+    // Bailout and defaults
+    if (! this.task) { return this }
+    if (typeof params == 'undefined') { params = {}; }
+    let { maxTimeoutSeconds, retryDelaySeconds } = params;
+    if (typeof maxTimeoutSeconds == 'undefined') {
+      maxTimeoutSeconds = 60;
     }
-    return undefined;
+    if (typeof retryDelaySeconds == 'undefined') {
+      retryDelaySeconds = 1;
+    }
+
+    // If we've already finished, no need to poll
+    if (this.task?.completed() === true) { return this; }
+
+    // Start the wait loop.
+    const start = Date.now(); // ms since epoch
+    await this.check();
+    if (this.task?.completed() === true) { return this; }
+
+    while ((Date.now() - start) / 1000.0 < maxTimeoutSeconds) {
+      await new Promise((r) =>
+        setTimeout(r, 1000 * (retryDelaySeconds as number))
+      );
+      await this.check();
+      if (this.task?.completed() === true) { return this; }
+    }
+    // If we're here, we timed out.
+    return this;
   }
 
-  update(
-    data: TaskStatusResponse | Response<TaskStatusResponse>
-  ): NludbTask<ResultType> | undefined {
+  update(response: Response<T>): Response<T> {
     if (this.task) {
-      return this.task.update(data);
+      this.task.update(response.task);
+    } else {
+      this.task = response.task
     }
-    return undefined;
+    if (response.data) {
+      this.setData(response.data)
+    }
+    return this;
   }
 
-  async check(): Promise<NludbTask<ResultType> | undefined> {
+  async check(): Promise<Response<T> | undefined> {
     if (this.task) {
-      return this.task.check();
+      const result = await (this.task.client.post('task/status', {
+        taskId: this.task.taskId,
+      }) as Promise<Response<T>>);
+      if (result) {
+        this.update(result)
+      }
     }
-    return undefined;
+    return this;
   }
 
   async addComment(
@@ -214,7 +227,9 @@ export class ApiBase {
     spaceId?: string,
     spaceHandle?: string,
     appOwner?: string,
-    appCall?: boolean
+    appCall?: boolean,
+    appId?: string,
+    appInstanceId?: string
   ): { [name: string]: string } {
     const ret: { [name: string]: string } = {
       'Content-Type': 'application/json',
@@ -230,8 +245,16 @@ export class ApiBase {
     } else if (config.spaceHandle) {
       ret['X-Space-Handle'] = config.spaceHandle;
     }
-    if ((appCall === true) && (appOwner)) {
-      ret['X-App-Owner'] = appOwner
+    if (appCall === true) {
+      if (appOwner) {
+        ret['X-App-Owner-Handle'] = appOwner
+      }
+      if (appId) {
+        ret['X-App-Id'] = appId
+      }
+      if (appInstanceId) {
+        ret['X-App-Instance-Id'] = appInstanceId
+      }
     }
     return ret;
   }
@@ -259,19 +282,21 @@ export class ApiBase {
           suggestion: "This should automatically have a good default setting. Reach out to our NLUDB support."
         })  
       }
+      // To make it easier to develop on localhost we'll pipe in the userHandle
+      // in a header.
       // We want to split the '//' part.
-      const parts = base.split('//')
-      if (parts.length < 2) {
-        throw new RemoteError({
-          code: "EndpointInvalid",
-          message: "You app base did not appear to begin with a valid HTTP or HTTPS protocol.",
-          suggestion: "Make sure you've provided an app base such as https://nludb.run, with the protocol."
-        })          
-      }
-      // Now we pre-pend the app-base to the first part!
-      parts[1] = `${appOwner}.${parts[1]}`
-      const newBase = parts.join('//')
-      return `${newBase}${operation}`
+      // const parts = base.split('//')
+      // if (parts.length < 2) {
+      //   throw new RemoteError({
+      //     code: "EndpointInvalid",
+      //     message: "You app base did not appear to begin with a valid HTTP or HTTPS protocol.",
+      //     suggestion: "Make sure you've provided an app base such as https://nludb.run, with the protocol."
+      //   })          
+      // }
+      // // Now we pre-pend the app-base to the first part!
+      // parts[1] = `${appOwner}.${parts[1]}`
+      // const newBase = parts.join('//')
+      return `${base}${operation}`
     } else {
       return `${apiBase || baseConfig.apiBase}${operation}`
     }
@@ -323,7 +348,9 @@ export class ApiBase {
         config?.spaceId, 
         config?.spaceHandle,
         config?.appOwner,
-        config?.appCall
+        config?.appCall,
+        config?.appId,
+        config?.appInstanceId
         ),
     };
 
@@ -398,24 +425,25 @@ export class ApiBase {
       throw new RemoteError({...resp.data.error});
     }
 
+    // TODO: we might need to switch the task channel to the headers
+    // to allow for async raw response! That way we can communicate
+    // that the task is complete while also saving the response body for
+    // binary.
     if (config?.rawResponse === true) {
       return new Response<T>(resp.data)
     } 
 
-    let data = resp.data.data;
-    if (config?.responsePath) {
-      if (data[config?.responsePath]) {
-        data = data[config?.responsePath]
-      }
-    }
-
-    if (config?.expect) {
-      data = config?.expect(this, data)
-    }
+    const task = resp?.data?.status as TaskParams
 
     return new Response<T>(
-      data as T,
-      new NludbTask<T>(this, resp.data.status as TaskStatusResponse)
+      resp.data.data,
+      task ? new Task<T>(this, task) : undefined,
+      {
+        client: this,
+        responsePath: config?.responsePath,
+        rawResponse: config?.rawResponse,
+        expect: config?.expect
+      }
     );
   }
 }

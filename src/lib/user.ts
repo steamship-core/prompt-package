@@ -29,7 +29,7 @@ export class User {
     client: ApiBase,
     config?: Configuration
   ): Promise<Response<User>> {
-    return (await client.post(
+    return (await client.get(
       'account/current',
       {},
       {
