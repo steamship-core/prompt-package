@@ -12,6 +12,7 @@ export interface AppParams {
   name?: string;
   handle?: string;
   userId?: string;
+  upsert?: boolean
 }
 
 export class App {
