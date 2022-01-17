@@ -53,7 +53,8 @@
     "axios": "^0.21.1",
     "form-data": "^4.0.0",
     "multi-part": "^3.0.0",
-    "node": "^17.3.0"
+    "node": "^17.3.0",
+    "regenerator-runtime": "^0.13.9"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.8",
@@ -64,6 +65,7 @@
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/jest": "^27.4.0",
     "@types/node": "^15.14.9",
+    "@types/regenerator-runtime": "^0.13.1",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
     "codecov": "^3.5.0",

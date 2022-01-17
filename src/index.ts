@@ -57,3 +57,5 @@ export { App } from './lib/app'
 export { AppVersion } from './lib/app_version'
 export { AppInstance } from './lib/app_instance'
 export { User } from './lib/user'
+
+export { default as regeneratorRuntime } from "regenerator-runtime";
