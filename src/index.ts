@@ -53,9 +53,11 @@ export type {
   DeleteModelRequest,
 } from './lib/types/Models';
 
-export { App } from './lib/app'
-export { AppVersion } from './lib/app_version'
-export { AppInstance } from './lib/app_instance'
-export { User } from './lib/user'
+export { App } from './lib/app';
+export { AppVersion } from './lib/app_version';
+export { AppInstance } from './lib/app_instance';
+export { User } from './lib/user';
 
-export { default as regeneratorRuntime } from "regenerator-runtime";
+export { Space } from './lib/space';
+
+export { default as regeneratorRuntime } from 'regenerator-runtime';
