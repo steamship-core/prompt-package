@@ -60,4 +60,16 @@ export { User } from './lib/user';
 
 export { Space } from './lib/space';
 
+export type {
+  Configuration,
+  LoadConfigParams,
+  SaveConfigParams,
+} from './lib/shared/Configuration';
+
+export {
+  CONFIG_FILENAME,
+  loadConfiguration,
+  saveConfiguration,
+} from './lib/shared/Configuration';
+
 export { default as regeneratorRuntime } from 'regenerator-runtime';
