@@ -68,6 +68,7 @@ export type {
 
 export {
   CONFIG_FILENAME,
+  DEFAULT_CONFIG,
   loadConfiguration,
   saveConfiguration,
 } from './lib/shared/Configuration';
