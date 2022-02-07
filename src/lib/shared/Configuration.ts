@@ -33,9 +33,9 @@ export interface SaveConfigParams {
   profiles?: { [name: string]: Configuration }; // Only allowed if not modifying a profile
 }
 
-const defaultProdCredentials = {
-  apiBase: 'https://api.steamship.com/api/v1',
-  appBase: 'https://steamship.com/api/v1',
+export const DEFAULT_CONFIG: { apiBase: string; appBase: string } = {
+  apiBase: 'https://api.steamship.com/api/v1/',
+  appBase: 'https://steamship.com/api/v1/',
 };
 
 // const defaultStagingCredentials = {
@@ -144,8 +144,8 @@ class ConfigManager {
 
   clear() {
     this._config = {
-      apiBase: defaultProdCredentials.apiBase,
-      appBase: defaultProdCredentials.appBase,
+      apiBase: DEFAULT_CONFIG.apiBase,
+      appBase: DEFAULT_CONFIG.appBase,
     };
   }
 
@@ -302,7 +302,7 @@ class ConfigManager {
       configFile = path.join(os.homedir(), CONFIG_FILENAME);
     }
     const str = this._readFile(configFile);
-    let newConfig: Configuration = defaultProdCredentials;
+    let newConfig: Configuration = DEFAULT_CONFIG;
     if (str) {
       try {
         newConfig = JSON.parse(str) as Configuration;
