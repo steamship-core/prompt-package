@@ -33,7 +33,7 @@ export interface SaveConfigParams {
   profiles?: { [name: string]: Configuration }; // Only allowed if not modifying a profile
 }
 
-export const DEFAULT_CONFIG = {
+export const DEFAULT_CONFIG: { apiBase: string; appBase: string } = {
   apiBase: 'https://api.steamship.com/api/v1',
   appBase: 'https://steamship.com/api/v1',
 };
