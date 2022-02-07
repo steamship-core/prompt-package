@@ -34,8 +34,8 @@ export interface SaveConfigParams {
 }
 
 export const DEFAULT_CONFIG: { apiBase: string; appBase: string } = {
-  apiBase: 'https://api.steamship.com/api/v1',
-  appBase: 'https://steamship.com/api/v1',
+  apiBase: 'https://api.steamship.com/api/v1/',
+  appBase: 'https://steamship.com/api/v1/',
 };
 
 // const defaultStagingCredentials = {
