@@ -33,7 +33,7 @@ const defaultProdCredentials = {
 //   appBase: "https://staging.nludb.com/api/v1"
 // }
 
-const CONFIG_FILENAME = '.nludb.json';
+const CONFIG_FILENAME = '.steamship.json';
 
 class ConfigLoader {
   static isNode(): boolean {
@@ -244,7 +244,7 @@ class ConfigLoader {
     if (this._config.apiBase) {
       if (this._config.apiBase[this._config.apiBase.length - 1] != '/') {
         this._config.apiBase = `${this._config.apiBase}/`;
-      }  
+      }
     }
     if (this._config.appBase) {
       if (this._config.appBase[this._config.appBase.length - 1] != '/') {
