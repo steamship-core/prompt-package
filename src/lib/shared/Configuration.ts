@@ -338,7 +338,7 @@ class ConfigManager {
     }
 
     // Finally, save the configuration
-    this._writeFile(configFile, JSON.stringify(newConfig));
+    this._writeFile(configFile, JSON.stringify(newConfig, undefined, 2));
   }
 }
 
