@@ -345,11 +345,6 @@ class ConfigManager {
 export async function loadConfiguration(
   params?: LoadConfigParams
 ): Promise<Configuration> {
-<<<<<<< HEAD
-  // If a file is provided, that always gets
-  const configLoader = new ConfigLoader();
-  return configLoader.load(params)
-=======
   const configManager = new ConfigManager();
   return await configManager.load(params);
 }
@@ -374,5 +369,4 @@ export async function saveConfiguration(
 ): Promise<void> {
   const configManager = new ConfigManager();
   await configManager.modifyConfiguration(values, profile, configFile);
->>>>>>> 919b6f3646b2f486b363a6db55901c5a43ab94fb
 }
