@@ -5,6 +5,7 @@ import { Models } from './models';
 import { RemoteError } from './nludb_error';
 import { LoadConfigParams } from './shared/Configuration';
 import { Tasks } from './tasks';
+import { CreateLoginAttemptResponse } from './types/account';
 import { CreateClassifierRequest } from './types/classifier';
 import {
   CreateIndexRequest,
@@ -47,7 +48,9 @@ export class Client extends ApiBase {
       params
     )) as Response<CreateIndexResult>;
     if (!res.data?.id) {
-      throw new RemoteError({message: 'createIndex did not result in an Index ID'});
+      throw new RemoteError({
+        message: 'createIndex did not result in an Index ID',
+      });
     }
     return new EmbeddingIndex(this, params.name, params.model, res.data.id);
   }
@@ -62,7 +65,7 @@ export class Client extends ApiBase {
         params.labels
       );
     } else {
-      throw new RemoteError({message: 'Feature not yet supported'});
+      throw new RemoteError({ message: 'Feature not yet supported' });
       // const res = (await this.post(
       //   'classifier/create',
       //   params
@@ -79,5 +82,13 @@ export class Client extends ApiBase {
       includeEntities: false,
       ...params,
     })) as Response<ParseResponse>;
+  }
+
+  /**
+   * Create a login attempt token, useful for logging in a client from the CLI
+   * @returns A response object with a "token" field
+   */
+  async createLoginAttempt(): Promise<Response<CreateLoginAttemptResponse>> {
+    return await this.post('account/create_login_attempt', {});
   }
 }

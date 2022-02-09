@@ -1,13 +1,34 @@
-import { nludb_client } from './helper';
+import axios from 'axios';
+import { Client } from '../src/lib/nludb';
+import { mockDefaultConfigFile, nludb_client, restoreMocks } from './helper';
 
-describe("NLUDB Client", () => {
+describe('NLUDB Client', () => {
   test('it should be running with the `test` profile', async () => {
     const nludb = nludb_client();
-    let config = await nludb.config
-    expect(config.profile).toBe('test')  
+    let config = await nludb.config;
+    expect(config.profile).toBe('test');
   });
-})
 
+  test('it should be able to create a login attempt token', async () => {
+    mockDefaultConfigFile();
+
+    jest.spyOn(axios, 'post');
+
+    // @ts-ignore
+    axios.post.mockResolvedValue({
+      data: {
+        data: {
+          token: 'hello',
+        },
+      },
+    });
+
+    const client = new Client();
+    const createTokenResponse = await client.createLoginAttempt();
+    expect(createTokenResponse.data!.token).toEqual('hello');
+    restoreMocks();
+  });
+});
 
 // test('Test Embeddings', async (t) => {
 //   const nludb = nludb_client();
