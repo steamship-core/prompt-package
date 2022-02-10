@@ -1,13 +1,12 @@
-
 import { ApiBase, Response } from './api_base';
 import { readFile } from './file';
 import { Configuration } from './shared/Configuration';
 import { GetParams } from './shared/Requests';
 import { MimeTypes } from './types/file';
 
-const _EXPECT = (client: ApiBase, data: unknown) => { 
-  return new AppVersion(client, data as AppVersionParams) 
-}
+const _EXPECT = (client: ApiBase, data: unknown) => {
+  return new AppVersion(client, data as AppVersionParams);
+};
 
 export interface AppVersionParams {
   id?: string;
@@ -47,7 +46,7 @@ export class AppVersion {
       {
         expect: _EXPECT,
         responsePath: 'appVersion',
-        ...config
+        ...config,
       }
     )) as Response<AppVersion>;
   }
@@ -60,14 +59,16 @@ export class AppVersion {
     if (!params.filename) {
       throw Error('A filename must be provided to create a new app version.');
     }
-    if (!params.filename.toLowerCase().endsWith(".zip")) {
-      throw Error('Only .zip archives can be used to create a new app version.');
+    if (!params.filename.toLowerCase().endsWith('.zip')) {
+      throw Error(
+        'Only .zip archives can be used to create a new app version.'
+      );
     }
     let buffer: Buffer | undefined = undefined;
-    
+
     if (!params.name) {
-      const parts = params.filename.split("/")
-      params.name = parts[parts.length - 1]
+      const parts = params.filename.split('/');
+      params.name = parts[parts.length - 1];
     }
     buffer = await readFile(params.filename);
 
@@ -78,14 +79,14 @@ export class AppVersion {
         type: 'file',
         handle: params.handle,
         mimeType: MimeTypes.ZIP,
-        appId: params.appId
+        appId: params.appId,
       },
       {
         ...config,
         expect: _EXPECT,
         responsePath: 'appVersion',
         file: buffer,
-        filename: params.filename
+        filename: params.filename,
       }
     )) as Response<AppVersion>;
   }
@@ -97,12 +98,12 @@ export class AppVersion {
   ): Promise<Response<AppVersion>> {
     return (await client.post(
       'app/version/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'appVersion',
-        ...config
-      },
+        ...config,
+      }
     )) as Response<AppVersion>;
   }
 }
