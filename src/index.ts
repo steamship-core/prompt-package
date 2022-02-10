@@ -56,6 +56,7 @@ export type {
 export { App } from './lib/app';
 export { AppVersion } from './lib/app_version';
 export { AppInstance } from './lib/app_instance';
+export { Plugin } from './lib/plugin';
 export { User } from './lib/user';
 
 export { Space } from './lib/space';

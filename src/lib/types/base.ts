@@ -7,6 +7,7 @@ export enum TaskStatus {
 export interface TaskParams {
   taskId?: string;
   taskStatus?: string;
+  taskStatusMessage?: string;
   taskCreatedOn?: string;
   taskLastModifiedOn?: string;
 }

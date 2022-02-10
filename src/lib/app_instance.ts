@@ -1,11 +1,10 @@
-
 import { ApiBase, Response } from './api_base';
 import { Configuration } from './shared/Configuration';
 import { GetParams } from './shared/Requests';
 
-const _EXPECT = (client: ApiBase, data: unknown) => { 
-  return new AppInstance(client, data as AppInstanceParams) 
-}
+const _EXPECT = (client: ApiBase, data: unknown) => {
+  return new AppInstance(client, data as AppInstanceParams);
+};
 
 export interface AppInstanceParams {
   id?: string;
@@ -61,7 +60,7 @@ export class AppInstance {
       {
         expect: _EXPECT,
         responsePath: 'appInstance',
-        ...config
+        ...config,
       }
     )) as Response<AppInstance>;
   }
@@ -89,12 +88,12 @@ export class AppInstance {
   ): Promise<Response<AppInstance>> {
     return (await client.post(
       'app/instance/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'appInstance',
-        ...config
-      },
+        ...config,
+      }
     )) as Response<AppInstance>;
   }
 
@@ -105,9 +104,15 @@ export class AppInstance {
   ): Promise<unknown> {
     return this.client.get(
       `/_/_/${path[0] == '/' ? path.slice(1) : path}`,
-      {...params},
-      {...config, appCall: true, appOwner: this.userHandle, appId: this.appId, appInstanceId: this.id},
-    )  
+      { ...params },
+      {
+        ...config,
+        appCall: true,
+        appOwner: this.userHandle,
+        appId: this.appId,
+        appInstanceId: this.id,
+      }
+    );
   }
 
   post(
@@ -117,8 +122,41 @@ export class AppInstance {
   ): Promise<unknown> {
     return this.client.post(
       `/_/_/${path[0] == '/' ? path.slice(1) : path}`,
-      {...params},
-      {...config, appCall: true, appOwner: this.userHandle, appId: this.appId, appInstanceId: this.id},
-    )  
+      { ...params },
+      {
+        ...config,
+        appCall: true,
+        appOwner: this.userHandle,
+        appId: this.appId,
+        appInstanceId: this.id,
+      }
+    );
+  }
+
+  async full_url_for(path: string, appHandle: string, useSubdomain = true) {
+    const appBase = (await this.client.config).appBase;
+    if (appBase === undefined) {
+      throw `No appBase found in config. Try logging in with "ship login"`;
+    }
+
+    let base = appBase;
+    if (useSubdomain) {
+      let parts = appBase.split('://');
+      // TODO(eob): In the Python client, I think there is a bug?
+      if (parts?.length == 1) {
+        parts = ['https', parts[0]];
+      }
+      base = `${parts[0]}://${this.userHandle}.${parts[1]}`;
+    }
+
+    if (!base.endsWith('/')) {
+      base = base + '/';
+    }
+
+    if (!useSubdomain) {
+      base = `${base}@${this.userHandle}`;
+    }
+
+    return `${base}${appHandle}/${this.handle}/${path}`;
   }
 }
