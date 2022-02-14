@@ -133,6 +133,12 @@ export class AppInstance {
     );
   }
 
+  /**
+   * Creates the URL that maps to a plugin to a specific instance
+   * @param pluginEndpoint The endpoint in the app to run as the plugin
+   * @param appHandle The handle to the app (not the app instance)
+   * @returns A URL used to register a plugin
+   */
   async full_url_for(pluginEndpoint: string, appHandle: string) {
     const appBase = (await this.client.config).appBase;
     if (appBase === undefined) {
@@ -143,7 +149,6 @@ export class AppInstance {
       pluginEndpoint = '/' + pluginEndpoint;
     }
 
-    // http://localhost:8081/@aaronatsteamship-com/hello-world-plugin/vast-tiger-oujnn/parse
     let parts = appBase.split('://');
     if (parts?.length == 1) {
       parts = ['https', parts[0]];
