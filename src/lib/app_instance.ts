@@ -133,30 +133,27 @@ export class AppInstance {
     );
   }
 
-  async full_url_for(path: string, appHandle: string, useSubdomain = true) {
+  /**
+   * Creates the URL that maps to a plugin to a specific instance
+   * @param pluginEndpoint The endpoint in the app to run as the plugin
+   * @param appHandle The handle to the app (not the app instance)
+   * @returns A URL used to register a plugin
+   */
+  async full_url_for(pluginEndpoint: string, appHandle: string) {
     const appBase = (await this.client.config).appBase;
     if (appBase === undefined) {
       throw `No appBase found in config. Try logging in with "ship login"`;
     }
 
-    let base = appBase;
-    if (useSubdomain) {
-      let parts = appBase.split('://');
-      // TODO(eob): In the Python client, I think there is a bug?
-      if (parts?.length == 1) {
-        parts = ['https', parts[0]];
-      }
-      base = `${parts[0]}://${this.userHandle}.${parts[1]}`;
+    if (pluginEndpoint[0] != '/') {
+      pluginEndpoint = '/' + pluginEndpoint;
     }
 
-    if (!base.endsWith('/')) {
-      base = base + '/';
+    let parts = appBase.split('://');
+    if (parts?.length == 1) {
+      parts = ['https', parts[0]];
     }
-
-    if (!useSubdomain) {
-      base = `${base}@${this.userHandle}`;
-    }
-
-    return `${base}${appHandle}/${this.handle}/${path}`;
+    const domain = parts[1].split('/')[0];
+    return `${parts[0]}://${domain}/@${this.userHandle}/${appHandle}/${this.handle}${pluginEndpoint}`;
   }
 }
