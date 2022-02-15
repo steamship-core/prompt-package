@@ -51,7 +51,7 @@ export type {
   ListPrivateModelsRequest,
   ListPublicModelsRequest,
   DeleteModelRequest,
-} from './lib/types/Models';
+} from './lib/types/models';
 
 export { App } from './lib/app';
 export { AppVersion } from './lib/app_version';
