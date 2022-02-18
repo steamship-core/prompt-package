@@ -7,6 +7,7 @@ export interface Configuration {
   apiKey?: string;
   apiBase?: string;
   appBase?: string;
+  webBase?: string;
   spaceId?: string;
   spaceHandle?: string;
   profile?: string;
@@ -17,6 +18,7 @@ export interface LoadConfigParams {
   apiKey?: string;
   apiBase?: string; // https://api.steamship.com/api/v1
   appBase?: string; // https://steamship.com/api/v1
+  webBase?: string; // https://app.steamship.com
   spaceId?: string;
   spaceHandle?: string;
   profile?: string;
@@ -27,15 +29,17 @@ export interface SaveConfigParams {
   apiKey?: string;
   apiBase?: string;
   appBase?: string;
+  webBase?: string;
   spaceId?: string;
   spaceHandle?: string;
   profile?: string;
   profiles?: { [name: string]: Configuration }; // Only allowed if not modifying a profile
 }
 
-export const DEFAULT_CONFIG: { apiBase: string; appBase: string } = {
+export const DEFAULT_CONFIG: { apiBase: string; appBase: string; webBase: string } = {
   apiBase: 'https://api.steamship.com/api/v1/',
   appBase: 'https://steamship.com/api/v1/',
+  webBase: 'https://app.steamship.com/'
 };
 
 // const defaultStagingCredentials = {
@@ -146,6 +150,7 @@ class ConfigManager {
     this._config = {
       apiBase: DEFAULT_CONFIG.apiBase,
       appBase: DEFAULT_CONFIG.appBase,
+      webBase: DEFAULT_CONFIG.webBase
     };
   }
 
@@ -162,6 +167,9 @@ class ConfigManager {
     }
     if (config.appBase) {
       this._config.appBase = config.appBase;
+    }
+    if (config.webBase) {
+      this._config.webBase = config.webBase;
     }
     if (config.apiKey) {
       this._config.apiKey = config.apiKey;
@@ -194,6 +202,9 @@ class ConfigManager {
         if (process.env['NLUDB_APP_BASE']) {
           this._config.appBase = process.env['NLUDB_APP_BASE'];
         }
+        if (process.env['NLUDB_WEB_BASE']) {
+          this._config.webBase = process.env['NLUDB_WEB_BASE'];
+        }
         if (process.env['NLUDB_API_KEY']) {
           this._config.apiKey = process.env['NLUDB_API_KEY'];
         }
@@ -215,6 +226,9 @@ class ConfigManager {
     }
     if (params?.appBase) {
       this._config.appBase = params?.appBase;
+    }
+    if (params?.webBase) {
+      this._config.webBase = params?.webBase;
     }
     if (params?.apiKey) {
       this._config.apiKey = params?.apiKey;
@@ -269,6 +283,11 @@ class ConfigManager {
     if (this._config.appBase) {
       if (this._config.appBase[this._config.appBase.length - 1] != '/') {
         this._config.appBase = `${this._config.appBase}/`;
+      }
+    }
+    if (this._config.webBase) {
+      if (this._config.webBase[this._config.webBase.length - 1] != '/') {
+        this._config.webBase = `${this._config.webBase}/`;
       }
     }
     return this._config;
