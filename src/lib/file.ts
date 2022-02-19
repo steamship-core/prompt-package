@@ -11,8 +11,8 @@ export async function readFile(filename: string): Promise<Buffer> {
   return content
 }
 
-const _EXPECT = (client: ApiBase, data: unknown) => { 
-  return new File(client, data as FileParams) 
+const _EXPECT = (client: ApiBase, data: unknown) => {
+  return new File(client, data as FileParams)
 }
 
 export interface FileParams {
@@ -104,7 +104,7 @@ export class File {
       throw Error('Either filename or name + content must be provided');
     }
     let buffer: Buffer | undefined = undefined;
-    
+
     if (params.filename) {
       if (!params.name) {
         const parts = params.filename.split("/")

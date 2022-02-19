@@ -10,15 +10,17 @@ import {
 
 let DEFAULT_CONFIG: Configuration = {
   apiKey: '1234-5678-9123-4567',
-  apiBase: 'https://api.steamship.com/api/v1/',
-  appBase: 'https://steamship.com/api/v1/',
+  apiBase: 'https://api.steamship.com/',
+  appBase: 'https://steamship.com/api/',
+  webBase: 'http://app.steamship.com/',
   spaceId: '9876-5432-100',
 };
 
 let DEFAULT_CONFIG_WITH_PROFILE: Configuration = {
   apiKey: 'some new key',
-  apiBase: 'https://api.steamship.com/api/v1/',
-  appBase: 'https://steamship.com/api/v1/',
+  apiBase: 'https://api.steamship.com/',
+  appBase: 'https://app.steamship.com/',
+  webBase: 'http://app.steamship.com/',
   spaceId: 'some space id',
   spaceHandle: 'the space name',
   // profile: this key will be attached upon load
