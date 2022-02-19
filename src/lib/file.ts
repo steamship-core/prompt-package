@@ -95,7 +95,7 @@ export class File {
     )) as Response<File>;
   }
 
-  static async dupload(
+  static async upload(
     client: ApiBase,
     params: UploadParams,
     config?: Configuration
