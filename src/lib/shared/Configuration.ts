@@ -17,7 +17,7 @@ export interface Configuration {
 export interface LoadConfigParams {
   apiKey?: string;
   apiBase?: string; // https://api.steamship.com/api/v1
-  appBase?: string; // https://steamship.com/api/v1
+  appBase?: string; // https://steamship.run/
   webBase?: string; // https://app.steamship.com
   spaceId?: string;
   spaceHandle?: string;
@@ -38,7 +38,7 @@ export interface SaveConfigParams {
 
 export const DEFAULT_CONFIG: { apiBase: string; appBase: string; webBase: string } = {
   apiBase: 'https://api.steamship.com/api/v1/',
-  appBase: 'https://steamship.com/api/v1/',
+  appBase: 'https://steamship.run/',
   webBase: 'https://app.steamship.com/'
 };
 
