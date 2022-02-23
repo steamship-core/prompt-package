@@ -17,6 +17,8 @@ jobs:
       - run: npm install
       - run: npm run test:unit
       - run: reset-hard
+      - name: Check package version
+        uses: technote-space/package-version-check-action@v1
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
