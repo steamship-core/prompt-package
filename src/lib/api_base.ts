@@ -414,15 +414,15 @@ export class ApiBase {
         throw new RemoteError({ message: `Unsupported HTTP Verb: ${verb}` });
       }
     } catch (error) {
-      if (error?.response) {
+      if ((error as any)?.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         throw new RemoteError({
-          message: `[${error?.response?.status}] ${JSON.stringify(
-            error?.response?.data
+          message: `[${(error as any)?.response?.status}] ${JSON.stringify(
+            (error as any)?.response?.data
           )}`,
         });
-      } else if (error?.request) {
+      } else if ((error as any)?.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
@@ -432,7 +432,7 @@ export class ApiBase {
       } else {
         // Something happened in setting up the request that triggered an Error
         throw new RemoteError({
-          message: `The request to ${url} could not be configured. Message: ${error?.message}`,
+          message: `The request to ${url} could not be configured. Message: ${(error as any)?.message}`,
         });
       }
       throw new RemoteError({
