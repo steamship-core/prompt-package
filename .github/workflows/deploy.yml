@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@master
+      - name: Check package version
+        uses: technote-space/package-version-check-action@v1
       - uses: actions/setup-node@v1
         with:
           node-version: 14
       - run: npm install
       - run: npm run test:unit
       - run: reset-hard
-      - name: Check package version
-        uses: technote-space/package-version-check-action@v1
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
