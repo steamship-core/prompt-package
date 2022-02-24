@@ -29,6 +29,7 @@ let DEFAULT_CONFIG_WITH_PROFILE: Configuration = {
       apiKey: 'some special profile api key',
       apiBase: 'https://other.steamship.com/api/v1/',
       appBase: 'https://other.steamship.com/api/v1/',
+      webBase: 'http://app.steamship.com/',
       spaceId: 'some new space id',
       spaceHandle: 'the new space name',
     },
@@ -138,7 +139,8 @@ describe('Configuration', () => {
     let config = await loadConfiguration({ configFile: newFile });
     let expected = {
       apiBase: 'https://api.steamship.com/api/v1/',
-      appBase: 'https://steamship.com/api/v1/',
+      appBase: 'https://steamship.run/',
+      webBase: 'https://app.steamship.com/',
       apiKey: 'from saving',
     };
     expect(config).toEqual(expected);
@@ -177,7 +179,8 @@ describe('Configuration', () => {
     let entireConfig = await loadConfiguration({ configFile: newFile });
     expect(entireConfig).toEqual({
       apiBase: 'https://api.steamship.com/api/v1/',
-      appBase: 'https://steamship.com/api/v1/',
+      appBase: 'https://steamship.run/',
+      webBase: 'https://app.steamship.com/',
     });
 
     restoreMocks();
