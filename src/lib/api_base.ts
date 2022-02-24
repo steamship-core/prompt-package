@@ -29,16 +29,16 @@ export interface PostConfig<T> extends Configuration {
 export class Task<T> implements TaskParams {
   client: ApiBase;
   taskId?: string;
-  taskStatus?: string;
-  taskStatusMessage?: string;
+  status?: string;
+  statusMessage?: string;
   taskCreatedOn?: string;
   taskLastModifiedOn?: string;
 
   constructor(client: ApiBase, params?: TaskParams) {
     this.client = client;
     this.taskId = params?.taskId;
-    this.taskStatus = params?.taskStatus;
-    this.taskStatusMessage = params?.taskStatusMessage;
+    this.status = params?.status;
+    this.statusMessage = params?.statusMessage;
     this.taskCreatedOn = params?.taskCreatedOn;
     this.taskLastModifiedOn = params?.taskLastModifiedOn;
   }
@@ -46,8 +46,8 @@ export class Task<T> implements TaskParams {
   update(task?: TaskParams): Task<T> {
     if (task) {
       this.taskId = task.taskId;
-      this.taskStatus = task.taskStatus;
-      this.taskStatusMessage = task.taskStatusMessage;
+      this.status = task.status;
+      this.statusMessage = task.statusMessage;
       this.taskCreatedOn = task.taskCreatedOn;
       this.taskLastModifiedOn = task.taskLastModifiedOn;
     }
@@ -56,13 +56,13 @@ export class Task<T> implements TaskParams {
 
   completed(): boolean {
     return (
-      this.taskStatus == TaskStatus.succeeded ||
-      this.taskStatus == TaskStatus.failed
+      this.status == TaskStatus.succeeded ||
+      this.status == TaskStatus.failed
     );
   }
 
   failed(): boolean {
-    return this.taskStatus == TaskStatus.failed;
+    return this.status == TaskStatus.failed;
   }
 
   async addComment(
@@ -211,7 +211,7 @@ export class Response<T> {
   ): Promise<Response<TaskCommentResponse>> {
     if (!this.task)
       throw new RemoteError({
-        message: "Can't add comment: no saved task was found for this item.",
+        statusMessage: "Can't add comment: no saved task was found for this item.",
       });
     return this.task.addComment(params);
   }
@@ -219,7 +219,7 @@ export class Response<T> {
   async listComments(): Promise<Response<ListTaskCommentResponse>> {
     if (!this.task)
       throw new RemoteError({
-        message: "Can't list comments: no saved task was found for this item.",
+        statusMessage: "Can't list comments: no saved task was found for this item.",
       });
     return this.task.listComments();
   }
@@ -229,7 +229,7 @@ export class Response<T> {
   ): Promise<Response<TaskCommentResponse>> {
     if (!this.task)
       throw new RemoteError({
-        message: "Can't delete comment: no saved task was found for this item.",
+        statusMessage: "Can't delete comment: no saved task was found for this item.",
       });
     return this.task.deleteComment(params);
   }
@@ -290,20 +290,20 @@ export class ApiBase {
     if (appCall === true) {
       if (!appOwner) {
         throw new RemoteError({
-          code: 'UserMissing',
-          message:
+          statusCode: 'UserMissing',
+          statusMessage:
             "Can not invoke an app endpoint without the app owner's user handle.",
-          suggestion:
+          statusSuggestion:
             'Provide the appOwner option, or initialize your app with a lookup.',
         });
       }
       const base = appBase || baseConfig.appBase;
       if (!base) {
         throw new RemoteError({
-          code: 'EndpointMissing',
-          message:
+          statusCode: 'EndpointMissing',
+          statusMessage:
             'Can not invoke an app endpoint without the App Base variable set.',
-          suggestion:
+          statusSuggestion:
             'This should automatically have a good default setting. Reach out to our NLUDB support.',
         });
       }
@@ -314,7 +314,7 @@ export class ApiBase {
       // if (parts.length < 2) {
       //   throw new RemoteError({
       //     code: "EndpointInvalid",
-      //     message: "You app base did not appear to begin with a valid HTTP or HTTPS protocol.",
+      //     statusMessage: "You app base did not appear to begin with a valid HTTP or HTTPS protocol.",
       //     suggestion: "Make sure you've provided an app base such as https://nludb.run, with the protocol."
       //   })
       // }
@@ -352,9 +352,9 @@ export class ApiBase {
     const baseConfig = await this.config;
     if (!baseConfig.apiKey) {
       throw new RemoteError({
-        code: 'Authentication',
-        message: 'API Key not found.',
-        suggestion:
+        statusCode: 'Authentication',
+        statusMessage: 'API Key not found.',
+        statusSuggestion:
           'Please see docs.nludb.com for a variety of ways to set your API key.',
       });
     }
@@ -411,14 +411,14 @@ export class ApiBase {
       } else if (verb == 'GET') {
         resp = await axios.get(url, { ...reqConfig, params: finalPayload });
       } else {
-        throw new RemoteError({ message: `Unsupported HTTP Verb: ${verb}` });
+        throw new RemoteError({ statusMessage: `Unsupported HTTP Verb: ${verb}` });
       }
     } catch (error) {
       if ((error as any)?.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         throw new RemoteError({
-          message: `[${(error as any)?.response?.status}] ${JSON.stringify(
+          statusMessage: `[${(error as any)?.response?.status}] ${JSON.stringify(
             (error as any)?.response?.data
           )}`,
         });
@@ -427,33 +427,30 @@ export class ApiBase {
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
         throw new RemoteError({
-          message: `A request was made to ${url} but no response was received`,
+          statusMessage: `A request was made to ${url} but no response was received`,
         });
       } else {
         // Something happened in setting up the request that triggered an Error
         throw new RemoteError({
-          message: `The request to ${url} could not be configured. Message: ${(error as any)?.message}`,
+          statusMessage: `The request to ${url} could not be configured. Message: ${(error as any)?.message}`,
         });
       }
       throw new RemoteError({
-        message: 'An unexpected error happened during your request.',
+        statusMessage: 'An unexpected error happened during your request.',
       });
     }
 
     if (!resp) {
-      throw new RemoteError({ message: 'No response.' });
+      throw new RemoteError({ statusMessage: 'No response.' });
     }
 
     if (!resp.data) {
-      throw new RemoteError({ message: 'No body or task status in response.' });
+      throw new RemoteError({ statusMessage: 'No body or task status in response.' });
     }
 
     // Is it an error?
     if (resp.data.reason) {
-      throw new RemoteError({ message: resp.data.reason });
-    }
-    if (resp.data.error) {
-      throw new RemoteError({ ...resp.data.error });
+      throw new RemoteError({ statusMessage: resp.data.reason });
     }
 
     // TODO: we might need to switch the task channel to the headers
@@ -465,6 +462,9 @@ export class ApiBase {
     }
 
     const task = resp?.data?.status as TaskParams;
+    if (task?.status == TaskStatus.failed) {
+      throw new RemoteError({ ...resp.data.error });
+    }
 
     return new Response<T>(
       resp.data.data,
