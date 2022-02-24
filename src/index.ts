@@ -27,7 +27,7 @@ export type { ParseRequest, ParseResponse } from './lib/types/parsing';
 
 export type {
   SearchHit,
-  TaskStatus,
+  TaskState as TaskStatus,
   TaskParams,
   Metadata,
 } from './lib/types/base';
