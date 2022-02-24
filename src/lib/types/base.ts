@@ -1,4 +1,4 @@
-export enum TaskStatus {
+export enum TaskState {
   waiting = 'waiting',
   running = 'running',
   succeeded = 'succeeded',
@@ -6,7 +6,7 @@ export enum TaskStatus {
 }
 export interface TaskParams {
   taskId?: string;
-  status?: string;
+  state?: string;
   statusMessage?: string;
   statusCode?: string;
   statusSuggestion?: string;

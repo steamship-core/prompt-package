@@ -4,8 +4,8 @@ export interface RemoteErrorProps {
   statusSuggestion?: string
 }
 export class RemoteError extends Error {
-  code?: string
-  suggestion?: string
+  statusCode?: string
+  statusSuggestion?: string
   origMessage?: string
 
   constructor(props?: RemoteErrorProps) {
@@ -24,10 +24,10 @@ export class RemoteError extends Error {
       baseMessage = parts.join('\n')
     }
     super(baseMessage)
-    this.code = props?.statusCode
+    this.statusCode = props?.statusCode
     this.origMessage = props?.statusMessage
     this.message = baseMessage
-    this.suggestion = props?.statusSuggestion
+    this.statusSuggestion = props?.statusSuggestion
 
     Object.setPrototypeOf(this, RemoteError.prototype);
   }

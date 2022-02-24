@@ -6,7 +6,7 @@ import {
   LoadConfigParams,
   loadConfiguration,
 } from './shared/Configuration';
-import { TaskParams, TaskStatus } from './types/base';
+import { TaskParams, TaskState } from './types/base';
 import {
   AddTaskCommentRequest,
   DeleteTaskCommentRequest,
@@ -29,7 +29,7 @@ export interface PostConfig<T> extends Configuration {
 export class Task<T> implements TaskParams {
   client: ApiBase;
   taskId?: string;
-  status?: string;
+  state?: string;
   statusMessage?: string;
   taskCreatedOn?: string;
   taskLastModifiedOn?: string;
@@ -37,7 +37,7 @@ export class Task<T> implements TaskParams {
   constructor(client: ApiBase, params?: TaskParams) {
     this.client = client;
     this.taskId = params?.taskId;
-    this.status = params?.status;
+    this.state = params?.state;
     this.statusMessage = params?.statusMessage;
     this.taskCreatedOn = params?.taskCreatedOn;
     this.taskLastModifiedOn = params?.taskLastModifiedOn;
@@ -46,7 +46,7 @@ export class Task<T> implements TaskParams {
   update(task?: TaskParams): Task<T> {
     if (task) {
       this.taskId = task.taskId;
-      this.status = task.status;
+      this.state = task.state;
       this.statusMessage = task.statusMessage;
       this.taskCreatedOn = task.taskCreatedOn;
       this.taskLastModifiedOn = task.taskLastModifiedOn;
@@ -56,13 +56,13 @@ export class Task<T> implements TaskParams {
 
   completed(): boolean {
     return (
-      this.status == TaskStatus.succeeded ||
-      this.status == TaskStatus.failed
+      this.state == TaskState.succeeded ||
+      this.state == TaskState.failed
     );
   }
 
   failed(): boolean {
-    return this.status == TaskStatus.failed;
+    return this.state == TaskState.failed;
   }
 
   async addComment(
@@ -462,7 +462,7 @@ export class ApiBase {
     }
 
     const task = resp?.data?.status as TaskParams;
-    if (task?.status == TaskStatus.failed) {
+    if (task?.state == TaskState.failed) {
       throw new RemoteError({ ...resp.data.error });
     }
 
