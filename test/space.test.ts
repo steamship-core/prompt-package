@@ -13,6 +13,9 @@ describe("Space", () => {
     const steamship = steamshipClient();
     const def = (await Space.get(steamship)).data!
 
+    const space1l = (await Space.list(steamship)).data!
+    const starting_spaces = space1l.spaces.length
+
     const space1 = (await Space.create(steamship)).data!
     expect(space1.handle).not.toBeUndefined()
     expect(space1.name).not.toBeUndefined()
@@ -29,8 +32,14 @@ describe("Space", () => {
     expect(space1a.id).toBe(space1.id)
     expect(space1a.handle).toBe(space1.handle)
 
+        // Can list them
+    const space2l = (await Space.list(steamship)).data!
+    expect(space2l.spaces.length).toBe(starting_spaces+2)
+
     await space1.delete()
     await space2.delete()
+
+
 
     // They should no longer be there.
     expect(

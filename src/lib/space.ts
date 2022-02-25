@@ -8,8 +8,18 @@ export interface SpaceParams {
   name?: string;
 }
 
-const _EXPECT = (client: ApiBase, data: unknown) => { 
-  return new Space(client, data as SpaceParams) 
+const _EXPECT = (client: ApiBase, data: unknown) => {
+  return new Space(client, data as SpaceParams)
+}
+
+const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+  return {
+    spaces: ((data as any).spaces as Array<any>).map(x => _EXPECT(client, x))
+  }
+}
+
+export interface SpaceList {
+  spaces: Space[]
 }
 
 export class Space {
@@ -70,5 +80,20 @@ export class Space {
         ...config
       },
     )) as Response<Space>;
+  }
+
+  static async list(
+    client: ApiBase,
+    params?: GetParams,
+    config?: Configuration
+  ): Promise<Response<SpaceList>> {
+    return (await client.post(
+      'space/list',
+      {...params},
+      {
+        expect: _EXPECT_LIST,
+        ...config
+      },
+    )) as Response<SpaceList>;
   }
 }
