@@ -39,7 +39,6 @@ export interface AppVersionParams {
   description?: string;
   createdAt?: string;
   updatedAt?: string;
-  description?: string;
   isDefault?: boolean;
 }
 
