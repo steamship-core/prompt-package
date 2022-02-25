@@ -1,7 +1,6 @@
 import { ApiBase, Response } from './api_base';
 import { readFile } from './file';
 import { Configuration } from './shared/Configuration';
-import { GetParams } from './shared/Requests';
 import { MimeTypes } from './types/file';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
@@ -15,6 +14,13 @@ const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
   return {
     appVersions: ((data as any).appVersions as Array<any>).map(x => _EXPECT(client, x))
   }
+}
+
+export interface GetParams {
+  id?: string;
+  name?: string;
+  handle?: string;
+  appId?: string;
 }
 
 export interface AppVersionListParams {

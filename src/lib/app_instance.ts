@@ -1,6 +1,5 @@
 import { ApiBase, Response } from './api_base';
 import { Configuration } from './shared/Configuration';
-import { GetParams } from './shared/Requests';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new AppInstance(client, data as AppInstanceParams);
@@ -13,6 +12,13 @@ const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
   return {
     appInstances: ((data as any).appInstances as Array<any>).map(x => _EXPECT(client, x))
   }
+}
+
+export interface GetParams {
+  id?: string;
+  name?: string;
+  handle?: string;
+  appHandle?: string;
 }
 
 export interface AppInstanceListParams {
