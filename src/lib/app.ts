@@ -22,6 +22,10 @@ export interface AppParams {
   name?: string;
   handle?: string;
   userId?: string;
+  description?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  isPublic?: boolean;
   upsert?: boolean
 }
 
@@ -31,6 +35,10 @@ export class App {
   handle?: string;
   userId?: string;
   userHandle?: string;
+  description?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  isPublic?: boolean;
   client: ApiBase;
 
   constructor(client: ApiBase, params: AppParams) {
@@ -39,6 +47,10 @@ export class App {
     this.name = params.name;
     this.handle = params.handle;
     this.userId = params.userId;
+    this.createdAt = params.createdAt;
+    this.updatedAt = params.updatedAt;
+    this.isPublic = params.isPublic;
+    this.description = params.description;
   }
 
   async delete(config?: Configuration): Promise<Response<App>> {

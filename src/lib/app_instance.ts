@@ -31,6 +31,9 @@ export interface AppInstanceParams {
   appId?: string;
   appInstanceId?: string;
   appVersionId?: string;
+  description?: string;
+  createdAt?: string;
+  updatedAt?: string;
   userId?: string;
   userHandle?: string;
   spaceId?: string;
@@ -55,6 +58,9 @@ export class AppInstance {
   spaceId?: string;
   userId?: string;
   userHandle?: string;
+  description?: string;
+  createdAt?: string;
+  updatedAt?: string;
   client: ApiBase;
 
   constructor(client: ApiBase, params: AppInstanceParams) {
@@ -67,6 +73,9 @@ export class AppInstance {
     this.spaceId = params.appInstanceId;
     this.userId = params.userId;
     this.userHandle = params.userHandle;
+    this.createdAt = params.createdAt;
+    this.updatedAt = params.updatedAt;
+    this.description = params.description;
   }
 
   async delete(config?: Configuration): Promise<Response<AppInstance>> {

@@ -6,6 +6,9 @@ export interface SpaceParams {
   id?: string;
   handle?: string;
   name?: string;
+  description?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
@@ -27,12 +30,18 @@ export class Space {
   id?: string;
   name?: string;
   handle?: string;
+  description?: string;
+  createdAt?: string;
+  updatedAt?: string;
 
   constructor(client: ApiBase, params: SpaceParams) {
     this.client = client;
     this.id = params.id;
     this.name = params.name;
     this.handle = params.handle;
+    this.createdAt = params.createdAt;
+    this.updatedAt = params.updatedAt;
+    this.description = params.description;
   }
 
   async delete(

@@ -30,6 +30,11 @@ export interface AppVersionParams {
   name?: string;
   handle?: string;
   appId?: string;
+  description?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  description?: string;
+  isDefault?: boolean;
 }
 
 export interface CreateParams {
@@ -44,6 +49,10 @@ export class AppVersion {
   name?: string;
   handle?: string;
   appId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  isDefault?: boolean;
+  description?: string;
   client: ApiBase;
 
   constructor(client: ApiBase, params: AppVersionParams) {
@@ -52,6 +61,11 @@ export class AppVersion {
     this.name = params.name;
     this.handle = params.handle;
     this.appId = params.appId;
+    this.createdAt = params.createdAt;
+    this.updatedAt = params.updatedAt;
+    this.isDefault = params.isDefault;
+    this.description = params.description;
+
   }
 
   async delete(config?: Configuration): Promise<Response<AppVersion>> {
