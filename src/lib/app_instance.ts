@@ -6,6 +6,24 @@ const _EXPECT = (client: ApiBase, data: unknown) => {
   return new AppInstance(client, data as AppInstanceParams);
 };
 
+const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+  if (!data) {
+    return []
+  }
+  return {
+    appInstances: ((data as any).appInstances as Array<any>).map(x => _EXPECT(client, x))
+  }
+}
+
+export interface AppInstanceListParams {
+  appId?: string
+  appVersionId?: string
+}
+
+export interface AppInstanceList {
+  appInstances: AppInstance[]
+}
+
 export interface AppInstanceParams {
   id?: string;
   name?: string;
@@ -113,6 +131,21 @@ export class AppInstance {
         appInstanceId: this.id,
       }
     );
+  }
+
+  static async list(
+    client: ApiBase,
+    params?: AppInstanceListParams,
+    config?: Configuration
+  ): Promise<Response<AppInstanceList>> {
+    return (await client.post(
+      'app/instance/list',
+      {...params},
+      {
+        expect: _EXPECT_LIST,
+        ...config
+      },
+    )) as Response<AppInstanceList>;
   }
 
   post(

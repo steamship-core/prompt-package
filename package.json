@@ -1,7 +1,7 @@
 {
-  "name": "@nludb/client",
-  "version": "2.0.2",
-  "description": "NLUDB is a cloud-hosted database that helps developers get work done with natural language content.",
+  "name": "@steamship/client",
+  "version": "2.0.0",
+  "description": "Steamship is a cloud-hosted database that helps developers get work done with natural language content.",
   "main": "build/main/index.js",
   "typings": "build/module/index.d.ts",
   "module": "build/module/index.js",
@@ -10,9 +10,9 @@
   "keywords": [],
   "contributors": [
     {
-      "name": "Edward Benson",
-      "email": "ted@nludb.com",
-      "url": "https://www.edwardbenson.com/"
+      "name": "Steamship Team",
+      "email": "contact@steamship.com",
+      "url": "https://www.steamship.com/"
     }
   ],
   "scripts": {
@@ -28,7 +28,7 @@
     "test:lint": "eslint src --ext .ts",
     "test:prettier": "prettier \"src/**/*.ts\" --list-different",
     "test:spelling": "cspell \"{README.md,.github/*.md,src/**/*.ts}\"",
-    "test:unit": "jest",
+    "test:unit": "jest --runInBand",
     "check-cli": "run-s test diff-integration-tests check-integration-tests",
     "check-integration-tests": "run-s check-integration-test:*",
     "diff-integration-tests": "mkdir -p diff && rm -rf diff/test && cp -r test diff/test && rm -rf diff/test/test-*/.git && cd diff && git init --quiet && git add -A && git commit --quiet --no-verify --allow-empty -m 'WIP' && echo '\\n\\nCommitted most recent integration test output in the \"diff\" directory. Review the changes with \"cd diff && git diff HEAD\" or your preferred git diff viewer.'",

@@ -1,24 +1,24 @@
-# NLUDB Typescript Client Library
+# Steamship Typescript Client Library
 
-NLUDB is a cloud-hosted database that helps developers get work done with natural language content.
+Steamship is a cloud-hosted database that helps developers get work done with natural language content.
 
-**NLUDB is currently in a closed beta.** If you are interested in joining, please sign up at https://www.nludb.com
+**Steamship is currently in a closed beta.** If you are interested in joining, please sign up at https://www.steamship.com
 
 ## Installing
 
 ```
-npm install nludb --save
+npm install @steamship/client --save
 ```
 
 ## Using
 
 ### Initialization
 
-Sign up for an account at https://www.nludb.com to get your API key. Then use it to initialize your client library:
+Sign up for an account at https://www.steamship.com to get your API key. Then use it to initialize your client library:
 
 ```typescript
-import NLUDB from '@nludb/client';
-const nludb = new NLUDB(api_key);
+import Client from '@steamship/client';
+const steamship = new Steamship(api_key);
 ```
 
 ### Embedding Indices
@@ -26,7 +26,7 @@ const nludb = new NLUDB(api_key);
 An Embedding Index is a persistent, read-optimized index over an embedded space. Once an index is created, you can search for similar items within that embedding space.
 
 ```typescript
-const index = await nludb.createIndex({
+const index = await steamship.createIndex({
   name: 'Question Answering Index',
   model: EmbeddingModels.QA,
   upsert: true,

@@ -1,28 +1,28 @@
-import { nludb_client, qa_model, random_name } from './helper.spec';
-import { NludbTaskStatus } from '../src/lib/types/base';
+import { steamship_client, qa_model, random_name } from './helper.spec';
+import { TaskStatus } from '../src/lib/types/base';
 import { CreateIndexRequest } from '../src/lib/types/embedding';
 
 test('Test Index Create', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
 
   t.throwsAsync(async () => {
     // Missing model
-    await nludb.createIndex({ name: random_name() } as CreateIndexRequest);
+    await steamship.createIndex({ name: random_name() } as CreateIndexRequest);
   });
 
   t.throwsAsync(async () => {
     // Missing name
-    await nludb.createIndex({ model: qa_model() } as CreateIndexRequest);
+    await steamship.createIndex({ model: qa_model() } as CreateIndexRequest);
   });
 
-  const index = await nludb.createIndex({
+  const index = await steamship.createIndex({
     name: random_name(),
     model: qa_model(),
   });
 
   t.throwsAsync(async () => {
     // Upsert false!
-    await nludb.createIndex({
+    await steamship.createIndex({
       name: index.name,
       model: qa_model(),
     });
@@ -32,17 +32,17 @@ test('Test Index Create', async (t) => {
 });
 
 test('Test Index Delete', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
 
   const name = random_name();
-  const index = await nludb.createIndex({
+  const index = await steamship.createIndex({
     name: name,
     model: qa_model(),
   });
   t.is(index.name, name);
   t.not(index.id, null);
 
-  const index2 = await nludb.createIndex({
+  const index2 = await steamship.createIndex({
     name: name,
     model: qa_model(),
     upsert: true,
@@ -52,7 +52,7 @@ test('Test Index Delete', async (t) => {
 
   await index.delete();
 
-  const index3 = await nludb.createIndex({
+  const index3 = await steamship.createIndex({
     name: name,
     model: qa_model(),
     upsert: true,
@@ -63,9 +63,9 @@ test('Test Index Delete', async (t) => {
 });
 
 test('Test Index Embed Task', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
   const name = random_name();
-  const index = await nludb.createIndex({
+  const index = await steamship.createIndex({
     name: name,
     model: qa_model(),
   });
@@ -80,21 +80,21 @@ test('Test Index Embed Task', async (t) => {
   t.not(task.task?.taskStatus, null);
   t.not(task.task?.taskCreatedOn, null);
   t.not(task.task?.taskLastModifiedOn, null);
-  t.is(task.task?.taskStatus, NludbTaskStatus.waiting);
+  t.is(task.task?.taskStatus, TaskStatus.waiting);
 
   await task.wait();
-  t.is(task.task?.taskStatus, NludbTaskStatus.succeeded);
+  t.is(task.task?.taskStatus, TaskStatus.succeeded);
 
   await task.check();
-  t.is(task.task?.taskStatus, NludbTaskStatus.succeeded);
+  t.is(task.task?.taskStatus, TaskStatus.succeeded);
 
   await index.delete();
 });
 
 test('Test Index Usage', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
   const name = random_name();
-  const index = await nludb.createIndex({
+  const index = await steamship.createIndex({
     name: name,
     model: qa_model(),
   });
@@ -163,9 +163,9 @@ test('Test Index Usage', async (t) => {
 });
 
 test('Test Multiple Queries', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
   const name = random_name();
-  const index = await nludb.createIndex({
+  const index = await steamship.createIndex({
     name: name,
     model: qa_model(),
   });

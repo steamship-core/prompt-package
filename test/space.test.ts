@@ -1,30 +1,30 @@
-import { nludb_client, random_name } from './helper';
+import { steamshipClient, randomName } from './helper';
 import { Space } from '../src/lib/space'
 
 describe("Space", () => {
   test('it should have a default space', async () => {
-    const nludb = nludb_client();    
-    const resp = await Space.get(nludb)
+    const steamship = steamshipClient();
+    const resp = await Space.get(steamship)
     expect(resp.data).not.toBeFalsy()
     expect(resp.data?.handle).toEqual('default')
-  });
+  }, 10000);
 
   test('it should be creatable and deletable', async () => {
-    const nludb = nludb_client();    
-    const def = (await Space.get(nludb)).data!
-    
-    const space1 = (await Space.create(nludb)).data!
+    const steamship = steamshipClient();
+    const def = (await Space.get(steamship)).data!
+
+    const space1 = (await Space.create(steamship)).data!
     expect(space1.handle).not.toBeUndefined()
     expect(space1.name).not.toBeUndefined()
     expect(space1.id).not.toBe(def.id)
-    
-    let name = random_name();
-    const space2 = (await Space.create(nludb, {name})).data!
+
+    let name = randomName();
+    const space2 = (await Space.create(steamship, {name})).data!
     expect(space2.name).toBe(name)
     expect(space2.id).not.toBe(space1.id)
 
     // Can get them!
-    const space1a = (await Space.get(nludb, {id: space1.id})).data!
+    const space1a = (await Space.get(steamship, {id: space1.id})).data!
     expect(space1a.name).toBe(space1.name)
     expect(space1a.id).toBe(space1.id)
     expect(space1a.handle).toBe(space1.handle)
@@ -34,8 +34,8 @@ describe("Space", () => {
 
     // They should no longer be there.
     expect(
-      Space.get(nludb, {id: space1.id})
+      Space.get(steamship, {id: space1.id})
     ).rejects.toThrow()
-  }); 
+  }, 10000);
 
 })

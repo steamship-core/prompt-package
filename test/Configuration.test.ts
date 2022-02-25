@@ -8,19 +8,25 @@ import {
   saveConfiguration,
 } from '../src/lib/shared/Configuration';
 
+let DEFAULT_CONFIG_WITHOUT_CUSTOMIZATION: Configuration = {
+  apiBase: 'https://api.steamship.com/api/v1/',
+  appBase: 'https://steamship.run/',
+  webBase: 'https://app.steamship.com/'
+};
+
 let DEFAULT_CONFIG: Configuration = {
   apiKey: '1234-5678-9123-4567',
-  apiBase: 'https://api.steamship.com/',
-  appBase: 'https://steamship.com/api/',
-  webBase: 'http://app.steamship.com/',
+  apiBase: 'https://api.steamship.com/api/v1/',
+  appBase: 'https://steamship.run/',
+  webBase: 'https://app.steamship.com/',
   spaceId: '9876-5432-100',
 };
 
 let DEFAULT_CONFIG_WITH_PROFILE: Configuration = {
   apiKey: 'some new key',
-  apiBase: 'https://api.steamship.com/',
-  appBase: 'https://app.steamship.com/',
-  webBase: 'http://app.steamship.com/',
+  apiBase: 'https://api.steamship.com/api/v1/',
+  appBase: 'https://steamship.run/',
+  webBase: 'https://app.steamship.com/',
   spaceId: 'some space id',
   spaceHandle: 'the space name',
   // profile: this key will be attached upon load
@@ -175,13 +181,12 @@ describe('Configuration', () => {
     };
     expect(profileConfig).toEqual(expectedProfile);
 
-    // Also expect the entire config
+    // Let's also test loading the config WITHOUT a profile.
     let entireConfig = await loadConfiguration({ configFile: newFile });
-    expect(entireConfig).toEqual({
-      apiBase: 'https://api.steamship.com/api/v1/',
-      appBase: 'https://steamship.run/',
-      webBase: 'https://app.steamship.com/',
-    });
+
+    // It should be the default config WITHOUT any customization, we never provided
+    // anything explicit to set here.
+    expect(entireConfig).toEqual(DEFAULT_CONFIG_WITHOUT_CUSTOMIZATION);
 
     restoreMocks();
   });
@@ -236,18 +241,18 @@ describe('Configuration', () => {
 
   test('it should override the config with env vars', async () => {
     mockDefaultConfigFile();
-    process.env['NLUDB_API_KEY'] = 'overridden by env var';
+    process.env['STEAMSHIP_API_KEY'] = 'overridden by env var';
     let config = await loadConfiguration();
     let expected = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
     expected.apiKey = 'overridden by env var';
     expect(config).toEqual(expected);
-    delete process.env['NLUDB_API_KEY'];
+    delete process.env['STEAMSHIP_API_KEY'];
     restoreMocks();
   });
 
   test('it should select the profile with env vars', async () => {
     mockDefaultConfigFile(DEFAULT_CONFIG_WITH_PROFILE);
-    process.env['NLUDB_PROFILE'] = 'my_profile';
+    process.env['STEAMSHIP_PROFILE'] = 'my_profile';
     let config = await loadConfiguration();
     let expected = JSON.parse(
       JSON.stringify(
@@ -258,7 +263,7 @@ describe('Configuration', () => {
     );
     expected.profile = 'my_profile';
     expect(config).toEqual(expected);
-    delete process.env['NLUDB_PROFILE'];
+    delete process.env['STEAMSHIP_PROFILE'];
     restoreMocks();
   });
 });

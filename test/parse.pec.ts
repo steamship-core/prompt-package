@@ -1,9 +1,9 @@
-import { nludb_client } from './helper.spec';
+import { steamship_client } from './helper.spec';
 import { TokenMatcher } from '../src/lib/types/parsing';
 
 test('Test Parse', async (t) => {
-  const nludb = nludb_client();
-  const e1 = await nludb.parse({
+  const steamship = steamship_client();
+  const e1 = await steamship.parse({
     docs: ['This is a test'],
   });
   t.is(e1.data?.docs.length, 1);
@@ -14,8 +14,8 @@ test('Test Parse', async (t) => {
 });
 
 test('Test Parse Options', async (t) => {
-  const nludb = nludb_client();
-  const e1 = await nludb.parse({
+  const steamship = steamship_client();
+  const e1 = await steamship.parse({
     docs: ['Ted likes to drink coffee'],
     includeTokens: false,
   });
@@ -25,8 +25,8 @@ test('Test Parse Options', async (t) => {
 });
 
 test('Test Entities', async (t) => {
-  const nludb = nludb_client();
-  const e1 = await nludb.parse({
+  const steamship = steamship_client();
+  const e1 = await steamship.parse({
     docs: ['Ted likes to drink coffee'],
     includeEntities: true,
   });
@@ -36,7 +36,7 @@ test('Test Entities', async (t) => {
 });
 
 test('Test Token Matcher', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
 
   const matcher: TokenMatcher = {
     label: 'A MATCHER',
@@ -48,7 +48,7 @@ test('Test Token Matcher', async (t) => {
     patterns: [[{ LOWER: 'see' }], [{ LOWER: 'if' }, { LOWER: 'a' }]],
   };
 
-  const e1 = await nludb.parse({
+  const e1 = await steamship.parse({
     docs: ['We can see if a matcher works'],
     tokenMatchers: [matcher, matcher_b],
   });

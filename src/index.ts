@@ -1,5 +1,5 @@
-export { Client } from './lib/nludb';
-export { RemoteError } from './lib/nludb_error';
+export { Client } from './lib/client';
+export { RemoteError } from './lib/steamship_error';
 
 // Embedding
 export { EmbeddingIndex } from './lib/embedding_index';

@@ -1,5 +1,5 @@
 import { ApiBase, Response } from './api_base';
-import { RemoteError } from './nludb_error';
+import { RemoteError } from './steamship_error';
 import { ClassifyRequest, ClassifyResult } from './types/classifier';
 
 export class Classifier {

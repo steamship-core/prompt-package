@@ -1,4 +1,4 @@
-import { Client } from '../src/lib/nludb';
+import { Client } from '../src/lib/client';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -10,12 +10,12 @@ import {
 const generateRandomString = (length = 6) =>
   Math.random().toString(20).substr(2, length);
 
-export function random_name(): string {
+export function randomName(): string {
   const id = generateRandomString(10);
   return `test_${id}`;
 }
 
-export function nludb_client(): Client {
+export function steamshipClient(): Client {
   return new Client({ profile: 'test' });
 }
 

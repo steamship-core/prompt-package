@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { Client } from '../src/lib/nludb';
-import { mockDefaultConfigFile, nludb_client, restoreMocks } from './helper';
+import { Client } from '../src/lib/client';
+import { mockDefaultConfigFile, steamshipClient, restoreMocks } from './helper';
 
-describe('NLUDB Client', () => {
+describe('Steamship Client', () => {
   test('it should be running with the `test` profile', async () => {
-    const nludb = nludb_client();
-    let config = await nludb.config;
+    const steamship = steamshipClient();
+    let config = await steamship.config;
     expect(config.profile).toBe('test');
   });
 
@@ -31,40 +31,40 @@ describe('NLUDB Client', () => {
 });
 
 // test('Test Embeddings', async (t) => {
-//   const nludb = nludb_client();
-//   const e1 = await nludb.embed({
+//   const steamship = steamship_client();
+//   const e1 = await steamship.embed({
 //     texts: ['This is a test'],
 //     model: qa_model(),
 //   });
-//   const e1b = await nludb.embed({
+//   const e1b = await steamship.embed({
 //     texts: ['Banana'],
 //     model: qa_model(),
 //   });
-//   const e2 = await nludb.embed({
+//   const e2 = await steamship.embed({
 //     texts: ['This is a test'],
 //     model: qa_model(),
 //   });
-//   const e3 = await nludb.embed({
+//   const e3 = await steamship.embed({
 //     texts: ['This is a test'],
 //     model: sim_model(),
 //   });
-//   const e3b = await nludb.embed({
+//   const e3b = await steamship.embed({
 //     texts: ['Banana'],
 //     model: sim_model(),
 //   });
-//   const e4 = await nludb.embed({
+//   const e4 = await steamship.embed({
 //     texts: ['This is a test'],
 //     model: sim_model(),
 //   });
-//   // const e5 = await nludb.embed({
+//   // const e5 = await steamship.embed({
 //   //   texts: ['This is a test'],
 //   //   model: EmbeddingModel.PARAPHRASE,
 //   // });
-//   // const e5b = await nludb.embed({
+//   // const e5b = await steamship.embed({
 //   //   texts: ['Banana'],
 //   //   model: EmbeddingModel.PARAPHRASE,
 //   // });
-//   // const e6 = await nludb.embed({
+//   // const e6 = await steamship.embed({
 //   //   texts: ['This is a test'],
 //   //   model: EmbeddingModel.PARAPHRASE,
 //   // });
@@ -91,7 +91,7 @@ describe('NLUDB Client', () => {
 // });
 
 // test('Test Embedding Search', async (t) => {
-//   const nludb = nludb_client();
+//   const steamship = steamship_client();
 //   const docs = [
 //     'Armadillo shells are bulletproof.',
 //     'Dolphins sleep with one eye open.',
@@ -100,7 +100,7 @@ describe('NLUDB Client', () => {
 //     'The code for the New York office is 1234',
 //   ];
 //   const query = 'Who should I talk to about new employee setup?';
-//   const results = await nludb.embedAndSearch({
+//   const results = await steamship.embedAndSearch({
 //     query: query,
 //     docs: docs,
 //     model: qa_model(),

@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { nludb_client, random_name } from './helper.spec';
+import { steamship_client, random_name } from './helper.spec';
 import {
   CreateModelRequest,
   ModelAdapterType,
@@ -8,53 +8,53 @@ import {
 } from './types/models';
 
 test('Test Model Create', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
 
-  const modelsOrig = await nludb.models.listPrivate();
+  const modelsOrig = await steamship.models.listPrivate();
   const origCount = modelsOrig.data?.models.length || 0;
 
   await t.throwsAsync(async () => {
-    await nludb.models.create({
+    await steamship.models.create({
       description: 'This is just for test',
       modelType: ModelType.embedder,
       url: 'http://foo',
-      adapterType: ModelAdapterType.nludbDocker,
+      adapterType: ModelAdapterType.steamshipDocker,
       isPublic: false,
     } as CreateModelRequest);
   });
 
   await t.throwsAsync(async () => {
-    await nludb.models.create({
+    await steamship.models.create({
       name: random_name(),
       modelType: ModelType.embedder,
       url: 'http://foo',
-      adapterType: ModelAdapterType.nludbDocker,
+      adapterType: ModelAdapterType.steamshipDocker,
       isPublic: false,
     } as CreateModelRequest);
   });
 
   await t.throwsAsync(async () => {
-    await nludb.models.create({
+    await steamship.models.create({
       name: random_name(),
       description: 'This is just for test',
       url: 'http://foo',
-      adapterType: ModelAdapterType.nludbDocker,
+      adapterType: ModelAdapterType.steamshipDocker,
       isPublic: false,
     } as CreateModelRequest);
   });
 
   await t.throwsAsync(async () => {
-    await nludb.models.create({
+    await steamship.models.create({
       name: random_name(),
       description: 'This is just for test',
       modelType: ModelType.embedder,
-      adapterType: ModelAdapterType.nludbDocker,
+      adapterType: ModelAdapterType.steamshipDocker,
       isPublic: false,
     } as CreateModelRequest);
   });
 
   await t.throwsAsync(async () => {
-    await nludb.models.create({
+    await steamship.models.create({
       name: random_name(),
       description: 'This is just for test',
       modelType: ModelType.embedder,
@@ -64,51 +64,51 @@ test('Test Model Create', async (t) => {
   });
 
   await t.throwsAsync(async () => {
-    await nludb.models.create({
+    await steamship.models.create({
       name: random_name(),
       description: 'This is just for test',
       modelType: ModelType.embedder,
       url: 'http://foo',
-      adapterType: ModelAdapterType.nludbDocker,
+      adapterType: ModelAdapterType.steamshipDocker,
     } as CreateModelRequest);
   });
 
-  const models = await nludb.models.listPrivate();
+  const models = await steamship.models.listPrivate();
   t.is(models.data?.models.length, origCount);
 
   const model = (
-    await nludb.models.create({
+    await steamship.models.create({
       name: random_name(),
       description: 'This is just for test',
       modelType: ModelType.embedder,
       url: 'http://foo',
-      adapterType: ModelAdapterType.nludbDocker,
+      adapterType: ModelAdapterType.steamshipDocker,
       isPublic: false,
     })
   ).data;
 
-  const models2 = await nludb.models.listPrivate();
+  const models2 = await steamship.models.listPrivate();
   t.is(models2.data?.models.length, origCount + 1);
 
   // Upsert
   await t.throwsAsync(async () => {
-    await nludb.models.create({
+    await steamship.models.create({
       name: model?.name || 'F',
       description: 'This is just for test',
       modelType: ModelType.embedder,
       url: 'http://foo',
-      adapterType: ModelAdapterType.nludbDocker,
+      adapterType: ModelAdapterType.steamshipDocker,
       isPublic: false,
     });
   });
 
   const model2 = (
-    await nludb.models.create({
+    await steamship.models.create({
       name: model?.name || 'F',
       description: 'This is just for test 2',
       modelType: ModelType.embedder,
       url: 'http://foo',
-      adapterType: ModelAdapterType.nludbDocker,
+      adapterType: ModelAdapterType.steamshipDocker,
       isPublic: false,
       upsert: true,
     })
@@ -116,27 +116,27 @@ test('Test Model Create', async (t) => {
 
   t.is(model2?.id, model?.id);
 
-  const models3 = (await nludb.models.listPrivate()).data;
+  const models3 = (await steamship.models.listPrivate()).data;
   t.is(models3?.models.length, origCount + 1);
   t.is(models2?.data?.models[0].id, models3?.models[0].id);
   // Upsert really doesn't update yet. Just retrieves old one.
   // t.is(models3.models[0].description, models.models[0].description)
 
-  await nludb.models.delete({ modelId: model?.id || '' });
+  await steamship.models.delete({ modelId: model?.id || '' });
 
-  const models4 = (await nludb.models.listPrivate()).data;
+  const models4 = (await steamship.models.listPrivate()).data;
   t.is(models4?.models.length, origCount);
 });
 
 test('Test Public Models', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
 
-  const modelsOrig = (await nludb.models.listPublic()).data;
+  const modelsOrig = (await steamship.models.listPublic()).data;
   const origCount = modelsOrig?.models.length || 0;
   t.is(origCount > 0, true);
 
   // It can't be deleted
   await t.throwsAsync(async () => {
-    await nludb.models.delete({ modelId: modelsOrig?.models[0].id || '' });
+    await steamship.models.delete({ modelId: modelsOrig?.models[0].id || '' });
   });
 });

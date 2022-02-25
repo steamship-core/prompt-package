@@ -1,17 +1,17 @@
-import { nludb_client } from './helper';
+import { steamshipClient } from './helper';
 import { User } from '../src/lib/user'
 
 describe("User", () => {
   test('it should be fetchable', async () => {
-    const nludb = nludb_client();
-    const resp = await User.current(nludb)
+    const steamship = steamshipClient();
+    const resp = await User.current(steamship)
     expect(resp.data).not.toBeFalsy()
     expect(resp.data?.handle).not.toBeUndefined()
   });
 
   test('it should be updatable', async () => {
-    const nludb = nludb_client();
-    const resp = await User.current(nludb)
+    const steamship = steamshipClient();
+    const resp = await User.current(steamship)
     expect(resp.data).not.toBeFalsy()
     expect(resp.data?.handle).not.toBeUndefined()
     const user = resp.data!
@@ -22,7 +22,7 @@ describe("User", () => {
     const user2 = resp2.data!
     expect(user2.handle).toBe('foo-bar')
 
-    const resp3 = await User.current(nludb)
+    const resp3 = await User.current(steamship)
     expect(resp3.data).not.toBeFalsy()
     expect(resp3.data?.handle).not.toBeUndefined()
     const user3 = resp3.data!

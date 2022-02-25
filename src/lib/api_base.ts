@@ -1,6 +1,4 @@
 import axios from 'axios';
-
-import { RemoteError } from './nludb_error';
 import {
   Configuration,
   LoadConfigParams,
@@ -13,6 +11,7 @@ import {
   ListTaskCommentResponse,
   TaskCommentResponse,
 } from './types/task_comment';
+import {RemoteError} from "./steamship_error";
 
 export interface PostConfig<T> extends Configuration {
   responsePath?: string;
@@ -297,30 +296,43 @@ export class ApiBase {
             'Provide the appOwner option, or initialize your app with a lookup.',
         });
       }
-      const base = appBase || baseConfig.appBase;
+      let base = appBase || baseConfig.appBase;
       if (!base) {
         throw new RemoteError({
           statusCode: 'EndpointMissing',
           statusMessage:
             'Can not invoke an app endpoint without the App Base variable set.',
           statusSuggestion:
-            'This should automatically have a good default setting. Reach out to our NLUDB support.',
+            'This should automatically have a good default setting. Reach out to our Steamship support.',
         });
       }
-      // To make it easier to develop on localhost we'll pipe in the userHandle
-      // in a header.
-      // We want to split the '//' part.
-      // const parts = base.split('//')
-      // if (parts.length < 2) {
-      //   throw new RemoteError({
-      //     code: "EndpointInvalid",
-      //     statusMessage: "You app base did not appear to begin with a valid HTTP or HTTPS protocol.",
-      //     suggestion: "Make sure you've provided an app base such as https://nludb.run, with the protocol."
-      //   })
-      // }
-      // // Now we pre-pend the app-base to the first part!
-      // parts[1] = `${appOwner}.${parts[1]}`
-      // const newBase = parts.join('//')
+
+      const isLocalhost = base.includes('//localhost') ||
+        base.includes('//127.0.0.1') ||
+        base.includes('//0:0:0:0');
+
+      if (isLocalhost) {
+        // To make it easier to develop on localhost we'll pipe in the userHandle
+        // in a header.
+      } else {
+        // Rewrite the base to be https://user.base
+        const parts = base.split('//')
+        if (parts.length < 2) {
+          throw new RemoteError({
+            statusCode: "EndpointInvalid",
+            statusMessage: "You app base did not appear to begin with a valid HTTP or HTTPS protocol.",
+            statusSuggestion: "Make sure you've provided an app base such as https://steamship.run, with the protocol."
+          })
+        }
+        // Now we pre-pend the app-base to the first part!
+        parts[1] = `${appOwner}.${parts[1]}`
+        base = parts.join('//')
+      }
+
+      // Guard against a double // after the domain
+      if ((base[base.length - 1] == '/') && operation && (operation[0] == '/')) {
+        operation = operation?.slice(1)
+      }
       return `${base}${operation}`;
     } else {
       return `${apiBase || baseConfig.apiBase}${operation}`;
@@ -355,7 +367,7 @@ export class ApiBase {
         statusCode: 'Authentication',
         statusMessage: 'API Key not found.',
         statusSuggestion:
-          'Please see docs.nludb.com for a variety of ways to set your API key.',
+          'Please see docs.steamship.com for a variety of ways to set your API key.',
       });
     }
 

@@ -1,9 +1,9 @@
-import { nludb_client, qa_model, random_name } from './helper.spec';
+import { steamship_client, qa_model, random_name } from './helper.spec';
 
 test('Test Snapshots', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
   const name = random_name();
-  const index = await nludb.createIndex({
+  const index = await steamship.createIndex({
     name: name,
     model: qa_model(),
   });

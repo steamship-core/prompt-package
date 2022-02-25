@@ -3,8 +3,18 @@ import { ApiBase, Response } from './api_base';
 import { Configuration } from './shared/Configuration';
 import { GetParams } from './shared/Requests';
 
-const _EXPECT = (client: ApiBase, data: unknown) => { 
-  return new App(client, data as AppParams) 
+const _EXPECT = (client: ApiBase, data: unknown) => {
+  return new App(client, data as AppParams)
+}
+
+const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+  return {
+    apps: ((data as any).apps as Array<any>).map(x => _EXPECT(client, x))
+  }
+}
+
+export interface AppList {
+  apps: App[]
 }
 
 export interface AppParams {
@@ -75,5 +85,20 @@ export class App {
         ...config
       },
     )) as Response<App>;
+  }
+
+  static async list(
+    client: ApiBase,
+    params?: GetParams,
+    config?: Configuration
+  ): Promise<Response<AppList>> {
+    return (await client.post(
+      'app/list',
+      {...params},
+      {
+        expect: _EXPECT_LIST,
+        ...config
+      },
+    )) as Response<AppList>;
   }
 }

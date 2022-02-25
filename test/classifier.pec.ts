@@ -1,6 +1,6 @@
 import test from 'jest';
 
-import { nludb_client } from './helper.spec';
+import { steamship_client } from './helper.spec';
 import {
   ClassifyRequest,
   ClassifyResult,
@@ -9,16 +9,16 @@ import {
 import { ClassifierModel } from '../src/lib/types/classifier_model';
 
 test('Test Zero Shot', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
 
   t.throwsAsync(async () => {
     // Missing model
-    return nludb.createClassifier({ save: false } as CreateClassifierRequest);
+    return steamship.createClassifier({ save: false } as CreateClassifierRequest);
   });
 
   t.throwsAsync(async () => {
     // Missing labels when it's a zero shot
-    const classifier = await nludb.createClassifier({
+    const classifier = await steamship.createClassifier({
       save: false,
       model: ClassifierModel.HF_ZERO_SHOT_LBART,
     });
@@ -29,7 +29,7 @@ test('Test Zero Shot', async (t) => {
 
   t.throwsAsync(async () => {
     // Missing docs
-    const classifier = await nludb.createClassifier({
+    const classifier = await steamship.createClassifier({
       save: false,
       model: ClassifierModel.HF_ZERO_SHOT_LBART,
     });
@@ -38,7 +38,7 @@ test('Test Zero Shot', async (t) => {
     } as ClassifyRequest);
   });
 
-  const c1 = await nludb.createClassifier({
+  const c1 = await steamship.createClassifier({
     save: false,
     model: ClassifierModel.HF_ZERO_SHOT_LBART,
   });

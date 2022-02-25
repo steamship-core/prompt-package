@@ -1,9 +1,9 @@
-import { nludb_client, qa_model, random_name } from './helper.spec';
+import { steamship_client, qa_model, random_name } from './helper.spec';
 
 test('Test Task Comments', async (t) => {
-  const nludb = nludb_client();
+  const steamship = steamship_client();
   const name = random_name();
-  const index = await nludb.createIndex({
+  const index = await steamship.createIndex({
     name: name,
     model: qa_model(),
   });
@@ -41,18 +41,18 @@ test('Test Task Comments', async (t) => {
   t.is(comments?.comments.length, 3);
 
   t.is(
-    (await nludb.tasks.listComments({ externalGroup: G1 })).data?.comments
+    (await steamship.tasks.listComments({ externalGroup: G1 })).data?.comments
       .length,
     2
   );
   t.is(
-    (await nludb.tasks.listComments({ externalGroup: G2 })).data?.comments
+    (await steamship.tasks.listComments({ externalGroup: G2 })).data?.comments
       .length,
     1
   );
   t.is(
     (
-      await nludb.tasks.listComments({
+      await steamship.tasks.listComments({
         taskId: search_results.task?.taskId,
         externalGroup: G1,
       })
@@ -61,7 +61,7 @@ test('Test Task Comments', async (t) => {
   );
   t.is(
     (
-      await nludb.tasks.listComments({
+      await steamship.tasks.listComments({
         taskId: search_results.task?.taskId,
         externalGroup: G2,
       })
@@ -70,7 +70,7 @@ test('Test Task Comments', async (t) => {
   );
   t.is(
     (
-      await nludb.tasks.listComments({
+      await steamship.tasks.listComments({
         taskId: search_results.task?.taskId,
         externalId: 'Foo1',
         externalGroup: G1,
@@ -80,7 +80,7 @@ test('Test Task Comments', async (t) => {
   );
   t.is(
     (
-      await nludb.tasks.listComments({
+      await steamship.tasks.listComments({
         taskId: search_results.task?.taskId,
         externalId: 'Foo1',
         externalGroup: G2,
@@ -104,12 +104,12 @@ test('Test Task Comments', async (t) => {
   });
 
   t.is(
-    (await nludb.tasks.listComments({ externalGroup: G1 })).data?.comments
+    (await steamship.tasks.listComments({ externalGroup: G1 })).data?.comments
       .length,
     0
   );
   t.is(
-    (await nludb.tasks.listComments({ externalGroup: G2 })).data?.comments
+    (await steamship.tasks.listComments({ externalGroup: G2 })).data?.comments
       .length,
     0
   );

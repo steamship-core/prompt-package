@@ -5,8 +5,8 @@ export enum ModelType {
 }
 
 export enum ModelAdapterType {
-  nludbDocker = 'nludbDocker',
-  nludbSagemaker = 'nludbSagemaker',
+  Docker = 'Docker',
+  Sagemaker = 'Sagemaker',
   huggingface = 'huggingface',
   openai = 'openai',
 }

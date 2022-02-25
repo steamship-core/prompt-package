@@ -8,6 +8,23 @@ const _EXPECT = (client: ApiBase, data: unknown) => {
   return new AppVersion(client, data as AppVersionParams);
 };
 
+const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+  if (!data) {
+    return []
+  }
+  return {
+    appVersions: ((data as any).appVersions as Array<any>).map(x => _EXPECT(client, x))
+  }
+}
+
+export interface AppVersionListParams {
+  appId?: string
+}
+
+export interface AppVersionList {
+  appVersions: AppVersion[]
+}
+
 export interface AppVersionParams {
   id?: string;
   name?: string;
@@ -105,5 +122,20 @@ export class AppVersion {
         ...config,
       }
     )) as Response<AppVersion>;
+  }
+
+  static async list(
+    client: ApiBase,
+    params?: AppVersionListParams,
+    config?: Configuration
+  ): Promise<Response<AppVersionList>> {
+    return (await client.post(
+      'app/version/list',
+      {...params},
+      {
+        expect: _EXPECT_LIST,
+        ...config
+      },
+    )) as Response<AppVersionList>;
   }
 }

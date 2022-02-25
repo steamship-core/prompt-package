@@ -43,8 +43,8 @@ export const DEFAULT_CONFIG: { apiBase: string; appBase: string; webBase: string
 };
 
 // const defaultStagingCredentials = {
-//   apiBase: "https://api.staging.nludb.com/api/v1",
-//   appBase: "https://staging.nludb.com/api/v1"
+//   apiBase: "https://api.staging.steamship.com/api/v1",
+//   appBase: "https://staging.steamship.com/api/v1"
 // }
 
 export const CONFIG_FILENAME = '.steamship.json';
@@ -196,23 +196,23 @@ class ConfigManager {
   async loadEnvVars() {
     if (typeof process != 'undefined' && typeof process.env != 'undefined') {
       try {
-        if (process.env['NLUDB_API_BASE']) {
-          this._config.apiBase = process.env['NLUDB_API_BASE'];
+        if (process.env['STEAMSHIP_API_BASE']) {
+          this._config.apiBase = process.env['STEAMSHIP_API_BASE'];
         }
-        if (process.env['NLUDB_APP_BASE']) {
-          this._config.appBase = process.env['NLUDB_APP_BASE'];
+        if (process.env['STEAMSHIP_APP_BASE']) {
+          this._config.appBase = process.env['STEAMSHIP_APP_BASE'];
         }
-        if (process.env['NLUDB_WEB_BASE']) {
-          this._config.webBase = process.env['NLUDB_WEB_BASE'];
+        if (process.env['STEAMSHIP_WEB_BASE']) {
+          this._config.webBase = process.env['STEAMSHIP_WEB_BASE'];
         }
-        if (process.env['NLUDB_API_KEY']) {
-          this._config.apiKey = process.env['NLUDB_API_KEY'];
+        if (process.env['STEAMSHIP_API_KEY']) {
+          this._config.apiKey = process.env['STEAMSHIP_API_KEY'];
         }
-        if (process.env['NLUDB_SPACE_ID']) {
-          this._config.spaceId = process.env['NLUDB_SPACE_ID'];
+        if (process.env['STEAMSHIP_SPACE_ID']) {
+          this._config.spaceId = process.env['STEAMSHIP_SPACE_ID'];
         }
-        if (process.env['NLUDB_SPACE_HANDLE']) {
-          this._config.spaceHandle = process.env['NLUDB_SPACE_HANDLE'];
+        if (process.env['STEAMSHIP_SPACE_HANDLE']) {
+          this._config.spaceHandle = process.env['STEAMSHIP_SPACE_HANDLE'];
         }
       } catch {
         // pass
@@ -247,8 +247,8 @@ class ConfigManager {
 
     // First set the profile.
     if (typeof process != 'undefined' && typeof process.env != 'undefined') {
-      if (process.env['NLUDB_PROFILE']) {
-        this._config.profile = process.env['NLUDB_PROFILE'];
+      if (process.env['STEAMSHIP_PROFILE']) {
+        this._config.profile = process.env['STEAMSHIP_PROFILE'];
       }
     }
     if (params?.profile) {
@@ -321,7 +321,7 @@ class ConfigManager {
       configFile = path.join(os.homedir(), CONFIG_FILENAME);
     }
     const str = this._readFile(configFile);
-    let newConfig: Configuration = DEFAULT_CONFIG;
+    let newConfig: Configuration = {...DEFAULT_CONFIG};
     if (str) {
       try {
         newConfig = JSON.parse(str) as Configuration;
