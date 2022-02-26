@@ -14,7 +14,7 @@ describe("User", () => {
     const resp = await User.current(steamship)
     expect(resp.data).not.toBeFalsy()
     expect(resp.data?.handle).not.toBeUndefined()
-    const user = resp.data!
+    const user = !resp.data
 
     const resp2 = await user.update({handle: 'foo bar'})
     expect(resp2.data).not.toBeFalsy()

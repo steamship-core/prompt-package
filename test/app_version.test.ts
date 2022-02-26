@@ -10,7 +10,7 @@ export async function helloWorld(client: Client): Promise<[App, AppVersion]> {
   const req1 = (await App.create(client))
   const app1 = req1.data!
 
-  const filename = path.join(process.cwd(), 'testAssets', 'hello-world-1.zip')
+  const filename = path.join(process.cwd(), 'testAssets', 'demo_app.zip')
 
   const version1t = (await AppVersion.create(client, {
     appId: app1.id!,

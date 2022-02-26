@@ -45,8 +45,11 @@ describe("App Instance", () => {
   test('it should be invocable', async () => {
     const steamship = steamshipClient();
     const [app1, version1, instance1] = await helloWorld(steamship)
-    let res = await instance1.post("/hello")
-    console.log(res);
+    let url = await instance1.invocationUrl("/hello", app1.handle!)
+    let res = (await instance1.get("/greet")) as any
+    expect(res.data).toBe("Hello, Person!")
+    let res2 = (await instance1.get("/greet", {name: "Ted"})) as any
+    expect(res2.data).toBe("Hello, Ted!")
     await instance1.delete()
     await version1.delete()
     await app1.delete()

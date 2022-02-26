@@ -130,7 +130,7 @@ export class AppInstance {
     )) as Response<AppInstance>;
   }
 
-  get(
+  async get(
     path: string,
     params?: Record<string, unknown>,
     config?: Configuration
@@ -144,6 +144,7 @@ export class AppInstance {
         appOwner: this.userHandle,
         appId: this.appId,
         appInstanceId: this.id,
+        rawResponse: true,
       }
     );
   }
@@ -163,7 +164,7 @@ export class AppInstance {
     )) as Response<AppInstanceList>;
   }
 
-  post(
+  async post(
     path: string,
     params?: Record<string, unknown>,
     config?: Configuration
@@ -177,6 +178,7 @@ export class AppInstance {
         appOwner: this.userHandle,
         appId: this.appId,
         appInstanceId: this.id,
+        rawResponse: true
       }
     );
   }
