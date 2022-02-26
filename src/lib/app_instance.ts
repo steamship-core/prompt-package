@@ -187,7 +187,7 @@ export class AppInstance {
    * @param appHandle The handle to the app (not the app instance)
    * @returns A URL used to register a plugin
    */
-  async full_url_for(pluginEndpoint: string, appHandle: string) {
+  async invocationUrl(pluginEndpoint: string, appHandle: string, useSubdomain?: boolean) {
     const appBase = (await this.client.config).appBase;
     if (appBase === undefined) {
       throw `No appBase found in config. Try logging in with "ship login"`;
@@ -202,6 +202,18 @@ export class AppInstance {
       parts = ['https', parts[0]];
     }
     const domain = parts[1].split('/')[0];
-    return `${parts[0]}://${domain}/@${this.userHandle}/${appHandle}/${this.handle}${pluginEndpoint}`;
+
+    if (typeof useSubdomain == 'undefined') {
+      const isLocal = appBase.includes('//localhost') || appBase.includes('//127.0.0.1') || appBase.includes('//0:0:0:0');
+      useSubdomain = !isLocal
+    }
+    if (useSubdomain) {
+      // This is what we normally want: https://user.steamship.run
+      return `${parts[0]}://${this.userHandle}.${domain}/${appHandle}/${this.handle}${pluginEndpoint}`;
+    } else {
+      // This is what we want for localhost development to avoid having to
+      // set up dynamic subdomains on localhost.
+      return `${parts[0]}://${domain}/@${this.userHandle}/${appHandle}/${this.handle}${pluginEndpoint}`;
+    }
   }
 }
