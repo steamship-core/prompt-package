@@ -1,9 +1,16 @@
 import { ApiBase, Response } from './api_base';
 import { Configuration } from './shared/Configuration';
+import {GetParams} from "./shared/Requests";
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new Plugin(client, data as PluginParams);
 };
+
+const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+  return {
+    plugins: ((data as any).plugins as Array<any>).map(x => _EXPECT(client, x))
+  }
+}
 
 export interface PluginParams {
   id?: string;
@@ -19,6 +26,14 @@ export interface PluginParams {
   limitUnit?: string;
   apiKey?: string;
   metadata?: unknown;
+}
+
+export interface ListParams {
+  private?: boolean
+}
+
+export interface PluginList {
+  plugins?: Plugin[]
 }
 
 export interface CreatePluginParams {
@@ -90,4 +105,52 @@ export class Plugin {
       }
     )) as Response<Plugin>;
   }
+
+  static async get(
+    client: ApiBase,
+    params?: GetParams,
+    config?: Configuration
+  ): Promise<Response<Plugin>> {
+    return (await client.post(
+      'plugin/get',
+      {...params},
+      {
+        expect: _EXPECT,
+        responsePath: 'plugin',
+        ...config
+      },
+    )) as Response<Plugin>;
+  }
+
+  static async list(
+    client: ApiBase,
+    params?: ListParams,
+    config?: Configuration
+  ): Promise<Response<PluginList>> {
+    const url = (params?.private === true) ? "plugin/private" : "plugin/public";
+    return (await client.post(
+      url,
+      {...params},
+      {
+        expect: _EXPECT_LIST,
+        ...config
+      },
+    )) as Response<PluginList>;
+  }
+
+  async delete(
+    config?: Configuration) {
+    return (await this.client.post(
+      'plugin/delete',
+      {
+        id: this.id,
+      },
+      {
+        expect: _EXPECT,
+        responsePath: 'plugin',
+        ...config
+      }
+    )) as Response<Plugin>;
+  }
+
 }
