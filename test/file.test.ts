@@ -6,7 +6,7 @@ describe("File", () => {
     const client = steamshipClient();
     const name = `${randomName()}.mkd`
     const content = 'A'
-    const res = await File.upload(client, {name, content, mimeType: "text/markdown"})
+    const res = await File.upload(client, { name, content, mimeType: "text/markdown" })
     expect(res.data).not.toBeUndefined()
     expect(res.data?.id).not.toBeUndefined()
     expect(res.data?.mimeType).toBe("text/markdown")
@@ -24,7 +24,7 @@ describe("File", () => {
     const fs = await import('fs')
     const filename = path.join(process.cwd(), 'testAssets', 'file.mkd')
     const content = fs.readFileSync(filename)
-    const res = await File.upload(client, {name, filename, mimeType: "text/markdown"})
+    const res = await File.upload(client, { name, filename, mimeType: "text/markdown" })
     expect(res.data).not.toBeUndefined()
     expect(res.data?.id).not.toBeUndefined()
     expect(res.data?.mimeType).toBe("text/markdown")

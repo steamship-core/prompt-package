@@ -4,7 +4,7 @@ import { Configuration } from './shared/Configuration';
 import { MimeTypes } from './types/file';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
-  return new AppVersion(client, data as AppVersionParams);
+  return new PluginVersion(client, data as PluginVersionParams);
 };
 
 const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
@@ -12,7 +12,7 @@ const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
     return []
   }
   return {
-    appVersions: ((data as any).appVersions as Array<any>).map(x => _EXPECT(client, x))
+    pluginVersions: ((data as any).pluginVersions as Array<any>).map(x => _EXPECT(client, x))
   }
 }
 
@@ -20,23 +20,22 @@ export interface GetParams {
   id?: string;
   name?: string;
   handle?: string;
-  appId?: string;
+  pluginId?: string;
 }
 
-export interface AppVersionListParams {
-  appId?: string,
-  private?: boolean
+export interface PluginVersionListParams {
+  pluginId?: string
 }
 
-export interface AppVersionList {
-  appVersions: AppVersion[]
+export interface PluginVersionList {
+  pluginVersions: PluginVersion[]
 }
 
-export interface AppVersionParams {
+export interface PluginVersionParams {
   id?: string;
   name?: string;
   handle?: string;
-  appId?: string;
+  pluginId?: string;
   description?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -45,28 +44,28 @@ export interface AppVersionParams {
 
 export interface CreateParams {
   filename: string;
-  appId: string;
+  pluginId: string;
   name?: string;
   handle?: string;
 }
 
-export class AppVersion {
+export class PluginVersion {
   id?: string;
   name?: string;
   handle?: string;
-  appId?: string;
+  pluginId?: string;
   createdAt?: string;
   updatedAt?: string;
   isDefault?: boolean;
   description?: string;
   client: ApiBase;
 
-  constructor(client: ApiBase, params: AppVersionParams) {
+  constructor(client: ApiBase, params: PluginVersionParams) {
     this.client = client;
     this.id = params.id;
     this.name = params.name;
     this.handle = params.handle;
-    this.appId = params.appId;
+    this.pluginId = params.pluginId;
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
     this.isDefault = params.isDefault;
@@ -74,31 +73,31 @@ export class AppVersion {
 
   }
 
-  async delete(config?: Configuration): Promise<Response<AppVersion>> {
+  async delete(config?: Configuration): Promise<Response<PluginVersion>> {
     return (await this.client.post(
-      'app/version/delete',
+      'plugin/version/delete',
       {
         id: this.id,
       },
       {
         expect: _EXPECT,
-        responsePath: 'appVersion',
+        responsePath: 'pluginVersion',
         ...config,
       }
-    )) as Response<AppVersion>;
+    )) as Response<PluginVersion>;
   }
 
   static async create(
     client: ApiBase,
     params: CreateParams,
     config?: Configuration
-  ): Promise<Response<AppVersion>> {
+  ): Promise<Response<PluginVersion>> {
     if (!params.filename) {
-      throw Error('A filename must be provided to create a new app version.');
+      throw Error('A filename must be provided to create a new plugin version.');
     }
     if (!params.filename.toLowerCase().endsWith('.zip')) {
       throw Error(
-        'Only .zip archives can be used to create a new app version.'
+        'Only .zip archives can be used to create a new plugin version.'
       );
     }
     let buffer: Buffer | undefined = undefined;
@@ -110,53 +109,52 @@ export class AppVersion {
     buffer = await readFile(params.filename);
 
     return (await client.post(
-      'app/version/create',
+      'plugin/version/create',
       {
         name: params.name,
         type: 'file',
         handle: params.handle,
         mimeType: MimeTypes.ZIP,
-        appId: params.appId,
+        pluginId: params.pluginId,
       },
       {
         ...config,
         expect: _EXPECT,
-        responsePath: 'appVersion',
+        responsePath: 'pluginVersion',
         file: buffer,
         filename: params.filename,
       }
-    )) as Response<AppVersion>;
+    )) as Response<PluginVersion>;
   }
 
   static async get(
     client: ApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<AppVersion>> {
+  ): Promise<Response<PluginVersion>> {
     return (await client.post(
-      'app/version/get',
+      'plugin/version/get',
       { ...params },
       {
         expect: _EXPECT,
-        responsePath: 'appVersion',
+        responsePath: 'pluginVersion',
         ...config,
       }
-    )) as Response<AppVersion>;
+    )) as Response<PluginVersion>;
   }
 
   static async list(
     client: ApiBase,
-    params?: AppVersionListParams,
+    params?: PluginVersionListParams,
     config?: Configuration
-  ): Promise<Response<AppVersionList>> {
-    const url = (params?.private === true) ? "app/version/private" : "app/version/public";
+  ): Promise<Response<PluginVersionList>> {
     return (await client.post(
-      url,
+      'plugin/version/list',
       { ...params },
       {
         expect: _EXPECT_LIST,
         ...config
       },
-    )) as Response<AppVersionList>;
+    )) as Response<PluginVersionList>;
   }
 }

@@ -43,6 +43,7 @@ export interface AppInstanceParams {
   userId?: string;
   userHandle?: string;
   spaceId?: string;
+  invocationURL?: string;
 }
 
 export interface CreateAppInstance {
@@ -68,6 +69,7 @@ export class AppInstance {
   createdAt?: string;
   updatedAt?: string;
   client: ApiBase;
+  invocationURL?: string;
 
   constructor(client: ApiBase, params: AppInstanceParams) {
     this.client = client;
@@ -82,6 +84,7 @@ export class AppInstance {
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
     this.description = params.description;
+    this.invocationURL = params.invocationURL;
   }
 
   async delete(config?: Configuration): Promise<Response<AppInstance>> {
@@ -156,7 +159,7 @@ export class AppInstance {
   ): Promise<Response<AppInstanceList>> {
     return (await client.post(
       'app/instance/list',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT_LIST,
         ...config
@@ -185,37 +188,13 @@ export class AppInstance {
 
   /**
    * Creates the URL that maps to a plugin to a specific instance
-   * @param pluginEndpoint The endpoint in the app to run as the plugin
-   * @param appHandle The handle to the app (not the app instance)
+   * @param pluginEndpoint The endpoint in the plugin to run as the plugin
+   * @param pluginHandle The handle to the plugin (not the plugin instance)
    * @returns A URL used to register a plugin
    */
-  async invocationUrl(pluginEndpoint: string, appHandle: string, useSubdomain?: boolean) {
-    const appBase = (await this.client.config).appBase;
-    if (appBase === undefined) {
-      throw `No appBase found in config. Try logging in with "ship login"`;
-    }
-
-    if (pluginEndpoint[0] != '/') {
-      pluginEndpoint = '/' + pluginEndpoint;
-    }
-
-    let parts = appBase.split('://');
-    if (parts?.length == 1) {
-      parts = ['https', parts[0]];
-    }
-    const domain = parts[1].split('/')[0];
-
-    if (typeof useSubdomain == 'undefined') {
-      const isLocal = appBase.includes('//localhost') || appBase.includes('//127.0.0.1') || appBase.includes('//0:0:0:0');
-      useSubdomain = !isLocal
-    }
-    if (useSubdomain) {
-      // This is what we normally want: https://user.steamship.run
-      return `${parts[0]}://${this.userHandle}.${domain}/${appHandle}/${this.handle}${pluginEndpoint}`;
-    } else {
-      // This is what we want for localhost development to avoid having to
-      // set up dynamic subdomains on localhost.
-      return `${parts[0]}://${domain}/@${this.userHandle}/${appHandle}/${this.handle}${pluginEndpoint}`;
-    }
+  invocationUrl(pluginEndpoint: string) {
+    // This is what we want for localhost development to avoid having to
+    // set up dynamic subdomains on localhost.
+    return `${this.invocationURL}${pluginEndpoint}`;
   }
 }
