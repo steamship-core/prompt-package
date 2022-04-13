@@ -44,10 +44,15 @@ export type {
 
 export {App} from './lib/app';
 export {
-  AppVersion, AppVersionList, AppVersionListParams, AppVersionParams
+  AppVersion
+} from './lib/app_version';
+export type {
+  AppVersionList, AppVersionListParams, AppVersionParams
 } from './lib/app_version';
 export {
-  AppInstance,
+  AppInstance
+} from './lib/app_instance';
+export type {
   AppInstanceList,
   AppInstanceListParams,
   AppInstanceParams,
@@ -55,14 +60,18 @@ export {
 } from './lib/app_instance';
 export {Plugin} from './lib/plugin';
 export {
-  PluginInstance,
+  PluginInstance
+} from './lib/plugin_instance';
+export type {
   PluginInstanceList,
   PluginInstanceListParams,
   PluginInstanceParams,
   CreatePluginInstance
 } from './lib/plugin_instance';
 export {
-  PluginVersion,
+  PluginVersion
+} from './lib/plugin_version';
+export type {
   PluginVersionList,
   PluginVersionListParams,
   PluginVersionParams
