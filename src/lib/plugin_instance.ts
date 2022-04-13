@@ -43,6 +43,7 @@ export interface PluginInstanceParams {
   userId?: string;
   userHandle?: string;
   spaceId?: string;
+  config?: Record<string, any>;
 }
 
 export interface CreatePluginInstance {
@@ -55,6 +56,7 @@ export interface CreatePluginInstance {
   pluginVersionHandle?: string;
   spaceId?: string;
   upsert?: boolean;
+  config?: Record<string, any>;
 }
 
 export class PluginInstance {
@@ -70,6 +72,7 @@ export class PluginInstance {
   createdAt?: string;
   updatedAt?: string;
   client: ApiBase;
+  config?: Record<string, any>;
 
   constructor(client: ApiBase, params: PluginInstanceParams) {
     this.client = client;
@@ -84,6 +87,7 @@ export class PluginInstance {
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
     this.description = params.description;
+    this.config = params.config;
   }
 
   async delete(config?: Configuration): Promise<Response<PluginInstance>> {

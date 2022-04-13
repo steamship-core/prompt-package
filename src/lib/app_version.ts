@@ -41,6 +41,7 @@ export interface AppVersionParams {
   createdAt?: string;
   updatedAt?: string;
   isDefault?: boolean;
+  configTemplate?: Record<string, any>
 }
 
 export interface CreateParams {
@@ -48,6 +49,7 @@ export interface CreateParams {
   appId: string;
   name?: string;
   handle?: string;
+  configTemplate?: Record<string, any>
 }
 
 export class AppVersion {
@@ -60,6 +62,7 @@ export class AppVersion {
   isDefault?: boolean;
   description?: string;
   client: ApiBase;
+  configTemplate?: Record<string, any>
 
   constructor(client: ApiBase, params: AppVersionParams) {
     this.client = client;
@@ -71,7 +74,7 @@ export class AppVersion {
     this.updatedAt = params.updatedAt;
     this.isDefault = params.isDefault;
     this.description = params.description;
-
+    this.configTemplate = params.configTemplate
   }
 
   async delete(config?: Configuration): Promise<Response<AppVersion>> {
@@ -91,7 +94,7 @@ export class AppVersion {
   static async create(
     client: ApiBase,
     params: CreateParams,
-    config?: Configuration
+    config?: Configuration,
   ): Promise<Response<AppVersion>> {
     if (!params.filename) {
       throw Error('A filename must be provided to create a new app version.');
@@ -117,6 +120,7 @@ export class AppVersion {
         handle: params.handle,
         mimeType: MimeTypes.ZIP,
         appId: params.appId,
+        configTemplate: JSON.stringify(params.configTemplate)
       },
       {
         ...config,

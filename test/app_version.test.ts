@@ -7,14 +7,19 @@ import { Client } from '../src/lib/client';
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 export async function helloWorld(client: Client): Promise<[App, AppVersion]> {
+  return deployAppVersion(client, 'demo_app.zip')
+}
+
+export async function deployAppVersion(client: Client, appPackage: string, configTemplate: Record<string, any> = {}): Promise<[App, AppVersion]> {
   const req1 = (await App.create(client))
   const app1 = req1.data!
 
-  const filename = path.join(process.cwd(), 'testAssets', 'demo_app.zip')
+  const filename = path.join(process.cwd(), 'testAssets', appPackage)
 
   const version1t = (await AppVersion.create(client, {
     appId: app1.id!,
-    filename: filename
+    filename: filename,
+    configTemplate: configTemplate,
   }))
   await version1t.wait()
   await delay(15000) // TODO: When our task system awaits the Lambda deployment, we can remove this.
@@ -33,13 +38,13 @@ describe("App Version", () => {
     expect(version1.name).not.toBeUndefined()
 
     // Can get them!
-    const version1a = (await AppVersion.get(steamship, {id: version1.id})).data!
+    const version1a = (await AppVersion.get(steamship, { id: version1.id })).data!
     expect(version1a.name).toBe(version1.name)
     expect(version1a.id).toBe(version1.id)
     expect(version1a.handle).toBe(version1.handle)
 
     // Can list them
-    const app1lr = await AppVersion.list(steamship, {appId: app1.id!})
+    const app1lr = await AppVersion.list(steamship, { appId: app1.id! })
     const app1l = app1lr.data!
     expect(app1l.appVersions.length).toBe(1)
 

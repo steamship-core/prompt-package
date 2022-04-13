@@ -40,6 +40,7 @@ export interface PluginVersionParams {
   createdAt?: string;
   updatedAt?: string;
   isDefault?: boolean;
+  configTemplate?: Record<string, any>
 }
 
 export interface CreateParams {
@@ -47,6 +48,7 @@ export interface CreateParams {
   pluginId: string;
   name?: string;
   handle?: string;
+  configTemplate?: Record<string, any>
 }
 
 export class PluginVersion {
@@ -59,6 +61,7 @@ export class PluginVersion {
   isDefault?: boolean;
   description?: string;
   client: ApiBase;
+  configTemplate?: Record<string, any>
 
   constructor(client: ApiBase, params: PluginVersionParams) {
     this.client = client;
@@ -70,7 +73,7 @@ export class PluginVersion {
     this.updatedAt = params.updatedAt;
     this.isDefault = params.isDefault;
     this.description = params.description;
-
+    this.configTemplate = params.configTemplate;
   }
 
   async delete(config?: Configuration): Promise<Response<PluginVersion>> {
@@ -116,6 +119,7 @@ export class PluginVersion {
         handle: params.handle,
         mimeType: MimeTypes.ZIP,
         pluginId: params.pluginId,
+        configTemplate: JSON.stringify(params.configTemplate)
       },
       {
         ...config,

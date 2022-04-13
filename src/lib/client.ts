@@ -17,6 +17,7 @@ import {
 } from './types/embedding';
 import { ParseRequest, ParseResponse } from './types/parsing';
 import { ParsingModel } from './types/parsing_model';
+import { TagResponse } from './types/tagging';
 
 export class Client extends ApiBase {
   models: Models;
@@ -83,6 +84,21 @@ export class Client extends ApiBase {
       ...params,
     })) as Response<ParseResponse>;
   }
+
+  //This mirrors the current Python version, which also assumes inline, which probably isn't what we want. 
+  async tag(doc: string, pluginInstance: string): Promise<Response<TagResponse>> {
+
+    return (await this.post('plugin/instance/tag', {
+      type: "inline",
+      pluginInstance: pluginInstance,
+      file: {
+        blocks: [
+          { text: doc }
+        ]
+      }
+    })) as Response<TagResponse>
+  }
+
 
   /**
    * Create a login attempt token, useful for logging in a client from the CLI

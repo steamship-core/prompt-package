@@ -44,6 +44,7 @@ export interface AppInstanceParams {
   userHandle?: string;
   spaceId?: string;
   invocationURL?: string;
+  config?: Record<string, any>;
 }
 
 export interface CreateAppInstance {
@@ -54,6 +55,7 @@ export interface CreateAppInstance {
   appVersionId?: string;
   spaceId?: string;
   upsert?: boolean;
+  config?: Record<string, any>;
 }
 
 export class AppInstance {
@@ -70,6 +72,7 @@ export class AppInstance {
   updatedAt?: string;
   client: ApiBase;
   invocationURL?: string;
+  config?: Record<string, any>;
 
   constructor(client: ApiBase, params: AppInstanceParams) {
     this.client = client;
@@ -78,13 +81,14 @@ export class AppInstance {
     this.handle = params.handle;
     this.appId = params.appId;
     this.appVersionId = params.appVersionId;
-    this.spaceId = params.appInstanceId;
+    this.spaceId = params.spaceId;
     this.userId = params.userId;
     this.userHandle = params.userHandle;
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
     this.description = params.description;
     this.invocationURL = params.invocationURL;
+    this.config = params.config
   }
 
   async delete(config?: Configuration): Promise<Response<AppInstance>> {
@@ -148,6 +152,7 @@ export class AppInstance {
         appId: this.appId,
         appInstanceId: this.id,
         rawResponse: true,
+        spaceId: this.spaceId
       }
     );
   }
@@ -181,7 +186,8 @@ export class AppInstance {
         appOwner: this.userHandle,
         appId: this.appId,
         appInstanceId: this.id,
-        rawResponse: true
+        rawResponse: true,
+        spaceId: this.spaceId
       }
     );
   }
