@@ -1,9 +1,8 @@
-export { Client } from './lib/client';
-export { RemoteError } from './lib/steamship_error';
+export {Client} from './lib/client';
+export {RemoteError} from './lib/steamship_error';
 
 // Embedding
-export { EmbeddingIndex } from './lib/embedding_index';
-export { EmbeddingModel } from './lib/types/embedding_model';
+export {EmbeddingIndex} from './lib/embedding_index';
 export type {
   CreateIndexRequest,
   EmbeddingHit,
@@ -13,17 +12,6 @@ export type {
   IndexSnapshotRequest,
   IndexSnapshotResponse,
 } from './lib/types/embedding';
-
-// Classifiers
-export { Classifier } from './lib/classifier';
-export { ClassifierModel } from './lib/types/classifier_model';
-export type {
-  CreateClassifierRequest,
-  CreateClassifierResult,
-} from './lib/types/classifier';
-
-export { ParsingModel } from './lib/types/parsing_model';
-export type { ParseRequest, ParseResponse } from './lib/types/parsing';
 
 export type {
   TaskState as TaskStatus,
@@ -41,7 +29,7 @@ export type {
   DeleteTaskCommentRequest,
 } from './lib/types/task_comment';
 
-export { Task, Response } from './lib/api_base';
+export {Task, Response} from './lib/api_base';
 
 export type {
   CreateModelRequest,
@@ -54,15 +42,34 @@ export type {
   DeleteModelRequest,
 } from './lib/types/models';
 
-export { App } from './lib/app';
-export { AppVersion, AppVersionList, AppVersionListParams, AppVersionParams } from './lib/app_version';
-export { AppInstance, AppInstanceList, AppInstanceListParams, AppInstanceParams, CreateAppInstance } from './lib/app_instance';
-export { Plugin } from './lib/plugin';
-export { PluginInstance, PluginInstanceList, PluginInstanceListParams, PluginInstanceParams, CreatePluginInstance } from './lib/plugin_instance';
-export { PluginVersion, PluginVersionList, PluginVersionListParams, PluginVersionParams } from './lib/plugin_version';
-export { User } from './lib/user';
+export {App} from './lib/app';
+export {
+  AppVersion, AppVersionList, AppVersionListParams, AppVersionParams
+} from './lib/app_version';
+export {
+  AppInstance,
+  AppInstanceList,
+  AppInstanceListParams,
+  AppInstanceParams,
+  CreateAppInstance
+} from './lib/app_instance';
+export {Plugin} from './lib/plugin';
+export {
+  PluginInstance,
+  PluginInstanceList,
+  PluginInstanceListParams,
+  PluginInstanceParams,
+  CreatePluginInstance
+} from './lib/plugin_instance';
+export {
+  PluginVersion,
+  PluginVersionList,
+  PluginVersionListParams,
+  PluginVersionParams
+} from './lib/plugin_version';
+export {User} from './lib/user';
 
-export { Space } from './lib/space';
+export {Space} from './lib/space';
 
 export type {
   Configuration,
@@ -77,4 +84,4 @@ export {
   saveConfiguration,
 } from './lib/shared/Configuration';
 
-export { default as regeneratorRuntime } from 'regenerator-runtime';
+export {default as regeneratorRuntime} from 'regenerator-runtime';

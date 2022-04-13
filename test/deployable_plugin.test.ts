@@ -1,16 +1,19 @@
-import { steamshipClient } from './helper';
-import { Plugin } from '../src/lib/plugin'
-import { PluginVersion } from '../src/lib/plugin_version'
-import { PluginInstance } from '../src/lib/plugin_instance'
-import { Client } from '../src/lib/client';
-import { Corpus } from '../src/lib/corpus'
+import {steamshipClient} from './helper';
+import {Plugin} from '../src/lib/plugin'
+import {PluginVersion} from '../src/lib/plugin_version'
+import {PluginInstance} from '../src/lib/plugin_instance'
+import {Client} from '../src/lib/client';
+import {Corpus} from '../src/lib/corpus'
 import path from 'path'
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 export async function deployInstance(client: Client): Promise<[Plugin, PluginVersion, PluginInstance]> {
   const [plugin1, version1] = await deployVersion(client)
-  const instance1r = (await PluginInstance.create(client, { pluginId: plugin1.id!, pluginVersionId: version1.id! }))
+  const instance1r = (await PluginInstance.create(client, {
+    pluginId: plugin1.id!,
+    pluginVersionId: version1.id!
+  }))
   const instance1 = instance1r.data!
   return [plugin1, version1, instance1]
 }
@@ -46,7 +49,7 @@ describe("Plugin", () => {
     const steamship = steamshipClient();
 
     // Can list them
-    const listOf = (await Plugin.list(steamship, { private: true })).data!
+    const listOf = (await Plugin.list(steamship, {private: true})).data!
     expect(listOf).not.toBeUndefined()
     expect(listOf.plugins).not.toBeUndefined()
 
@@ -70,7 +73,7 @@ describe("Plugin", () => {
 
     // They should no longer be there.
     expect(
-      Plugin.get(steamship, { id: plugin.id })
+      Plugin.get(steamship, {id: plugin.id})
     ).rejects.toThrow()
   }, 25000);
 

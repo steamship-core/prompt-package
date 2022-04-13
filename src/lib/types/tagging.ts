@@ -1,16 +1,16 @@
-import { File, UploadParams } from "../file";
+import {File, UploadParams} from "../file";
 
 
 export interface TagRequest {
-    type: string;
-    id: string;
-    name: string;
-    handle: string;
-    pluginInstance: string;
-    file: UploadParams;
+  type: string;
+  id: string;
+  name: string;
+  handle: string;
+  pluginInstance: string;
+  file: UploadParams;
 }
 
 
 export interface TagResponse {
-    file: File;
+  file: File;
 }

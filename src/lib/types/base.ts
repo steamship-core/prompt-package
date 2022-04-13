@@ -4,6 +4,7 @@ export enum TaskState {
   succeeded = 'succeeded',
   failed = 'failed',
 }
+
 export interface TaskParams {
   taskId?: string;
   userId?: string;

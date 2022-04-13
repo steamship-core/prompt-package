@@ -1,5 +1,5 @@
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
 import {GetParams} from "./shared/Requests";
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
@@ -71,7 +71,6 @@ export class Plugin {
   client: ApiBase;
 
 
-
   constructor(client: ApiBase, params: PluginParams) {
     this.client = client;
     this.id = params.id;
@@ -99,7 +98,7 @@ export class Plugin {
     }
     return (await client.post(
       'plugin/create',
-      { ...params },
+      {...params},
       {
         ...config,
         expect: _EXPECT,

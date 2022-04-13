@@ -1,5 +1,5 @@
-import { steamshipClient, randomName } from './helper';
-import { Plugin } from '../src/lib/plugin'
+import {randomName, steamshipClient} from './helper';
+import {Plugin} from '../src/lib/plugin'
 
 describe("Plugin", () => {
   test('it should be creatable and deletable', async () => {

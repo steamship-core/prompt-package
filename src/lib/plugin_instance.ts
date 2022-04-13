@@ -1,5 +1,5 @@
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new PluginInstance(client, data as PluginInstanceParams);
@@ -90,20 +90,6 @@ export class PluginInstance {
     this.config = params.config;
   }
 
-  async delete(config?: Configuration): Promise<Response<PluginInstance>> {
-    return (await this.client.post(
-      'plugin/instance/delete',
-      {
-        id: this.id,
-      },
-      {
-        expect: _EXPECT,
-        responsePath: 'pluginInstance',
-        ...config,
-      }
-    )) as Response<PluginInstance>;
-  }
-
   static async create(
     client: ApiBase,
     params: CreatePluginInstance,
@@ -111,7 +97,7 @@ export class PluginInstance {
   ): Promise<Response<PluginInstance>> {
     return (await client.post(
       'plugin/instance/create',
-      { ...params },
+      {...params},
       {
         ...config,
         expect: _EXPECT,
@@ -127,7 +113,7 @@ export class PluginInstance {
   ): Promise<Response<PluginInstance>> {
     return (await client.post(
       'plugin/instance/get',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT,
         responsePath: 'pluginInstance',
@@ -143,7 +129,7 @@ export class PluginInstance {
   ): Promise<Response<PluginInstanceList>> {
     return (await client.post(
       'plugin/instance/list',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT_LIST,
         ...config
@@ -151,6 +137,19 @@ export class PluginInstance {
     )) as Response<PluginInstanceList>;
   }
 
+  async delete(config?: Configuration): Promise<Response<PluginInstance>> {
+    return (await this.client.post(
+      'plugin/instance/delete',
+      {
+        id: this.id,
+      },
+      {
+        expect: _EXPECT,
+        responsePath: 'pluginInstance',
+        ...config,
+      }
+    )) as Response<PluginInstance>;
+  }
 
 
 }

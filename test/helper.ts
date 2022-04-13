@@ -1,11 +1,8 @@
-import { Client } from '../src/lib/client';
+import {Client} from '../src/lib/client';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import {
-  Configuration,
-  CONFIG_FILENAME,
-} from '../src/lib/shared/Configuration';
+import {CONFIG_FILENAME, Configuration,} from '../src/lib/shared/Configuration';
 
 const generateRandomString = (length = 6) =>
   Math.random().toString(20).substr(2, length);
@@ -16,7 +13,7 @@ export function randomName(): string {
 }
 
 export function steamshipClient(): Client {
-  return new Client({ profile: 'test' });
+  return new Client({profile: 'test'});
 }
 
 export const DEFAULT_CONFIG: Configuration = {
@@ -62,7 +59,7 @@ export function mockDefaultConfigFile(config?: Configuration): {
   }
 
   let defaultLocation = path.join(os.homedir(), CONFIG_FILENAME);
-  fs.writeFileSync(defaultLocation, JSON.stringify(config), { flag: 'w+' });
+  fs.writeFileSync(defaultLocation, JSON.stringify(config), {flag: 'w+'});
   let otherConfig = JSON.parse(JSON.stringify(config));
   otherConfig.apiKey = 'special location';
   const anotherTmpDir = fs.mkdtempSync(
@@ -71,9 +68,9 @@ export function mockDefaultConfigFile(config?: Configuration): {
   fs.writeFileSync(
     path.join(anotherTmpDir, CONFIG_FILENAME),
     JSON.stringify(otherConfig),
-    { flag: 'w+' }
+    {flag: 'w+'}
   );
-  return { anotherFile: path.join(anotherTmpDir, CONFIG_FILENAME) };
+  return {anotherFile: path.join(anotherTmpDir, CONFIG_FILENAME)};
 }
 
 export function restoreMocks() {

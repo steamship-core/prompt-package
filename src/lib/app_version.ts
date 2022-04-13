@@ -1,7 +1,7 @@
-import { ApiBase, Response } from './api_base';
-import { readFile } from './file';
-import { Configuration } from './shared/Configuration';
-import { MimeTypes } from './types/file';
+import {ApiBase, Response} from './api_base';
+import {readFile} from './file';
+import {Configuration} from './shared/Configuration';
+import {MimeTypes} from './types/file';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new AppVersion(client, data as AppVersionParams);
@@ -77,20 +77,6 @@ export class AppVersion {
     this.configTemplate = params.configTemplate
   }
 
-  async delete(config?: Configuration): Promise<Response<AppVersion>> {
-    return (await this.client.post(
-      'app/version/delete',
-      {
-        id: this.id,
-      },
-      {
-        expect: _EXPECT,
-        responsePath: 'appVersion',
-        ...config,
-      }
-    )) as Response<AppVersion>;
-  }
-
   static async create(
     client: ApiBase,
     params: CreateParams,
@@ -139,7 +125,7 @@ export class AppVersion {
   ): Promise<Response<AppVersion>> {
     return (await client.post(
       'app/version/get',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT,
         responsePath: 'appVersion',
@@ -156,11 +142,25 @@ export class AppVersion {
     const url = (params?.private === true) ? "app/version/private" : "app/version/public";
     return (await client.post(
       url,
-      { ...params },
+      {...params},
       {
         expect: _EXPECT_LIST,
         ...config
       },
     )) as Response<AppVersionList>;
+  }
+
+  async delete(config?: Configuration): Promise<Response<AppVersion>> {
+    return (await this.client.post(
+      'app/version/delete',
+      {
+        id: this.id,
+      },
+      {
+        expect: _EXPECT,
+        responsePath: 'appVersion',
+        ...config,
+      }
+    )) as Response<AppVersion>;
   }
 }

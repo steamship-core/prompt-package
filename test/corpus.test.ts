@@ -1,5 +1,5 @@
-import { steamshipClient, randomName } from './helper';
-import { Corpus } from '../src/lib/corpus'
+import {randomName, steamshipClient} from './helper';
+import {Corpus} from '../src/lib/corpus'
 
 describe("Corpus", () => {
   test('it should have a default corpus', async () => {

@@ -1,5 +1,5 @@
-import { steamshipClient, randomName } from './helper';
-import { App } from '../src/lib/app'
+import {randomName, steamshipClient} from './helper';
+import {App} from '../src/lib/app'
 
 describe("App", () => {
   test('it should be creatable and deletable', async () => {
@@ -28,7 +28,7 @@ describe("App", () => {
 
     // Can list them
     const app1l = (await App.list(steamship)).data!
-    expect(app1l.apps.length).toBe(starting_apps+2)
+    expect(app1l.apps.length).toBe(starting_apps + 2)
 
     await app1.delete()
     await app2.delete()

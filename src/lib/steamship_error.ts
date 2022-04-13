@@ -3,6 +3,7 @@ export interface RemoteErrorProps {
   statusMessage?: string
   statusSuggestion?: string
 }
+
 export class RemoteError extends Error {
   statusCode?: string
   statusSuggestion?: string

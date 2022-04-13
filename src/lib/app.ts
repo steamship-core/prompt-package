@@ -1,7 +1,6 @@
-
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
-import { GetParams } from './shared/Requests';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
+import {GetParams} from './shared/Requests';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new App(client, data as AppParams)
@@ -53,20 +52,6 @@ export class App {
     this.description = params.description;
   }
 
-  async delete(config?: Configuration): Promise<Response<App>> {
-    return (await this.client.post(
-      'app/delete',
-      {
-        id: this.id,
-      },
-      {
-        expect: _EXPECT,
-        responsePath: 'app',
-        ...config
-      }
-    )) as Response<App>;
-  }
-
   static async create(
     client: ApiBase,
     params?: AppParams,
@@ -74,7 +59,7 @@ export class App {
   ): Promise<Response<App>> {
     return (await client.post(
       'app/create',
-      { ...params },
+      {...params},
       {
         ...config,
         expect: _EXPECT,
@@ -112,5 +97,19 @@ export class App {
         ...config
       },
     )) as Response<AppList>;
+  }
+
+  async delete(config?: Configuration): Promise<Response<App>> {
+    return (await this.client.post(
+      'app/delete',
+      {
+        id: this.id,
+      },
+      {
+        expect: _EXPECT,
+        responsePath: 'app',
+        ...config
+      }
+    )) as Response<App>;
   }
 }

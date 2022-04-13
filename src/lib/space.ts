@@ -1,6 +1,6 @@
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
-import { CreateParams, GetParams } from './shared/Requests';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
+import {CreateParams, GetParams} from './shared/Requests';
 
 export interface SpaceParams {
   id?: string;
@@ -42,21 +42,6 @@ export class Space {
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
     this.description = params.description;
-  }
-
-  async delete(
-    config?: Configuration) {
-    return (await this.client.post(
-      'space/delete',
-      {
-        id: this.id,
-      },
-      {
-        expect: _EXPECT,
-        responsePath: 'space',
-        ...config
-      }
-    )) as Response<Space>;
   }
 
   static async create(
@@ -104,5 +89,20 @@ export class Space {
         ...config
       },
     )) as Response<SpaceList>;
+  }
+
+  async delete(
+    config?: Configuration) {
+    return (await this.client.post(
+      'space/delete',
+      {
+        id: this.id,
+      },
+      {
+        expect: _EXPECT,
+        responsePath: 'space',
+        ...config
+      }
+    )) as Response<Space>;
   }
 }

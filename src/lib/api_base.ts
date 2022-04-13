@@ -4,7 +4,7 @@ import {
   LoadConfigParams,
   loadConfiguration,
 } from './shared/Configuration';
-import { TaskParams, TaskState } from './types/base';
+import {TaskParams, TaskState} from './types/base';
 import {
   AddTaskCommentRequest,
   DeleteTaskCommentRequest,
@@ -27,8 +27,12 @@ const _EXPECT_LIST = (client: ApiBase, data: unknown): TaskList => {
 }
 
 export interface TaskListParams {
+  // The task ID
+  id?: string
+  // The space in which the task lives
   spaceId?: string
-  status?: TaskState
+  // The state of the task
+  state?: TaskState
 }
 
 export interface TaskList {
@@ -69,10 +73,24 @@ export class Task<T> implements TaskParams {
   startedAt?: string
 
 
-
   constructor(client: ApiBase, params?: TaskParams) {
     this.client = client;
     this.update(params)
+  }
+
+  static async list(
+    client: ApiBase,
+    params?: TaskListParams,
+    config?: Configuration
+  ): Promise<Response<TaskList>> {
+    return (await client.post(
+      "/task/list",
+      {...params},
+      {
+        expect: _EXPECT_LIST,
+        ...config
+      },
+    )) as Response<TaskList>;
   }
 
   update(params?: TaskParams): Task<T> {
@@ -94,23 +112,9 @@ export class Task<T> implements TaskParams {
       this.taskExecutor = params?.taskExecutor;
       this.taskType = params?.taskType;
       this.assignedWorker = params?.assignedWorker;
-      this.startedAt = params?.startedAt;    }
+      this.startedAt = params?.startedAt;
+    }
     return this;
-  }
-
-  static async list(
-    client: ApiBase,
-    params?: TaskListParams,
-    config?: Configuration
-  ): Promise<Response<TaskList>> {
-    return (await client.post(
-      "/task/lsit",
-      {...params},
-      {
-        expect: _EXPECT_LIST,
-        ...config
-      },
-    )) as Response<TaskList>;
   }
 
   completed(): boolean {
@@ -208,7 +212,7 @@ export class Response<T> {
     if (typeof params == 'undefined') {
       params = {};
     }
-    let { maxTimeoutSeconds, retryDelaySeconds } = params;
+    let {maxTimeoutSeconds, retryDelaySeconds} = params;
     if (typeof maxTimeoutSeconds == 'undefined') {
       maxTimeoutSeconds = 60;
     }
@@ -459,7 +463,7 @@ export class ApiBase {
       // TODO: We might not be able to import this in the browser..
       const FormData = await import('form-data');
       const formData = new FormData.default();
-      formData.append('file', config?.file, { filename: config?.filename });
+      formData.append('file', config?.file, {filename: config?.filename});
       const pp = payload as { [key: string]: undefined };
       for (const key of Object.keys(pp)) {
         const value = pp[key];
@@ -471,7 +475,7 @@ export class ApiBase {
       const boundary = formData.getBoundary();
       reqConfig.headers[
         'Content-Type'
-      ] = `multipart/form-data; boundary=${boundary}`;
+        ] = `multipart/form-data; boundary=${boundary}`;
     } else {
       finalPayload = payload;
     }
@@ -481,9 +485,9 @@ export class ApiBase {
       if (verb == 'POST') {
         resp = await axios.post(url, finalPayload, reqConfig);
       } else if (verb == 'GET') {
-        resp = await axios.get(url, { ...reqConfig, params: finalPayload });
+        resp = await axios.get(url, {...reqConfig, params: finalPayload});
       } else {
-        throw new RemoteError({ statusMessage: `Unsupported HTTP Verb: ${verb}` });
+        throw new RemoteError({statusMessage: `Unsupported HTTP Verb: ${verb}`});
       }
     } catch (error) {
       if ((error as any)?.response) {
@@ -513,16 +517,16 @@ export class ApiBase {
     }
 
     if (!resp) {
-      throw new RemoteError({ statusMessage: 'No response.' });
+      throw new RemoteError({statusMessage: 'No response.'});
     }
 
     if (!resp.data) {
-      throw new RemoteError({ statusMessage: 'No body or task status in response.' });
+      throw new RemoteError({statusMessage: 'No body or task status in response.'});
     }
 
     // Is it an error?
     if (resp.data.reason) {
-      throw new RemoteError({ statusMessage: resp.data.reason });
+      throw new RemoteError({statusMessage: resp.data.reason});
     }
 
     // TODO: we might need to switch the task channel to the headers
@@ -535,7 +539,7 @@ export class ApiBase {
 
     const task = resp?.data?.status as TaskParams;
     if (task?.state == TaskState.failed) {
-      throw new RemoteError({ ...resp.data.error });
+      throw new RemoteError({...resp.data.error});
     }
 
     return new Response<T>(

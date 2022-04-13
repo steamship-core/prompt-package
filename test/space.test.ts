@@ -1,5 +1,5 @@
-import { steamshipClient, randomName } from './helper';
-import { Space } from '../src/lib/space'
+import {randomName, steamshipClient} from './helper';
+import {Space} from '../src/lib/space'
 
 describe("Space", () => {
   test('it should have a default space', async () => {
@@ -32,13 +32,12 @@ describe("Space", () => {
     expect(space1a.id).toBe(space1.id)
     expect(space1a.handle).toBe(space1.handle)
 
-        // Can list them
+    // Can list them
     const space2l = (await Space.list(steamship)).data!
-    expect(space2l.spaces.length).toBe(starting_spaces+2)
+    expect(space2l.spaces.length).toBe(starting_spaces + 2)
 
     await space1.delete()
     await space2.delete()
-
 
 
     // They should no longer be there.

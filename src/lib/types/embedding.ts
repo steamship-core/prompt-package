@@ -1,4 +1,4 @@
-import { Metadata } from './base';
+import {Metadata} from './base';
 
 export interface EmbeddingIndexParams {
   id?: string;

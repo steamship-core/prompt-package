@@ -1,8 +1,8 @@
-import { steamshipClient } from './helper';
-import { Plugin } from '../src/lib/plugin'
-import { PluginVersion } from '../src/lib/plugin_version'
-import { PluginInstance } from '../src/lib/plugin_instance'
-import { Client } from '../src/lib/client';
+import {steamshipClient} from './helper';
+import {Plugin} from '../src/lib/plugin'
+import {PluginVersion} from '../src/lib/plugin_version'
+import {PluginInstance} from '../src/lib/plugin_instance'
+import {Client} from '../src/lib/client';
 import path from 'path'
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -39,10 +39,10 @@ export async function deployVersion(client: Client): Promise<[Plugin, PluginVers
     filename: filename,
     handle: "1.0",
     configTemplate: {
-      "tagKind": { "type": "string" },
-      "tagName": { "type": "string" },
-      "numberValue": { "type": "number" },
-      "booleanValue": { "type": "boolean" }
+      "tagKind": {"type": "string"},
+      "tagName": {"type": "string"},
+      "numberValue": {"type": "number"},
+      "booleanValue": {"type": "boolean"}
     }
   }))
   await version1t.wait()
@@ -89,7 +89,7 @@ describe("Plugin", () => {
 
     // They should no longer be there.
     expect(
-      Plugin.get(steamship, { id: plugin.id })
+      Plugin.get(steamship, {id: plugin.id})
     ).rejects.toThrow()
   }, 25000);
 

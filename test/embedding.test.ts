@@ -1,8 +1,8 @@
-import { Client } from '../src/lib/client';
+import {Client} from '../src/lib/client';
 import {Plugin, PluginInstance} from "../src";
-import { steamshipClient } from './helper';
+import {steamshipClient} from './helper';
 
-export type EmbedderCallback = (plugin:  Plugin, instance: PluginInstance) => Promise<void>
+export type EmbedderCallback = (plugin: Plugin, instance: PluginInstance) => Promise<void>
 
 export async function createEmbedder(client: Client, callback: EmbedderCallback): Promise<void> {
   const plugin = (await Plugin.get(client, {handle: "test-embedder"})).data
@@ -23,6 +23,7 @@ export async function createEmbedder(client: Client, callback: EmbedderCallback)
 
 test('Test Create and Delete Embedder', async () => {
   const client = steamshipClient();
-  await createEmbedder(client, async () => {})
+  await createEmbedder(client, async () => {
+  })
 });
 

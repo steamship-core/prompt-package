@@ -1,5 +1,5 @@
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new AppInstance(client, data as AppInstanceParams);
@@ -91,20 +91,6 @@ export class AppInstance {
     this.config = params.config
   }
 
-  async delete(config?: Configuration): Promise<Response<AppInstance>> {
-    return (await this.client.post(
-      'app/instance/delete',
-      {
-        id: this.id,
-      },
-      {
-        expect: _EXPECT,
-        responsePath: 'appInstance',
-        ...config,
-      }
-    )) as Response<AppInstance>;
-  }
-
   static async create(
     client: ApiBase,
     params: CreateAppInstance,
@@ -112,7 +98,7 @@ export class AppInstance {
   ): Promise<Response<AppInstance>> {
     return (await client.post(
       'app/instance/create',
-      { ...params },
+      {...params},
       {
         ...config,
         expect: _EXPECT,
@@ -128,7 +114,36 @@ export class AppInstance {
   ): Promise<Response<AppInstance>> {
     return (await client.post(
       'app/instance/get',
-      { ...params },
+      {...params},
+      {
+        expect: _EXPECT,
+        responsePath: 'appInstance',
+        ...config,
+      }
+    )) as Response<AppInstance>;
+  }
+
+  static async list(
+    client: ApiBase,
+    params?: AppInstanceListParams,
+    config?: Configuration
+  ): Promise<Response<AppInstanceList>> {
+    return (await client.post(
+      'app/instance/list',
+      {...params},
+      {
+        expect: _EXPECT_LIST,
+        ...config
+      },
+    )) as Response<AppInstanceList>;
+  }
+
+  async delete(config?: Configuration): Promise<Response<AppInstance>> {
+    return (await this.client.post(
+      'app/instance/delete',
+      {
+        id: this.id,
+      },
       {
         expect: _EXPECT,
         responsePath: 'appInstance',
@@ -144,7 +159,7 @@ export class AppInstance {
   ): Promise<unknown> {
     return this.client.get(
       `/_/_/${path[0] == '/' ? path.slice(1) : path}`,
-      { ...params },
+      {...params},
       {
         ...config,
         appCall: true,
@@ -157,21 +172,6 @@ export class AppInstance {
     );
   }
 
-  static async list(
-    client: ApiBase,
-    params?: AppInstanceListParams,
-    config?: Configuration
-  ): Promise<Response<AppInstanceList>> {
-    return (await client.post(
-      'app/instance/list',
-      { ...params },
-      {
-        expect: _EXPECT_LIST,
-        ...config
-      },
-    )) as Response<AppInstanceList>;
-  }
-
   async post(
     path: string,
     params?: Record<string, unknown>,
@@ -179,7 +179,7 @@ export class AppInstance {
   ): Promise<unknown> {
     return this.client.post(
       `/_/_/${path[0] == '/' ? path.slice(1) : path}`,
-      { ...params },
+      {...params},
       {
         ...config,
         appCall: true,

@@ -1,5 +1,5 @@
-import { steamship_client } from './helper.spec';
-import { TokenMatcher } from '../src/lib/types/parsing';
+import {steamship_client} from './helper.spec';
+import {TokenMatcher} from '../src/lib/types/parsing';
 
 test('Test Parse', async (t) => {
   const steamship = steamship_client();
@@ -40,12 +40,12 @@ test('Test Token Matcher', async (t) => {
 
   const matcher: TokenMatcher = {
     label: 'A MATCHER',
-    patterns: [[{ LOWER: 'a' }, { LOWER: 'matcher' }]],
+    patterns: [[{LOWER: 'a'}, {LOWER: 'matcher'}]],
   };
 
   const matcher_b: TokenMatcher = {
     label: 'B MATCHER',
-    patterns: [[{ LOWER: 'see' }], [{ LOWER: 'if' }, { LOWER: 'a' }]],
+    patterns: [[{LOWER: 'see'}], [{LOWER: 'if'}, {LOWER: 'a'}]],
   };
 
   const e1 = await steamship.parse({

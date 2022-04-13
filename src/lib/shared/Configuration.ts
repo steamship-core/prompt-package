@@ -337,7 +337,7 @@ class ConfigManager {
         newConfig.profiles = {}; // Add the profiles field if it does not exist
       }
       if (!Object.keys(newConfig.profiles).includes(profile)) {
-        newConfig.profiles[profile] = { profile: profile }; // Adds this specific profile
+        newConfig.profiles[profile] = {profile: profile}; // Adds this specific profile
       }
       Object.keys(values).forEach((key: string) => {
         if (key === 'profiles') {

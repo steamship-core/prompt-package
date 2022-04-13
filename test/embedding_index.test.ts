@@ -1,9 +1,9 @@
-import { Client } from '../src/lib/client';
-import {Plugin, PluginInstance, EmbeddingIndex} from "../src";
-import { steamshipClient } from './helper';
-import { createEmbedder } from './embedding.test'
+import {Client} from '../src/lib/client';
+import {EmbeddingIndex, Plugin, PluginInstance} from "../src";
+import {steamshipClient} from './helper';
+import {createEmbedder} from './embedding.test'
 
-export type EmbeddingIndexCallback = (plugin:  Plugin, instance: PluginInstance, index: EmbeddingIndex) => Promise<void>
+export type EmbeddingIndexCallback = (plugin: Plugin, instance: PluginInstance, index: EmbeddingIndex) => Promise<void>
 
 export async function createEmbeddingIndex(client: Client, callback: EmbeddingIndexCallback): Promise<void> {
   await createEmbedder(client, async (plugin, instance) => {
@@ -21,7 +21,11 @@ export async function createEmbeddingIndex(client: Client, callback: EmbeddingIn
 }
 
 const possibilities = ["sweet cake", "chocolate flour", "apple and cheese"]
-const queryAnswer = {"sweet cream": "sweet cake", "flour and egg": "chocolate flour", "apple and cracker": "apple and cheese"}
+const queryAnswer = {
+  "sweet cream": "sweet cake",
+  "flour and egg": "chocolate flour",
+  "apple and cracker": "apple and cheese"
+}
 
 test('Test Create and Delete Embedding Index', async () => {
   const client = steamshipClient();

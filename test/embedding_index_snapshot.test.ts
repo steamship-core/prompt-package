@@ -1,8 +1,12 @@
-import { steamshipClient } from './helper';
+import {steamshipClient} from './helper';
 import {createEmbeddingIndex} from "./embedding_index.test";
 
 const possibilities = ["sweet cake", "chocolate flour", "apple and cheese"]
-const queryAnswer = {"sweet cream": "sweet cake", "flour and egg": "chocolate flour", "apple and cracker": "apple and cheese"}
+const queryAnswer = {
+  "sweet cream": "sweet cake",
+  "flour and egg": "chocolate flour",
+  "apple and cracker": "apple and cheese"
+}
 
 test('Test Embedding Index Snapshot', async () => {
   const client = steamshipClient();

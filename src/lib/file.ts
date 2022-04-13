@@ -1,6 +1,5 @@
-
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
 
 
 export async function readFile(filename: string): Promise<Buffer> {
@@ -54,47 +53,6 @@ export class File {
     this.spaceId = params.spaceId;
   }
 
-  async delete(config?: Configuration): Promise<Response<File>> {
-    return (await this.client.post(
-      'file/delete',
-      {
-        id: this.id,
-      },
-      {
-        expect: _EXPECT,
-        responsePath: 'file',
-        ...config
-      }
-    )) as Response<File>;
-  }
-
-  async raw(config?: Configuration): Promise<Response<unknown>> {
-    return (await this.client.post(
-      'file/raw',
-      {
-        id: this.id,
-      },
-      {
-        ...config,
-        rawResponse: true
-      }
-    )) as Response<unknown>;
-  }
-
-  async clear(config?: Configuration): Promise<Response<File>> {
-    return (await this.client.post(
-      'file/clear',
-      {
-        id: this.id,
-      },
-      {
-        expect: _EXPECT,
-        responsePath: 'config',
-        ...config
-      }
-    )) as Response<File>;
-  }
-
   static async upload(
     client: ApiBase,
     params: UploadParams,
@@ -133,6 +91,47 @@ export class File {
         responsePath: 'file',
         file: buffer,
         filename: params.filename
+      }
+    )) as Response<File>;
+  }
+
+  async delete(config?: Configuration): Promise<Response<File>> {
+    return (await this.client.post(
+      'file/delete',
+      {
+        id: this.id,
+      },
+      {
+        expect: _EXPECT,
+        responsePath: 'file',
+        ...config
+      }
+    )) as Response<File>;
+  }
+
+  async raw(config?: Configuration): Promise<Response<unknown>> {
+    return (await this.client.post(
+      'file/raw',
+      {
+        id: this.id,
+      },
+      {
+        ...config,
+        rawResponse: true
+      }
+    )) as Response<unknown>;
+  }
+
+  async clear(config?: Configuration): Promise<Response<File>> {
+    return (await this.client.post(
+      'file/clear',
+      {
+        id: this.id,
+      },
+      {
+        expect: _EXPECT,
+        responsePath: 'config',
+        ...config
       }
     )) as Response<File>;
   }

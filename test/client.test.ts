@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Client } from '../src/lib/client';
-import { mockDefaultConfigFile, steamshipClient, restoreMocks } from './helper';
+import {Client} from '../src/lib/client';
+import {mockDefaultConfigFile, restoreMocks, steamshipClient} from './helper';
 
 describe('Steamship Client', () => {
   test('it should be running with the `test` profile', async () => {

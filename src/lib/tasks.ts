@@ -1,4 +1,4 @@
-import { ApiBase, Response } from './api_base';
+import {ApiBase, Response} from './api_base';
 import {
   ListTaskCommentRequest,
   ListTaskCommentResponse,

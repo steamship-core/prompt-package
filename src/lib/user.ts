@@ -1,12 +1,11 @@
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
 
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
-
-const _EXPECT = (client: ApiBase, data: unknown) => { 
+const _EXPECT = (client: ApiBase, data: unknown) => {
   if ((data as any).user) {
     data = (data as any).user
   }
-  return new User(client, data as UserParams) 
+  return new User(client, data as UserParams)
 }
 
 export interface UserParams {
@@ -67,7 +66,7 @@ export class User {
 
   async update(
     params?: UpdateParams,
-    config?: Configuration 
+    config?: Configuration
   ): Promise<Response<User>> {
     return (await this.client.post(
       'account/update',

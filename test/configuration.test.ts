@@ -2,8 +2,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import {
-  Configuration,
   CONFIG_FILENAME,
+  Configuration,
   loadConfiguration,
   saveConfiguration,
 } from '../src/lib/shared/Configuration';
@@ -60,7 +60,7 @@ function mockDefaultConfigFile(config?: Configuration): {
   }
 
   let defaultLocation = path.join(os.homedir(), CONFIG_FILENAME);
-  fs.writeFileSync(defaultLocation, JSON.stringify(config), { flag: 'w+' });
+  fs.writeFileSync(defaultLocation, JSON.stringify(config), {flag: 'w+'});
   let otherConfig = JSON.parse(JSON.stringify(config));
   otherConfig.apiKey = 'special location';
   const anotherTmpDir = fs.mkdtempSync(
@@ -69,9 +69,9 @@ function mockDefaultConfigFile(config?: Configuration): {
   fs.writeFileSync(
     path.join(anotherTmpDir, CONFIG_FILENAME),
     JSON.stringify(otherConfig),
-    { flag: 'w+' }
+    {flag: 'w+'}
   );
-  return { anotherFile: path.join(anotherTmpDir, CONFIG_FILENAME) };
+  return {anotherFile: path.join(anotherTmpDir, CONFIG_FILENAME)};
 }
 
 function restoreMocks() {
@@ -94,7 +94,7 @@ describe('Configuration', () => {
 
   test('it should load an existing config profile from the default location', async () => {
     mockDefaultConfigFile(DEFAULT_CONFIG_WITH_PROFILE);
-    let config = await loadConfiguration({ profile: 'my_profile' });
+    let config = await loadConfiguration({profile: 'my_profile'});
     let expected = JSON.parse(
       JSON.stringify(
         DEFAULT_CONFIG_WITH_PROFILE.profiles
@@ -128,7 +128,7 @@ describe('Configuration', () => {
 
   test('it should modify the config file in the default location', async () => {
     mockDefaultConfigFile();
-    await saveConfiguration({ apiKey: 'from saving' });
+    await saveConfiguration({apiKey: 'from saving'});
     let config = await loadConfiguration();
     let expected = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
     expected.apiKey = 'from saving';
@@ -141,8 +141,8 @@ describe('Configuration', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'corrupted-config'));
     let newFile = path.join(tmpDir, CONFIG_FILENAME);
     fs.writeFileSync(newFile, 'I am not JSON!');
-    await saveConfiguration({ apiKey: 'from saving' }, undefined, newFile);
-    let config = await loadConfiguration({ configFile: newFile });
+    await saveConfiguration({apiKey: 'from saving'}, undefined, newFile);
+    let config = await loadConfiguration({configFile: newFile});
     let expected = {
       apiBase: 'https://api.steamship.com/api/v1/',
       appBase: 'https://steamship.run/',
@@ -155,8 +155,8 @@ describe('Configuration', () => {
 
   test('it should modify the config file profile in the default location', async () => {
     mockDefaultConfigFile(DEFAULT_CONFIG_WITH_PROFILE);
-    await saveConfiguration({ apiKey: 'from saving' }, 'my_profile');
-    let config = await loadConfiguration({ profile: 'my_profile' });
+    await saveConfiguration({apiKey: 'from saving'}, 'my_profile');
+    let config = await loadConfiguration({profile: 'my_profile'});
     let expected = JSON.parse(JSON.stringify(DEFAULT_CONFIG_WITH_PROFILE))
       .profiles['my_profile'];
     expected.apiKey = 'from saving';
@@ -170,7 +170,7 @@ describe('Configuration', () => {
     // TODO: Sometimes this test is flaky, still looking into this...
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'new-location-test'));
     let newFile = path.join(tmpDir, CONFIG_FILENAME);
-    await saveConfiguration({ ...DEFAULT_CONFIG }, 'my_profile', newFile);
+    await saveConfiguration({...DEFAULT_CONFIG}, 'my_profile', newFile);
     let profileConfig = await loadConfiguration({
       profile: 'my_profile',
       configFile: newFile,
@@ -182,7 +182,7 @@ describe('Configuration', () => {
     expect(profileConfig).toEqual(expectedProfile);
 
     // Let's also test loading the config WITHOUT a profile.
-    let entireConfig = await loadConfiguration({ configFile: newFile });
+    let entireConfig = await loadConfiguration({configFile: newFile});
 
     // It should be the default config WITHOUT any customization, we never provided
     // anything explicit to set here.
@@ -195,7 +195,7 @@ describe('Configuration', () => {
     mockDefaultConfigFile();
     expect.assertions(1);
     try {
-      await saveConfiguration({ ...DEFAULT_CONFIG }, 'my_profile', '');
+      await saveConfiguration({...DEFAULT_CONFIG}, 'my_profile', '');
     } catch (e) {
       expect(e).toEqual('An invalid save location was given.');
     }
@@ -206,7 +206,7 @@ describe('Configuration', () => {
     mockDefaultConfigFile();
     expect.assertions(1);
     try {
-      await saveConfiguration({ profiles: { hello: {} } }, 'my_profile');
+      await saveConfiguration({profiles: {hello: {}}}, 'my_profile');
     } catch (e) {
       expect(e).toContain(
         'Cannot save a profiles list within a profile itself'
@@ -219,7 +219,7 @@ describe('Configuration', () => {
     mockDefaultConfigFile();
     expect.assertions(1);
     try {
-      await loadConfiguration({ configFile: 'nothing_here' });
+      await loadConfiguration({configFile: 'nothing_here'});
     } catch (e) {
       expect(e).toEqual(
         "Configuration path provided but no configuration found at 'nothing_here'"
@@ -229,7 +229,7 @@ describe('Configuration', () => {
   });
 
   test('it should read the config file in a specific location', async () => {
-    const { anotherFile } = mockDefaultConfigFile();
+    const {anotherFile} = mockDefaultConfigFile();
     let config = await loadConfiguration({
       configFile: anotherFile,
     });

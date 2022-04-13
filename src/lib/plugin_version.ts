@@ -1,7 +1,7 @@
-import { ApiBase, Response } from './api_base';
-import { readFile } from './file';
-import { Configuration } from './shared/Configuration';
-import { MimeTypes } from './types/file';
+import {ApiBase, Response} from './api_base';
+import {readFile} from './file';
+import {Configuration} from './shared/Configuration';
+import {MimeTypes} from './types/file';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new PluginVersion(client, data as PluginVersionParams);
@@ -76,20 +76,6 @@ export class PluginVersion {
     this.configTemplate = params.configTemplate;
   }
 
-  async delete(config?: Configuration): Promise<Response<PluginVersion>> {
-    return (await this.client.post(
-      'plugin/version/delete',
-      {
-        id: this.id,
-      },
-      {
-        expect: _EXPECT,
-        responsePath: 'pluginVersion',
-        ...config,
-      }
-    )) as Response<PluginVersion>;
-  }
-
   static async create(
     client: ApiBase,
     params: CreateParams,
@@ -138,7 +124,7 @@ export class PluginVersion {
   ): Promise<Response<PluginVersion>> {
     return (await client.post(
       'plugin/version/get',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT,
         responsePath: 'pluginVersion',
@@ -154,11 +140,25 @@ export class PluginVersion {
   ): Promise<Response<PluginVersionList>> {
     return (await client.post(
       'plugin/version/list',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT_LIST,
         ...config
       },
     )) as Response<PluginVersionList>;
+  }
+
+  async delete(config?: Configuration): Promise<Response<PluginVersion>> {
+    return (await this.client.post(
+      'plugin/version/delete',
+      {
+        id: this.id,
+      },
+      {
+        expect: _EXPECT,
+        responsePath: 'pluginVersion',
+        ...config,
+      }
+    )) as Response<PluginVersion>;
   }
 }

@@ -1,5 +1,5 @@
-import { steamshipClient } from './helper';
-import { User } from '../src/lib/user'
+import {steamshipClient} from './helper';
+import {User} from '../src/lib/user'
 
 describe("User", () => {
   test('it should be fetchable', async () => {
@@ -16,7 +16,7 @@ describe("User", () => {
     expect(resp.data?.handle).not.toBeUndefined()
     const user = resp.data!
 
-    const resp2 = await user.update({ handle: 'foo bar' })
+    const resp2 = await user.update({handle: 'foo bar'})
     expect(resp2.data).not.toBeFalsy()
     expect(resp2.data?.handle).not.toBeUndefined()
     const user2 = resp2.data!
