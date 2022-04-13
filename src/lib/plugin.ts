@@ -70,6 +70,8 @@ export class Plugin {
   metadata?: unknown;
   client: ApiBase;
 
+
+
   constructor(client: ApiBase, params: PluginParams) {
     this.client = client;
     this.id = params.id;
@@ -121,6 +123,7 @@ export class Plugin {
       },
     )) as Response<Plugin>;
   }
+
 
   static async list(
     client: ApiBase,

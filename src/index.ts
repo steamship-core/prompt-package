@@ -54,11 +54,11 @@ export type {
 } from './lib/types/models';
 
 export { App } from './lib/app';
-export { AppVersion } from './lib/app_version';
-export { AppInstance } from './lib/app_instance';
+export { AppVersion, AppVersionList, AppVersionListParams, AppVersionParams } from './lib/app_version';
+export { AppInstance, AppInstanceList, AppInstanceListParams, AppInstanceParams, CreateAppInstance } from './lib/app_instance';
 export { Plugin } from './lib/plugin';
-export { PluginInstance } from './lib/plugin_instance';
-export { PluginVersion } from './lib/plugin_version';
+export { PluginInstance, PluginInstanceList, PluginInstanceListParams, PluginInstanceParams, CreatePluginInstance } from './lib/plugin_instance';
+export { PluginVersion, PluginVersionList, PluginVersionListParams, PluginVersionParams } from './lib/plugin_version';
 export { User } from './lib/user';
 
 export { Space } from './lib/space';
