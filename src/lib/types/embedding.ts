@@ -1,8 +1,18 @@
-import { Metadata, SearchHit } from './base';
+import { Metadata } from './base';
+
+export interface EmbeddingIndexParams {
+  id?: string;
+  name?: string;
+  handle?: string;
+}
 
 export interface CreateIndexRequest {
-  name: string;
-  model: string;
+  pluginInstance: string;
+  name?: string;
+  handle?: string;
+  externalId?: string;
+  externalType?: string;
+  metadata?: Metadata;
   upsert?: boolean;
 }
 
@@ -11,24 +21,27 @@ export interface EmbedRequest {
   model: string;
 }
 
+export type Embedding = number[]
+
 export interface EmbedResult {
-  embeddings: number[][];
+  embeddings: Embedding[];
 }
 
 export interface EmbedAndSearchRequest {
-  docs: string[];
+  docs: string[]
   query: string;
   model: string;
   k?: number;
   includeMetadata?: boolean;
 }
 
-export interface EmbedAndSearchResult {
-  hits: SearchHit[];
-}
-
-export interface CreateIndexResult {
-  id: string;
+export interface EmbeddingHit {
+  value?: string;
+  indexSource?: string;
+  externalId?: string;
+  externalType?: string;
+  metadata?: unknown;
+  query?: string;
 }
 
 export interface SearchRequest {
@@ -36,10 +49,6 @@ export interface SearchRequest {
   queries?: string[];
   k?: number;
   includeMetadata?: boolean;
-}
-
-export interface SearchResult {
-  hits: SearchHit[];
 }
 
 export interface InsertRequest {
@@ -83,6 +92,8 @@ export interface ListSnapshotsResponse {
 export interface DeleteSnapshotsRequest {
   snapshotId: string;
 }
+
 export interface DeleteSnapshotsResponse {
   snapshotId: string;
 }
+

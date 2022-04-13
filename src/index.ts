@@ -6,7 +6,7 @@ export { EmbeddingIndex } from './lib/embedding_index';
 export { EmbeddingModel } from './lib/types/embedding_model';
 export type {
   CreateIndexRequest,
-  SearchResult,
+  EmbeddingHit,
   SearchRequest,
   InsertRequest,
   InsertResult,
@@ -26,9 +26,10 @@ export { ParsingModel } from './lib/types/parsing_model';
 export type { ParseRequest, ParseResponse } from './lib/types/parsing';
 
 export type {
-  SearchHit,
   TaskState as TaskStatus,
   TaskParams,
+  QueryResult,
+  QueryResults,
   Metadata,
 } from './lib/types/base';
 

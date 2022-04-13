@@ -13,6 +13,28 @@ import {
 } from './types/task_comment';
 import {RemoteError} from "./steamship_error";
 
+const _EXPECT_TASK = (client: ApiBase, data: unknown): Task<unknown> => {
+  return new Task(client, data as TaskParams);
+};
+
+const _EXPECT_LIST = (client: ApiBase, data: unknown): TaskList => {
+  if (!data) {
+    return {tasks: []}
+  }
+  return {
+    tasks: ((data as any).tasks as Array<any>).map(x => _EXPECT_TASK(client, x))
+  }
+}
+
+export interface TaskListParams {
+  spaceId?: string
+  status?: TaskState
+}
+
+export interface TaskList {
+  tasks: Task<any>[]
+}
+
 export interface PostConfig<T> extends Configuration {
   responsePath?: string;
   rawResponse?: boolean;
@@ -28,29 +50,67 @@ export interface PostConfig<T> extends Configuration {
 export class Task<T> implements TaskParams {
   client: ApiBase;
   taskId?: string;
+  userId?: string;
+  spaceId?: string;
+  version?: string;
+  name?: string;
+  input?: string;
+  maxRetries?: number;
+  retries?: number;
   state?: string;
   statusMessage?: string;
+  statusCode?: string;
+  statusSuggestion?: string;
   taskCreatedOn?: string;
   taskLastModifiedOn?: string;
+  taskExecutor?: string;
+  taskType?: string;
+  assignedWorker?: string;
+  startedAt?: string
+
+
 
   constructor(client: ApiBase, params?: TaskParams) {
     this.client = client;
-    this.taskId = params?.taskId;
-    this.state = params?.state;
-    this.statusMessage = params?.statusMessage;
-    this.taskCreatedOn = params?.taskCreatedOn;
-    this.taskLastModifiedOn = params?.taskLastModifiedOn;
+    this.update(params)
   }
 
-  update(task?: TaskParams): Task<T> {
-    if (task) {
-      this.taskId = task.taskId;
-      this.state = task.state;
-      this.statusMessage = task.statusMessage;
-      this.taskCreatedOn = task.taskCreatedOn;
-      this.taskLastModifiedOn = task.taskLastModifiedOn;
-    }
+  update(params?: TaskParams): Task<T> {
+    if (params) {
+      this.taskId = params?.taskId;
+      this.userId = params?.userId;
+      this.spaceId = params?.spaceId;
+      this.version = params?.version;
+      this.name = params?.name;
+      this.input = params?.input;
+      this.maxRetries = params?.maxRetries;
+      this.retries = params?.retries;
+      this.state = params?.state;
+      this.statusMessage = params?.statusMessage;
+      this.statusCode = params?.statusCode;
+      this.statusSuggestion = params?.statusSuggestion;
+      this.taskCreatedOn = params?.taskCreatedOn;
+      this.taskLastModifiedOn = params?.taskLastModifiedOn;
+      this.taskExecutor = params?.taskExecutor;
+      this.taskType = params?.taskType;
+      this.assignedWorker = params?.assignedWorker;
+      this.startedAt = params?.startedAt;    }
     return this;
+  }
+
+  static async list(
+    client: ApiBase,
+    params?: TaskListParams,
+    config?: Configuration
+  ): Promise<Response<TaskList>> {
+    return (await client.post(
+      "/task/lsit",
+      {...params},
+      {
+        expect: _EXPECT_LIST,
+        ...config
+      },
+    )) as Response<TaskList>;
   }
 
   completed(): boolean {

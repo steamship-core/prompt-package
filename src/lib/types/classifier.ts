@@ -1,4 +1,4 @@
-import { SearchHit } from './base';
+import { EmbeddingHit } from './base';
 
 export interface CreateClassifierRequest {
   model: string;
@@ -20,7 +20,7 @@ export interface ClassifyRequest {
 }
 
 export interface ClassifyResult {
-  hits: SearchHit[][];
+  hits: EmbeddingHit[][];
 }
 
 export interface InsertLabelRequest {

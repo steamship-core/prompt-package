@@ -1,6 +1,5 @@
 import { ApiBase, Response } from './api_base';
 import { Classifier } from './classifier';
-import { EmbeddingIndex } from './embedding_index';
 import { Models } from './models';
 import { LoadConfigParams } from './shared/Configuration';
 import { RemoteError } from './steamship_error';
@@ -8,16 +7,14 @@ import { Tasks } from './tasks';
 import { CreateLoginAttemptResponse } from './types/account';
 import { CreateClassifierRequest } from './types/classifier';
 import {
-  CreateIndexRequest,
-  CreateIndexResult,
-  EmbedAndSearchRequest,
-  EmbedAndSearchResult,
+  EmbedAndSearchRequest, EmbeddingHit,
   EmbedRequest,
   EmbedResult,
 } from './types/embedding';
 import { ParseRequest, ParseResponse } from './types/parsing';
 import { ParsingModel } from './types/parsing_model';
 import { TagResponse } from './types/tagging';
+import {QueryResults} from "./types/base";
 
 export class Client extends ApiBase {
   models: Models;
@@ -37,23 +34,10 @@ export class Client extends ApiBase {
 
   async embedAndSearch(
     params: EmbedAndSearchRequest
-  ): Promise<Response<EmbedAndSearchResult>> {
+  ): Promise<Response<QueryResults<EmbeddingHit>>> {
     return this.post('embedding/search', params) as Promise<
-      Response<EmbedAndSearchResult>
+      Response<QueryResults<EmbeddingHit>>
     >;
-  }
-
-  async createIndex(params: CreateIndexRequest): Promise<EmbeddingIndex> {
-    const res = (await this.post(
-      'embedding-index/create',
-      params
-    )) as Response<CreateIndexResult>;
-    if (!res.data?.id) {
-      throw new RemoteError({
-        statusMessage: 'createIndex did not result in an Index ID',
-      });
-    }
-    return new EmbeddingIndex(this, params.name, params.model, res.data.id);
   }
 
   async createClassifier(params: CreateClassifierRequest): Promise<Classifier> {
@@ -85,7 +69,7 @@ export class Client extends ApiBase {
     })) as Response<ParseResponse>;
   }
 
-  //This mirrors the current Python version, which also assumes inline, which probably isn't what we want. 
+  //This mirrors the current Python version, which also assumes inline, which probably isn't what we want.
   async tag(doc: string, pluginInstance: string): Promise<Response<TagResponse>> {
 
     return (await this.post('plugin/instance/tag', {

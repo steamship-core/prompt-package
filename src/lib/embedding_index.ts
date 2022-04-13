@@ -1,46 +1,72 @@
 import { ApiBase, Response } from './api_base';
 import {
+  CreateIndexRequest,
   DeleteResult,
   DeleteSnapshotsResponse,
+  EmbeddingIndexParams,
   EmbedIndexResult,
   IndexSnapshotResponse,
   InsertRequest,
   InsertResult,
   ListSnapshotsResponse,
   SearchRequest,
-  SearchResult,
+  EmbeddingHit,
 } from './types/embedding';
+import {Configuration} from "./shared/Configuration";
+import {QueryResults} from "./types/base";
+
+const _EXPECT = (client: ApiBase, data: unknown): EmbeddingIndex => {
+  return new EmbeddingIndex(client, data as EmbeddingIndexParams)
+}
 
 export class EmbeddingIndex {
-  id: string;
-  name: string;
-  model: string;
+  id?: string;
+  name?: string;
+  handle?: string;
   client: ApiBase;
 
-  constructor(client: ApiBase, name: string, model: string, id: string) {
-    this.name = name;
-    this.model = model;
-    this.id = id;
+  constructor(client: ApiBase, params?: EmbeddingIndexParams) {
     this.client = client;
+    this.id = params?.id;
+    this.name = params?.name;
+    this.handle = params?.handle;
   }
 
-  async search(params: SearchRequest): Promise<Response<SearchResult>> {
+  static async create(
+    client: ApiBase,
+    params: CreateIndexRequest,
+    config?: Configuration
+  ): Promise<Response<EmbeddingIndex>> {
+    return (await client.post(
+      'embedding-index/create',
+      { ...params },
+      {
+        ...config,
+        expect: _EXPECT,
+        responsePath: 'index',
+      }
+    )) as Response<EmbeddingIndex>;
+  }
+
+  async search(params: SearchRequest): Promise<Response<QueryResults<EmbeddingHit>>> {
     const res = (await this.client.post('embedding-index/search', {
-      indexId: this.id,
+      id: this.id,
       ...params,
-    })) as Response<SearchResult>;
+    })) as Response<QueryResults<EmbeddingHit>>;
     if (typeof res.data == 'undefined') {
-      res.data = {} as SearchResult;
+      res.data = {} as QueryResults<EmbeddingHit>;
     }
-    if (typeof res.data.hits == 'undefined') {
-      res.data.hits = [];
+    if (typeof res.data.items == 'undefined') {
+      res.data.items = [];
     }
-    for (let i = 0; i < res.data.hits.length; i++) {
+    for (let i = 0; i < res.data.items.length; i++) {
       try {
-        if (res.data.hits[i].metadata) {
-          res.data.hits[i].metadata = JSON.parse(
-            res.data.hits[i].metadata as string
-          );
+        if (res.data.items[i].value) {
+          if (res.data.items[i].value!.metadata) {
+            res.data.items[i].value!.metadata = JSON.parse(
+              res.data.items[i].value!.metadata as string
+            );
+          }
         }
       } catch {
         // pass
@@ -53,7 +79,7 @@ export class EmbeddingIndex {
     if (typeof params.metadata == 'object') {
       params.metadata = JSON.stringify(params.metadata);
     }
-    return (await this.client.post('embedding-index/insert', {
+    return (await this.client.post('embedding-index/item/create', {
       indexId: this.id,
       ...params,
     })) as Response<InsertResult>;
@@ -61,13 +87,13 @@ export class EmbeddingIndex {
 
   async delete(): Promise<Response<DeleteResult>> {
     return (await this.client.post('embedding-index/delete', {
-      indexId: this.id,
+      id: this.id,
     })) as Response<DeleteResult>;
   }
 
   async embed(): Promise<Response<EmbedIndexResult>> {
     return (await this.client.post('embedding-index/embed', {
-      indexId: this.id,
+      id: this.id,
     })) as Response<EmbedIndexResult>;
   }
 
