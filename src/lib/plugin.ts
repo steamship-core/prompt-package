@@ -19,6 +19,7 @@ export interface PluginParams {
   url?: string;
   transport?: string;
   isPublic?: boolean;
+  isTrainable?: boolean;
   handle?: string;
   description?: string;
   dimensionality?: number;
@@ -42,6 +43,7 @@ export interface CreatePluginParams {
   url?: string;
   transport?: string;
   isPublic?: boolean;
+  isTrainable?: boolean;
   handle?: string;
   description?: string;
   dimensionality?: number;
@@ -61,6 +63,7 @@ export class Plugin {
   url?: string;
   transport?: string;
   isPublic?: boolean;
+  isTrainable?: boolean;
   handle?: string;
   description?: string;
   dimensionality?: number;
@@ -79,6 +82,7 @@ export class Plugin {
     this.url = params.url;
     this.transport = params.transport;
     this.isPublic = params.isPublic;
+    this.isTrainable = params.isTrainable;
     this.handle = params.handle;
     this.description = params.description;
     this.dimensionality = params.dimensionality;
