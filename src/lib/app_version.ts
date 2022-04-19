@@ -24,8 +24,7 @@ export interface GetParams {
 }
 
 export interface AppVersionListParams {
-  appId?: string,
-  private?: boolean
+  appId?: string
 }
 
 export interface AppVersionList {
@@ -139,9 +138,8 @@ export class AppVersion {
     params?: AppVersionListParams,
     config?: Configuration
   ): Promise<Response<AppVersionList>> {
-    const url = (params?.private === true) ? "app/version/private" : "app/version/public";
     return (await client.post(
-      url,
+      "app/version/list",
       {...params},
       {
         expect: _EXPECT_LIST,

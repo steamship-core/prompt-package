@@ -30,7 +30,6 @@ export interface PluginParams {
 }
 
 export interface ListParams {
-  private?: boolean
 }
 
 export interface PluginList {
@@ -133,9 +132,8 @@ export class Plugin {
     params?: ListParams,
     config?: Configuration
   ): Promise<Response<PluginList>> {
-    const url = (params?.private === true) ? "plugin/private" : "plugin/public";
     return (await client.post(
-      url,
+      "plugin/list",
       {...params},
       {
         expect: _EXPECT_LIST,
