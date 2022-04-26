@@ -19,7 +19,6 @@ export enum LimitUnit {
 
 export interface Model {
   id: string;
-  name: string;
   modelType: string;
   url: string;
   adapterType: string;
@@ -35,7 +34,6 @@ export interface Model {
 
 export interface CreateModelRequest {
   id?: string;
-  name: string;
   modelType: string;
   url: string;
   adapterType: string;

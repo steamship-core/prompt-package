@@ -1,10 +1,9 @@
-import {ApiBase, Response} from './api_base';
-import {Configuration} from './shared/Configuration';
-import {CreateParams, GetParams} from './shared/Requests';
+import { ApiBase, Response } from './api_base';
+import { Configuration } from './shared/Configuration';
+import { CreateParams, GetParams } from './shared/Requests';
 
 export interface CorpusParams {
   id?: string;
-  name?: string;
   handle?: string;
 }
 
@@ -15,13 +14,11 @@ const _EXPECT = (client: ApiBase, data: unknown) => {
 export class Corpus {
   client: ApiBase;
   id?: string;
-  name?: string;
   handle?: string;
 
   constructor(client: ApiBase, params: CorpusParams) {
     this.client = client;
     this.id = params.id;
-    this.name = params.name;
     this.handle = params.handle;
   }
 
@@ -32,7 +29,7 @@ export class Corpus {
   ): Promise<Response<Corpus>> {
     return (await client.post(
       'corpus/create',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'corpus',
@@ -48,7 +45,7 @@ export class Corpus {
   ): Promise<Response<Corpus>> {
     return (await client.post(
       'corpus/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'corpus',

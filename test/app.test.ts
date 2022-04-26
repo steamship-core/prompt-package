@@ -1,5 +1,5 @@
-import {randomName, steamshipClient} from './helper';
-import {App} from '../src/lib/app'
+import { steamshipClient } from './helper';
+import { App } from '../src/lib/app'
 
 describe("App", () => {
   test('it should be creatable and deletable', async () => {
@@ -13,16 +13,12 @@ describe("App", () => {
 
     const app1 = (await App.create(steamship)).data!
     expect(app1.handle).not.toBeUndefined()
-    expect(app1.name).not.toBeUndefined()
 
-    let name = randomName();
-    const app2 = (await App.create(steamship, {name})).data!
-    expect(app2.name).toBe(name)
+    const app2 = (await App.create(steamship, {})).data!
     expect(app2.id).not.toBe(app1.id)
 
     // Can get them!
-    const app1a = (await App.get(steamship, {id: app1.id})).data!
-    expect(app1a.name).toBe(app1.name)
+    const app1a = (await App.get(steamship, { id: app1.id })).data!
     expect(app1a.id).toBe(app1.id)
     expect(app1a.handle).toBe(app1.handle)
 
@@ -35,7 +31,7 @@ describe("App", () => {
 
     // They should no longer be there.
     expect(
-      App.get(steamship, {id: app1.id})
+      App.get(steamship, { id: app1.id })
     ).rejects.toThrow()
   }, 25000);
 

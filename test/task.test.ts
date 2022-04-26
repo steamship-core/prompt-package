@@ -1,19 +1,19 @@
-import {steamshipClient} from './helper';
-import {createEmbeddingIndex} from "./embedding_index.test";
-import {Space, Task} from "../src";
-import {TaskState} from "../src/lib/types/base";
+import { steamshipClient } from './helper';
+import { createEmbeddingIndex } from "./embedding_index.test";
+import { Space, Task } from "../src";
+import { TaskState } from "../src/lib/types/base";
 
 test('Test Task List', async () => {
   const client = steamshipClient();
   // We're doing to do this just to create a task..
   await createEmbeddingIndex(client, async (_1, _2, index) => {
-    await index.insert({value: "Hi there"}) // This creates a task
+    await index.insert({ value: "Hi there" }) // This creates a task
     let embedR = await index.embed()
     expect(embedR.task).not.toBeFalsy()
 
     await embedR.wait() // Let it finish
 
-    let tasksR = await Task.list(client, {id: embedR.task!.taskId})
+    let tasksR = await Task.list(client, { id: embedR.task!.taskId })
     expect(tasksR.data).not.toBeFalsy()
     let tasks = tasksR.data!
     expect(tasks.tasks).not.toBeFalsy()
@@ -66,7 +66,7 @@ test('Test Task List', async () => {
     expect(tasks5.tasks).not.toBeFalsy()
     expect(tasks5.tasks.length).toBe(1)
   })
-});
+}, 10000);
 
 
 

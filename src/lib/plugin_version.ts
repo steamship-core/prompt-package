@@ -1,7 +1,7 @@
-import {ApiBase, Response} from './api_base';
-import {readFile} from './file';
-import {Configuration} from './shared/Configuration';
-import {MimeTypes} from './types/file';
+import { ApiBase, Response } from './api_base';
+import { readFile } from './file';
+import { Configuration } from './shared/Configuration';
+import { MimeTypes } from './types/file';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new PluginVersion(client, data as PluginVersionParams);
@@ -18,7 +18,6 @@ const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
 
 export interface GetParams {
   id?: string;
-  name?: string;
   handle?: string;
   pluginId?: string;
 }
@@ -33,7 +32,6 @@ export interface PluginVersionList {
 
 export interface PluginVersionParams {
   id?: string;
-  name?: string;
   handle?: string;
   pluginId?: string;
   description?: string;
@@ -46,14 +44,12 @@ export interface PluginVersionParams {
 export interface CreateParams {
   filename: string;
   pluginId: string;
-  name?: string;
   handle?: string;
   configTemplate?: Record<string, any>
 }
 
 export class PluginVersion {
   id?: string;
-  name?: string;
   handle?: string;
   pluginId?: string;
   createdAt?: string;
@@ -66,7 +62,6 @@ export class PluginVersion {
   constructor(client: ApiBase, params: PluginVersionParams) {
     this.client = client;
     this.id = params.id;
-    this.name = params.name;
     this.handle = params.handle;
     this.pluginId = params.pluginId;
     this.createdAt = params.createdAt;
@@ -91,16 +86,11 @@ export class PluginVersion {
     }
     let buffer: Buffer | undefined = undefined;
 
-    if (!params.name) {
-      const parts = params.filename.split('/');
-      params.name = parts[parts.length - 1];
-    }
     buffer = await readFile(params.filename);
 
     return (await client.post(
       'plugin/version/create',
       {
-        name: params.name,
         type: 'file',
         handle: params.handle,
         mimeType: MimeTypes.ZIP,
@@ -124,7 +114,7 @@ export class PluginVersion {
   ): Promise<Response<PluginVersion>> {
     return (await client.post(
       'plugin/version/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'pluginVersion',
@@ -140,7 +130,7 @@ export class PluginVersion {
   ): Promise<Response<PluginVersionList>> {
     return (await client.post(
       'plugin/version/list',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT_LIST,
         ...config

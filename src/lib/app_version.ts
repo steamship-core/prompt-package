@@ -1,7 +1,7 @@
-import {ApiBase, Response} from './api_base';
-import {readFile} from './file';
-import {Configuration} from './shared/Configuration';
-import {MimeTypes} from './types/file';
+import { ApiBase, Response } from './api_base';
+import { readFile } from './file';
+import { Configuration } from './shared/Configuration';
+import { MimeTypes } from './types/file';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new AppVersion(client, data as AppVersionParams);
@@ -18,7 +18,6 @@ const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
 
 export interface GetParams {
   id?: string;
-  name?: string;
   handle?: string;
   appId?: string;
 }
@@ -33,7 +32,6 @@ export interface AppVersionList {
 
 export interface AppVersionParams {
   id?: string;
-  name?: string;
   handle?: string;
   appId?: string;
   description?: string;
@@ -46,14 +44,12 @@ export interface AppVersionParams {
 export interface CreateParams {
   filename: string;
   appId: string;
-  name?: string;
   handle?: string;
   configTemplate?: Record<string, any>
 }
 
 export class AppVersion {
   id?: string;
-  name?: string;
   handle?: string;
   appId?: string;
   createdAt?: string;
@@ -66,7 +62,6 @@ export class AppVersion {
   constructor(client: ApiBase, params: AppVersionParams) {
     this.client = client;
     this.id = params.id;
-    this.name = params.name;
     this.handle = params.handle;
     this.appId = params.appId;
     this.createdAt = params.createdAt;
@@ -91,16 +86,11 @@ export class AppVersion {
     }
     let buffer: Buffer | undefined = undefined;
 
-    if (!params.name) {
-      const parts = params.filename.split('/');
-      params.name = parts[parts.length - 1];
-    }
     buffer = await readFile(params.filename);
 
     return (await client.post(
       'app/version/create',
       {
-        name: params.name,
         type: 'file',
         handle: params.handle,
         mimeType: MimeTypes.ZIP,
@@ -124,7 +114,7 @@ export class AppVersion {
   ): Promise<Response<AppVersion>> {
     return (await client.post(
       'app/version/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'appVersion',
@@ -140,7 +130,7 @@ export class AppVersion {
   ): Promise<Response<AppVersionList>> {
     return (await client.post(
       "app/version/list",
-      {...params},
+      { ...params },
       {
         expect: _EXPECT_LIST,
         ...config

@@ -1,5 +1,5 @@
-import {ApiBase, Response} from './api_base';
-import {Configuration} from './shared/Configuration';
+import { ApiBase, Response } from './api_base';
+import { Configuration } from './shared/Configuration';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   if ((data as any).user) {
@@ -10,7 +10,6 @@ const _EXPECT = (client: ApiBase, data: unknown) => {
 
 export interface UserParams {
   id?: string;
-  name?: string;
   firstName?: string;
   lastName?: string;
   nickName?: string;
@@ -23,14 +22,12 @@ export interface UpdateParams {
   firstName?: string;
   lastName?: string;
   nickName?: string;
-  name?: string;
   handle?: string;
 }
 
 export class User {
   client: ApiBase;
   id?: string;
-  name?: string;
   firstName?: string;
   lastName?: string;
   nickName?: string;
@@ -41,7 +38,6 @@ export class User {
   constructor(client: ApiBase, params: UserParams) {
     this.client = client;
     this.id = params.id;
-    this.name = params.name;
     this.firstName = params.firstName;
     this.lastName = params.lastName;
     this.nickName = params.nickName;

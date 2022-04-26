@@ -1,5 +1,5 @@
-import {randomName, steamshipClient} from './helper';
-import {Space} from '../src/lib/space'
+import { steamshipClient } from './helper';
+import { Space } from '../src/lib/space'
 
 describe("Space", () => {
   test('it should have a default space', async () => {
@@ -18,17 +18,13 @@ describe("Space", () => {
 
     const space1 = (await Space.create(steamship)).data!
     expect(space1.handle).not.toBeUndefined()
-    expect(space1.name).not.toBeUndefined()
     expect(space1.id).not.toBe(def.id)
 
-    let name = randomName();
-    const space2 = (await Space.create(steamship, {name})).data!
-    expect(space2.name).toBe(name)
+    const space2 = (await Space.create(steamship, {})).data!
     expect(space2.id).not.toBe(space1.id)
 
     // Can get them!
-    const space1a = (await Space.get(steamship, {id: space1.id})).data!
-    expect(space1a.name).toBe(space1.name)
+    const space1a = (await Space.get(steamship, { id: space1.id })).data!
     expect(space1a.id).toBe(space1.id)
     expect(space1a.handle).toBe(space1.handle)
 
@@ -42,7 +38,7 @@ describe("Space", () => {
 
     // They should no longer be there.
     expect(
-      Space.get(steamship, {id: space1.id})
+      Space.get(steamship, { id: space1.id })
     ).rejects.toThrow()
   }, 10000);
 

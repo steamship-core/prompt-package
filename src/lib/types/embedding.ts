@@ -1,14 +1,12 @@
-import {Metadata} from './base';
+import { Metadata } from './base';
 
 export interface EmbeddingIndexParams {
   id?: string;
-  name?: string;
   handle?: string;
 }
 
 export interface CreateIndexRequest {
   pluginInstance: string;
-  name?: string;
   handle?: string;
   externalId?: string;
   externalType?: string;

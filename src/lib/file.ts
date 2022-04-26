@@ -1,5 +1,5 @@
-import {ApiBase, Response} from './api_base';
-import {Configuration} from './shared/Configuration';
+import { ApiBase, Response } from './api_base';
+import { Configuration } from './shared/Configuration';
 
 
 export async function readFile(filename: string): Promise<Buffer> {
@@ -16,7 +16,6 @@ const _EXPECT = (client: ApiBase, data: unknown) => {
 
 export interface FileParams {
   id?: string;
-  name?: string;
   handle?: string;
   mimeType?: string;
   corpusId?: string;
@@ -27,7 +26,6 @@ export interface UploadParams {
   filename?: string;
   content?: string | Buffer;
   type?: "file" | "url" | "value"
-  name?: string;
   handle?: string;
   mimeType?: string;
   corpusId?: string;
@@ -36,7 +34,6 @@ export interface UploadParams {
 
 export class File {
   id?: string;
-  name?: string;
   handle?: string;
   mimeType?: string;
   corpusId?: string;
@@ -46,7 +43,6 @@ export class File {
   constructor(client: ApiBase, params: FileParams) {
     this.client = client;
     this.id = params.id;
-    this.name = params.name;
     this.handle = params.handle;
     this.mimeType = params.mimeType;
     this.corpusId = params.corpusId;
@@ -58,16 +54,12 @@ export class File {
     params: UploadParams,
     config?: Configuration
   ): Promise<Response<File>> {
-    if (!params.filename && !params.name && !params.content) {
-      throw Error('Either filename or name + content must be provided');
+    if (!params.filename && !params.content) {
+      throw Error('Either filename or content must be provided');
     }
     let buffer: Buffer | undefined = undefined;
 
     if (params.filename) {
-      if (!params.name) {
-        const parts = params.filename.split("/")
-        params.name = parts[parts.length - 1]
-      }
       params.type = "file"
       buffer = await readFile(params.filename);
     } else {
@@ -77,8 +69,8 @@ export class File {
     return (await client.post(
       'file/create',
       {
-        name: params.name,
         type: params.type,
+        filename: params.filename,
         handle: params.handle,
         value: params.content,
         mimeType: params.mimeType,

@@ -1,5 +1,5 @@
-import {ApiBase, Response} from './api_base';
-import {Configuration} from './shared/Configuration';
+import { ApiBase, Response } from './api_base';
+import { Configuration } from './shared/Configuration';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new AppInstance(client, data as AppInstanceParams);
@@ -16,7 +16,6 @@ const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
 
 export interface GetParams {
   id?: string;
-  name?: string;
   handle?: string;
   appHandle?: string;
 }
@@ -32,7 +31,6 @@ export interface AppInstanceList {
 
 export interface AppInstanceParams {
   id?: string;
-  name?: string;
   handle?: string;
   appId?: string;
   appInstanceId?: string;
@@ -49,7 +47,6 @@ export interface AppInstanceParams {
 
 export interface CreateAppInstance {
   id?: string;
-  name?: string;
   handle?: string;
   appId?: string;
   appVersionId?: string;
@@ -60,7 +57,6 @@ export interface CreateAppInstance {
 
 export class AppInstance {
   id?: string;
-  name?: string;
   handle?: string;
   appId?: string;
   appVersionId?: string;
@@ -77,7 +73,6 @@ export class AppInstance {
   constructor(client: ApiBase, params: AppInstanceParams) {
     this.client = client;
     this.id = params.id;
-    this.name = params.name;
     this.handle = params.handle;
     this.appId = params.appId;
     this.appVersionId = params.appVersionId;
@@ -98,7 +93,7 @@ export class AppInstance {
   ): Promise<Response<AppInstance>> {
     return (await client.post(
       'app/instance/create',
-      {...params},
+      { ...params },
       {
         ...config,
         expect: _EXPECT,
@@ -114,7 +109,7 @@ export class AppInstance {
   ): Promise<Response<AppInstance>> {
     return (await client.post(
       'app/instance/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'appInstance',
@@ -130,7 +125,7 @@ export class AppInstance {
   ): Promise<Response<AppInstanceList>> {
     return (await client.post(
       'app/instance/list',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT_LIST,
         ...config
@@ -159,7 +154,7 @@ export class AppInstance {
   ): Promise<unknown> {
     return this.client.get(
       `/_/_/${path[0] == '/' ? path.slice(1) : path}`,
-      {...params},
+      { ...params },
       {
         ...config,
         appCall: true,
@@ -179,7 +174,7 @@ export class AppInstance {
   ): Promise<unknown> {
     return this.client.post(
       `/_/_/${path[0] == '/' ? path.slice(1) : path}`,
-      {...params},
+      { ...params },
       {
         ...config,
         appCall: true,

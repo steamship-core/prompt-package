@@ -1,6 +1,6 @@
-import {ApiBase, Response} from './api_base';
-import {Configuration} from './shared/Configuration';
-import {GetParams} from "./shared/Requests";
+import { ApiBase, Response } from './api_base';
+import { Configuration } from './shared/Configuration';
+import { GetParams } from "./shared/Requests";
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new Plugin(client, data as PluginParams);
@@ -14,7 +14,6 @@ const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
 
 export interface PluginParams {
   id?: string;
-  name?: string;
   type?: string;
   url?: string;
   transport?: string;
@@ -37,7 +36,6 @@ export interface PluginList {
 }
 
 export interface CreatePluginParams {
-  name?: string;
   type?: string;
   url?: string;
   transport?: string;
@@ -57,7 +55,6 @@ export interface CreatePluginParams {
 
 export class Plugin {
   id?: string;
-  name?: string;
   type?: string;
   url?: string;
   transport?: string;
@@ -76,7 +73,6 @@ export class Plugin {
   constructor(client: ApiBase, params: PluginParams) {
     this.client = client;
     this.id = params.id;
-    this.name = params.name;
     this.type = params.type;
     this.url = params.url;
     this.transport = params.transport;
@@ -101,7 +97,7 @@ export class Plugin {
     }
     return (await client.post(
       'plugin/create',
-      {...params},
+      { ...params },
       {
         ...config,
         expect: _EXPECT,
@@ -117,7 +113,7 @@ export class Plugin {
   ): Promise<Response<Plugin>> {
     return (await client.post(
       'plugin/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'plugin',
@@ -134,7 +130,7 @@ export class Plugin {
   ): Promise<Response<PluginList>> {
     return (await client.post(
       "plugin/list",
-      {...params},
+      { ...params },
       {
         expect: _EXPECT_LIST,
         ...config
