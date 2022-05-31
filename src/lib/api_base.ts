@@ -14,7 +14,7 @@ import {
 import {RemoteError} from "./steamship_error";
 
 
-const TWO_HUNDRED_MEGS_IN_BYTES = 100 * 1000
+const TWO_HUNDRED_MEGS_IN_BYTES = 200 * 1000
 
 const _EXPECT_TASK = (client: ApiBase, data: unknown): Task<unknown> => {
   return new Task(client, data as TaskParams);
