@@ -13,6 +13,9 @@ import {
 } from './types/task_comment';
 import {RemoteError} from "./steamship_error";
 
+
+const TWO_HUNDRED_MEGS_IN_BYTES = 100 * 1000
+
 const _EXPECT_TASK = (client: ApiBase, data: unknown): Task<unknown> => {
   return new Task(client, data as TaskParams);
 };
@@ -454,6 +457,8 @@ export class ApiBase {
         config?.appId,
         config?.appInstanceId
       ),
+      maxContentLength: TWO_HUNDRED_MEGS_IN_BYTES,
+      maxBodyLength: TWO_HUNDRED_MEGS_IN_BYTES
     };
 
     let finalPayload: undefined | unknown | { [key: string]: undefined } =
