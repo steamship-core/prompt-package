@@ -1,8 +1,6 @@
+// @ts-ignore
 import {steamshipClient} from './helper';
-import {Plugin} from '../src/lib/plugin'
-import {PluginVersion} from '../src/lib/plugin_version'
-import {PluginInstance} from '../src/lib/plugin_instance'
-import {Client} from '../src/lib/client';
+import {Client, Plugin, PluginInstance, PluginVersion} from '../src'
 import {Corpus} from '../src/lib/corpus'
 import path from 'path'
 
@@ -72,7 +70,7 @@ describe("Plugin", () => {
     await plugin.delete()
 
     // They should no longer be there.
-    expect(
+    await expect(
       Plugin.get(steamship, {id: plugin.id})
     ).rejects.toThrow()
   }, 25000);

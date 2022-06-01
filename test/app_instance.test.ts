@@ -1,8 +1,10 @@
+// @ts-ignore
 import {steamshipClient} from './helper';
 import {App} from '../src/lib/app'
 import {AppVersion} from '../src/lib/app_version'
 import {AppInstance} from '../src/lib/app_instance'
 import {User} from '../src/lib/user'
+// @ts-ignore
 import {helloWorld as _helloWorld} from './app_version.test'
 import {Client} from '../src/lib/client';
 
