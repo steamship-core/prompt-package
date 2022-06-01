@@ -14,7 +14,7 @@ import {
 import {RemoteError} from "./steamship_error";
 
 
-const TWO_HUNDRED_MEGS_IN_BYTES = 200 * 1000
+const MAX_BODY_LENGTH = 100000 * 1000
 
 const _EXPECT_TASK = (client: ApiBase, data: unknown): Task<unknown> => {
   return new Task(client, data as TaskParams);
@@ -64,7 +64,7 @@ export class Task<T> implements TaskParams {
   input?: string;
   maxRetries?: number;
   retries?: number;
-  state?: string;
+  state?: TaskState;
   statusMessage?: string;
   statusCode?: string;
   statusSuggestion?: string;
@@ -457,8 +457,8 @@ export class ApiBase {
         config?.appId,
         config?.appInstanceId
       ),
-      maxContentLength: TWO_HUNDRED_MEGS_IN_BYTES,
-      maxBodyLength: TWO_HUNDRED_MEGS_IN_BYTES
+      maxContentLength: MAX_BODY_LENGTH,
+      maxBodyLength: MAX_BODY_LENGTH
     };
 
     let finalPayload: undefined | unknown | { [key: string]: undefined } =
@@ -486,6 +486,7 @@ export class ApiBase {
     }
 
     let resp = null;
+
     try {
       if (verb == 'POST') {
         resp = await axios.post(url, finalPayload, reqConfig);
@@ -495,30 +496,36 @@ export class ApiBase {
         throw new RemoteError({statusMessage: `Unsupported HTTP Verb: ${verb}`});
       }
     } catch (error) {
+      let httpStatus = ""
+      if ((error as any)?.response?.status) {
+        httpStatus = `[HTTP ${(error as any)?.response?.status}] `
+      }
+      const origMessage = `${httpStatus}${error.message}. When calling ${verb} ${url}`
+      let statusMessage = 'An unexpected error happened during your request.'
+
       if ((error as any)?.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        throw new RemoteError({
-          statusMessage: `[${(error as any)?.response?.status}] ${JSON.stringify(
-            (error as any)?.response?.data
-          )}`,
-        });
+        const data = (error as any)?.response?.data
+        if (data) {
+          if (data.status) {
+            statusMessage = JSON.stringify(data.status)
+          } else {
+            statusMessage = `${data}`
+          }
+        }
       } else if ((error as any)?.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        throw new RemoteError({
-          statusMessage: `A request was made to ${url} but no response was received`,
-        });
+        statusMessage = `A request was made to ${url} but no response was received.`
       } else {
         // Something happened in setting up the request that triggered an Error
-        throw new RemoteError({
-          statusMessage: `The request to ${url} could not be configured. Message: ${(error as any)?.message}`,
-        });
+        statusMessage = `The request to ${url} could not be configured.`
       }
       throw new RemoteError({
-        statusMessage: 'An unexpected error happened during your request.',
-      });
+        statusMessage: statusMessage, origMessage: origMessage
+      })
     }
 
     if (!resp) {
@@ -527,11 +534,6 @@ export class ApiBase {
 
     if (!resp.data) {
       throw new RemoteError({statusMessage: 'No body or task status in response.'});
-    }
-
-    // Is it an error?
-    if (resp.data.reason) {
-      throw new RemoteError({statusMessage: resp.data.reason});
     }
 
     // TODO: we might need to switch the task channel to the headers
@@ -544,7 +546,7 @@ export class ApiBase {
 
     const task = resp?.data?.status as TaskParams;
     if (task?.state == TaskState.failed) {
-      throw new RemoteError({...resp.data.error});
+      throw new RemoteError({statusMessage: task?.statusMessage});
     }
 
     return new Response<T>(
