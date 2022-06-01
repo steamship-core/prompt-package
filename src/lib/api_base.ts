@@ -501,7 +501,7 @@ export class ApiBase {
       if ((error as any)?.response?.status) {
         httpStatus = `[HTTP ${(error as any)?.response?.status}] `
       }
-      const origMessage = `${httpStatus}${error.message as any}. When calling ${verb} ${url}`
+      const origMessage = `${httpStatus}${(error as Error).message}. When calling ${verb} ${url}`
       let statusMessage = 'An unexpected error happened during your request.'
 
       if ((error as any)?.response) {
