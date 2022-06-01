@@ -1,5 +1,5 @@
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new PluginInstance(client, data as PluginInstanceParams);
@@ -92,7 +92,7 @@ export class PluginInstance {
   ): Promise<Response<PluginInstance>> {
     return (await client.post(
       'plugin/instance/create',
-      { ...params },
+      {...params},
       {
         ...config,
         expect: _EXPECT,
@@ -108,7 +108,7 @@ export class PluginInstance {
   ): Promise<Response<PluginInstance>> {
     return (await client.post(
       'plugin/instance/get',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT,
         responsePath: 'pluginInstance',
@@ -124,7 +124,7 @@ export class PluginInstance {
   ): Promise<Response<PluginInstanceList>> {
     return (await client.post(
       'plugin/instance/list',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT_LIST,
         ...config

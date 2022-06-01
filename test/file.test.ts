@@ -1,5 +1,5 @@
-import { steamshipClient } from './helper';
-import { File } from '../src/lib/file'
+import {steamshipClient} from './helper';
+import {File} from '../src/lib/file'
 
 describe("File", () => {
   test('it should be uploadable via content', async () => {

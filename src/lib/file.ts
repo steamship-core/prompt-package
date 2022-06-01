@@ -1,5 +1,5 @@
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
 
 
 export async function readFile(filename: string): Promise<Buffer> {

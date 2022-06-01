@@ -1,5 +1,5 @@
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new AppInstance(client, data as AppInstanceParams);
@@ -93,7 +93,7 @@ export class AppInstance {
   ): Promise<Response<AppInstance>> {
     return (await client.post(
       'app/instance/create',
-      { ...params },
+      {...params},
       {
         ...config,
         expect: _EXPECT,
@@ -109,7 +109,7 @@ export class AppInstance {
   ): Promise<Response<AppInstance>> {
     return (await client.post(
       'app/instance/get',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT,
         responsePath: 'appInstance',
@@ -125,7 +125,7 @@ export class AppInstance {
   ): Promise<Response<AppInstanceList>> {
     return (await client.post(
       'app/instance/list',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT_LIST,
         ...config
@@ -154,7 +154,7 @@ export class AppInstance {
   ): Promise<unknown> {
     return this.client.get(
       `/_/_/${path[0] == '/' ? path.slice(1) : path}`,
-      { ...params },
+      {...params},
       {
         ...config,
         appCall: true,
@@ -174,7 +174,7 @@ export class AppInstance {
   ): Promise<unknown> {
     return this.client.post(
       `/_/_/${path[0] == '/' ? path.slice(1) : path}`,
-      { ...params },
+      {...params},
       {
         ...config,
         appCall: true,

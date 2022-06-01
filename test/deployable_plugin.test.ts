@@ -1,9 +1,9 @@
-import { steamshipClient } from './helper';
-import { Plugin } from '../src/lib/plugin'
-import { PluginVersion } from '../src/lib/plugin_version'
-import { PluginInstance } from '../src/lib/plugin_instance'
-import { Client } from '../src/lib/client';
-import { Corpus } from '../src/lib/corpus'
+import {steamshipClient} from './helper';
+import {Plugin} from '../src/lib/plugin'
+import {PluginVersion} from '../src/lib/plugin_version'
+import {PluginInstance} from '../src/lib/plugin_instance'
+import {Client} from '../src/lib/client';
+import {Corpus} from '../src/lib/corpus'
 import path from 'path'
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -49,7 +49,7 @@ describe("Plugin", () => {
     const steamship = steamshipClient();
 
     // Can list them
-    const listOf = (await Plugin.list(steamship, { private: true })).data!
+    const listOf = (await Plugin.list(steamship, {private: true})).data!
     expect(listOf).not.toBeUndefined()
     expect(listOf.plugins).not.toBeUndefined()
 
@@ -73,7 +73,7 @@ describe("Plugin", () => {
 
     // They should no longer be there.
     expect(
-      Plugin.get(steamship, { id: plugin.id })
+      Plugin.get(steamship, {id: plugin.id})
     ).rejects.toThrow()
   }, 25000);
 

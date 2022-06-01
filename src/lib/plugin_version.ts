@@ -1,7 +1,7 @@
-import { ApiBase, Response } from './api_base';
-import { readFile } from './file';
-import { Configuration } from './shared/Configuration';
-import { MimeTypes } from './types/file';
+import {ApiBase, Response} from './api_base';
+import {readFile} from './file';
+import {Configuration} from './shared/Configuration';
+import {MimeTypes} from './types/file';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new PluginVersion(client, data as PluginVersionParams);
@@ -114,7 +114,7 @@ export class PluginVersion {
   ): Promise<Response<PluginVersion>> {
     return (await client.post(
       'plugin/version/get',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT,
         responsePath: 'pluginVersion',
@@ -130,7 +130,7 @@ export class PluginVersion {
   ): Promise<Response<PluginVersionList>> {
     return (await client.post(
       'plugin/version/list',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT_LIST,
         ...config

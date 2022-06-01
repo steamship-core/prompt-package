@@ -1,7 +1,7 @@
-import { ApiBase, Response } from './api_base';
-import { readFile } from './file';
-import { Configuration } from './shared/Configuration';
-import { MimeTypes } from './types/file';
+import {ApiBase, Response} from './api_base';
+import {readFile} from './file';
+import {Configuration} from './shared/Configuration';
+import {MimeTypes} from './types/file';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new AppVersion(client, data as AppVersionParams);
@@ -114,7 +114,7 @@ export class AppVersion {
   ): Promise<Response<AppVersion>> {
     return (await client.post(
       'app/version/get',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT,
         responsePath: 'appVersion',
@@ -130,7 +130,7 @@ export class AppVersion {
   ): Promise<Response<AppVersionList>> {
     return (await client.post(
       "app/version/list",
-      { ...params },
+      {...params},
       {
         expect: _EXPECT_LIST,
         ...config

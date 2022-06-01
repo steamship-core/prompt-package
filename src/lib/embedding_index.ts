@@ -1,4 +1,4 @@
-import { ApiBase, Response } from './api_base';
+import {ApiBase, Response} from './api_base';
 import {
   CreateIndexRequest,
   DeleteResult,
@@ -12,8 +12,8 @@ import {
   ListSnapshotsResponse,
   SearchRequest,
 } from './types/embedding';
-import { Configuration } from "./shared/Configuration";
-import { QueryResults } from "./types/base";
+import {Configuration} from "./shared/Configuration";
+import {QueryResults} from "./types/base";
 
 const _EXPECT = (client: ApiBase, data: unknown): EmbeddingIndex => {
   return new EmbeddingIndex(client, data as EmbeddingIndexParams)
@@ -37,7 +37,7 @@ export class EmbeddingIndex {
   ): Promise<Response<EmbeddingIndex>> {
     return (await client.post(
       'embedding-index/create',
-      { ...params },
+      {...params},
       {
         ...config,
         expect: _EXPECT,

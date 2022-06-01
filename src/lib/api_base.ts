@@ -1,9 +1,11 @@
 import axios from 'axios';
+
 import {
   Configuration,
   LoadConfigParams,
   loadConfiguration,
 } from './shared/Configuration';
+import {RemoteError} from "./steamship_error";
 import {TaskParams, TaskState} from './types/base';
 import {
   AddTaskCommentRequest,
@@ -11,7 +13,6 @@ import {
   ListTaskCommentResponse,
   TaskCommentResponse,
 } from './types/task_comment';
-import {RemoteError} from "./steamship_error";
 
 
 const TWO_HUNDRED_MEGS_IN_BYTES = 200 * 1000

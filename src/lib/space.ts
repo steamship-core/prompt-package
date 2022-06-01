@@ -1,6 +1,6 @@
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
-import { CreateParams, GetParams } from './shared/Requests';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
+import {CreateParams, GetParams} from './shared/Requests';
 
 export interface SpaceParams {
   id?: string;
@@ -48,7 +48,7 @@ export class Space {
   ): Promise<Response<Space>> {
     return (await client.post(
       'space/create',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT,
         responsePath: 'space',
@@ -64,7 +64,7 @@ export class Space {
   ): Promise<Response<Space>> {
     return (await client.post(
       'space/get',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT,
         responsePath: 'space',
@@ -80,7 +80,7 @@ export class Space {
   ): Promise<Response<SpaceList>> {
     return (await client.post(
       'space/list',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT_LIST,
         ...config

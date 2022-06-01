@@ -1,6 +1,6 @@
-import { ApiBase, Response } from './api_base';
-import { Configuration } from './shared/Configuration';
-import { GetParams } from './shared/Requests';
+import {ApiBase, Response} from './api_base';
+import {Configuration} from './shared/Configuration';
+import {GetParams} from './shared/Requests';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new App(client, data as AppParams)
@@ -56,7 +56,7 @@ export class App {
   ): Promise<Response<App>> {
     return (await client.post(
       'app/create',
-      { ...params },
+      {...params},
       {
         ...config,
         expect: _EXPECT,
@@ -72,7 +72,7 @@ export class App {
   ): Promise<Response<App>> {
     return (await client.post(
       'app/get',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT,
         responsePath: 'app',
@@ -88,7 +88,7 @@ export class App {
   ): Promise<Response<AppList>> {
     return (await client.post(
       'app/list',
-      { ...params },
+      {...params},
       {
         expect: _EXPECT_LIST,
         ...config
