@@ -14,7 +14,7 @@ export interface TaskParams {
   input?: string;
   maxRetries?: number;
   retries?: number;
-  state?: string;
+  state?: TaskState;
   statusMessage?: string;
   statusCode?: string;
   statusSuggestion?: string;
