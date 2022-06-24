@@ -12,13 +12,27 @@ const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
   }
 }
 
+export type PluginType =
+    'fileImporter' |
+    'corpusImporter' |
+    'corpusExporter' |
+    'blockifier' |
+    'tagger' |
+    'embedder' |
+    'exporter'
+
+export type PluginTransport = 'jsonOverHttp'
+
+export type TrainingPlatform = 'ecs' | 'lambda'
+
 export interface PluginParams {
   id?: string;
-  type?: string;
+  type?: PluginType;
   url?: string;
-  transport?: string;
+  transport?: PluginTransport;
   isPublic?: boolean;
   isTrainable?: boolean;
+  trainingPlatform?: TrainingPlatform;
   handle?: string;
   description?: string;
   dimensionality?: number;
@@ -36,11 +50,12 @@ export interface PluginList {
 }
 
 export interface CreatePluginParams {
-  type?: string;
+  type?: PluginType;
   url?: string;
-  transport?: string;
+  transport?: PluginTransport;
   isPublic?: boolean;
   isTrainable?: boolean;
+  trainingPlatform?: TrainingPlatform;
   handle?: string;
   description?: string;
   dimensionality?: number;
@@ -55,11 +70,12 @@ export interface CreatePluginParams {
 
 export class Plugin {
   id?: string;
-  type?: string;
+  type?: PluginType;
   url?: string;
-  transport?: string;
+  transport?: PluginTransport;
   isPublic?: boolean;
   isTrainable?: boolean;
+  trainingPlatform?: TrainingPlatform
   handle?: string;
   description?: string;
   dimensionality?: number;
@@ -69,7 +85,6 @@ export class Plugin {
   metadata?: unknown;
   client: ApiBase;
 
-
   constructor(client: ApiBase, params: PluginParams) {
     this.client = client;
     this.id = params.id;
@@ -78,6 +93,7 @@ export class Plugin {
     this.transport = params.transport;
     this.isPublic = params.isPublic;
     this.isTrainable = params.isTrainable;
+    this.trainingPlatform = params.trainingPlatform;
     this.handle = params.handle;
     this.description = params.description;
     this.dimensionality = params.dimensionality;
