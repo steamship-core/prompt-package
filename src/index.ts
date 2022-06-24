@@ -58,11 +58,13 @@ export type {
   AppInstanceParams,
   CreateAppInstance
 } from './lib/app_instance';
-export {
-  Plugin,
+export type {
   TrainingPlatform,
   PluginType,
   PluginTransport
+} from './lib/plugin';
+export {
+  Plugin,
 } from './lib/plugin';
 export {
   PluginInstance
