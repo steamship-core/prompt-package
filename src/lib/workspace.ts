@@ -2,7 +2,7 @@ import {ApiBase, Response} from './api_base';
 import {Configuration} from './shared/Configuration';
 import {CreateParams, GetParams} from './shared/Requests';
 
-export interface SpaceParams {
+export interface WorkspaceParams {
   id?: string;
   handle?: string;
   description?: string;
@@ -11,20 +11,20 @@ export interface SpaceParams {
 }
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
-  return new Space(client, data as SpaceParams)
+  return new Workspace(client, data as WorkspaceParams)
 }
 
 const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
   return {
-    spaces: ((data as any).spaces as Array<any>).map(x => _EXPECT(client, x))
+    workspaces: ((data as any).workspaces as Array<any>).map(x => _EXPECT(client, x))
   }
 }
 
-export interface SpaceList {
-  spaces: Space[]
+export interface WorkspaceList {
+  workspaces: Workspace[]
 }
 
-export class Space {
+export class Workspace {
   client: ApiBase;
   id?: string;
   handle?: string;
@@ -32,7 +32,7 @@ export class Space {
   createdAt?: string;
   updatedAt?: string;
 
-  constructor(client: ApiBase, params: SpaceParams) {
+  constructor(client: ApiBase, params: WorkspaceParams) {
     this.client = client;
     this.id = params.id;
     this.handle = params.handle;
@@ -45,61 +45,61 @@ export class Space {
     client: ApiBase,
     params?: CreateParams,
     config?: Configuration
-  ): Promise<Response<Space>> {
+  ): Promise<Response<Workspace>> {
     return (await client.post(
-      'space/create',
+      'workspace/create',
       {...params},
       {
         expect: _EXPECT,
-        responsePath: 'space',
+        responsePath: 'workspace',
         ...config
       },
-    )) as Response<Space>;
+    )) as Response<Workspace>;
   }
 
   static async get(
     client: ApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<Space>> {
+  ): Promise<Response<Workspace>> {
     return (await client.post(
-      'space/get',
+      'workspace/get',
       {...params},
       {
         expect: _EXPECT,
-        responsePath: 'space',
+        responsePath: 'workspace',
         ...config
       },
-    )) as Response<Space>;
+    )) as Response<Workspace>;
   }
 
   static async list(
     client: ApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<SpaceList>> {
+  ): Promise<Response<WorkspaceList>> {
     return (await client.post(
-      'space/list',
+      'workspace/list',
       {...params},
       {
         expect: _EXPECT_LIST,
         ...config
       },
-    )) as Response<SpaceList>;
+    )) as Response<WorkspaceList>;
   }
 
   async delete(
     config?: Configuration) {
     return (await this.client.post(
-      'space/delete',
+      'workspace/delete',
       {
         id: this.id,
       },
       {
         expect: _EXPECT,
-        responsePath: 'space',
+        responsePath: 'workspace',
         ...config
       }
-    )) as Response<Space>;
+    )) as Response<Workspace>;
   }
 }

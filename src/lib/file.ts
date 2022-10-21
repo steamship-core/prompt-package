@@ -19,7 +19,7 @@ export interface FileParams {
   handle?: string;
   mimeType?: string;
   corpusId?: string;
-  spaceId?: string;
+  workspaceId?: string;
 }
 
 export interface UploadParams {
@@ -29,7 +29,7 @@ export interface UploadParams {
   handle?: string;
   mimeType?: string;
   corpusId?: string;
-  spaceId?: string;
+  workspaceId?: string;
 }
 
 export class File {
@@ -37,7 +37,7 @@ export class File {
   handle?: string;
   mimeType?: string;
   corpusId?: string;
-  spaceId?: string;
+  workspaceId?: string;
   client: ApiBase;
 
   constructor(client: ApiBase, params: FileParams) {
@@ -46,7 +46,7 @@ export class File {
     this.handle = params.handle;
     this.mimeType = params.mimeType;
     this.corpusId = params.corpusId;
-    this.spaceId = params.spaceId;
+    this.workspaceId = params.workspaceId;
   }
 
   static async upload(
@@ -75,7 +75,7 @@ export class File {
         value: params.content,
         mimeType: params.mimeType,
         corpusId: params.corpusId,
-        spaceId: params.spaceId,
+        workspaceId: params.workspaceId,
       },
       {
         ...config,

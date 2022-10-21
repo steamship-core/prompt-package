@@ -40,7 +40,7 @@ export interface PluginInstanceParams {
   updatedAt?: string;
   userId?: string;
   userHandle?: string;
-  spaceId?: string;
+  workspaceId?: string;
   config?: Record<string, any>;
 }
 
@@ -51,7 +51,7 @@ export interface CreatePluginInstance {
   pluginVersionId?: string;
   pluginHandle?: string;
   pluginVersionHandle?: string;
-  spaceId?: string;
+  workspaceId?: string;
   upsert?: boolean;
   config?: Record<string, any>;
 }
@@ -61,7 +61,7 @@ export class PluginInstance {
   handle?: string;
   pluginId?: string;
   pluginVersionId?: string;
-  spaceId?: string;
+  workspaceId?: string;
   userId?: string;
   userHandle?: string;
   description?: string;
@@ -76,7 +76,7 @@ export class PluginInstance {
     this.handle = params.handle;
     this.pluginId = params.pluginId;
     this.pluginVersionId = params.pluginVersionId;
-    this.spaceId = params.pluginInstanceId;
+    this.workspaceId = params.pluginInstanceId;
     this.userId = params.userId;
     this.userHandle = params.userHandle;
     this.createdAt = params.createdAt;

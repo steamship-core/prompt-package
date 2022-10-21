@@ -85,7 +85,7 @@ export type {
 } from './lib/plugin_version';
 export {User} from './lib/user';
 
-export {Space} from './lib/space';
+export {Workspace} from './lib/workspace';
 
 export type {
   Configuration,

@@ -19,7 +19,7 @@ let DEFAULT_CONFIG: Configuration = {
   apiBase: 'https://api.steamship.com/api/v1/',
   appBase: 'https://steamship.run/',
   webBase: 'https://app.steamship.com/',
-  spaceId: '9876-5432-100',
+  workspaceId: '9876-5432-100',
 };
 
 let DEFAULT_CONFIG_WITH_PROFILE: Configuration = {
@@ -27,8 +27,8 @@ let DEFAULT_CONFIG_WITH_PROFILE: Configuration = {
   apiBase: 'https://api.steamship.com/api/v1/',
   appBase: 'https://steamship.run/',
   webBase: 'https://app.steamship.com/',
-  spaceId: 'some space id',
-  spaceHandle: 'the space name',
+  workspaceId: 'some space id',
+  workspaceHandle: 'the space name',
   // profile: this key will be attached upon load
   profiles: {
     my_profile: {
@@ -36,8 +36,8 @@ let DEFAULT_CONFIG_WITH_PROFILE: Configuration = {
       apiBase: 'https://other.steamship.com/api/v1/',
       appBase: 'https://other.steamship.com/api/v1/',
       webBase: 'http://app.steamship.com/',
-      spaceId: 'some new space id',
-      spaceHandle: 'the new space name',
+      workspaceId: 'some new space id',
+      workspaceHandle: 'the new space name',
     },
   },
 };

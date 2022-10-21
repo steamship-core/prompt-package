@@ -30,12 +30,12 @@ export interface AppParams {
 export class App {
   id?: string;
   handle?: string;
+  isPublic?: boolean;
   userId?: string;
   userHandle?: string;
   description?: string;
   createdAt?: string;
   updatedAt?: string;
-  isPublic?: boolean;
   client: ApiBase;
 
   constructor(client: ApiBase, params: AppParams) {

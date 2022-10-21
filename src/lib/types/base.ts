@@ -8,7 +8,7 @@ export enum TaskState {
 export interface TaskParams {
   taskId?: string;
   userId?: string;
-  spaceId?: string;
+  workspaceId?: string;
   version?: string;
   name?: string;
   input?: string;

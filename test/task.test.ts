@@ -1,6 +1,6 @@
 import {steamshipClient} from './helper';
 import {createEmbeddingIndex} from "./embedding_index.test";
-import {Space, Task} from "../src";
+import {Workspace, Task} from "../src";
 import {TaskState} from "../src/lib/types/base";
 
 test('Test Task List', async () => {
@@ -41,15 +41,15 @@ test('Test Task List', async () => {
     expect(tasks3.tasks.length).toBe(1)
 
     // Filtering for bad space; 0 results
-    let space2 = (await Space.create(client)).data
+    let space2 = (await Workspace.create(client)).data
     expect(space2).not.toBeFalsy()
     expect(space2?.handle).not.toBeFalsy()
 
-    expect(space2?.handle).not.toEqual((await client.config).spaceHandle)
+    expect(space2?.handle).not.toEqual((await client.config).workspaceHandle)
 
     let tasksR4 = await Task.list(client, {
       id: embedR.task!.taskId,
-      spaceId: space2?.id
+      workspaceId: space2?.id
     })
     expect(tasksR4.data).not.toBeFalsy()
     let tasks4 = tasksR4.data!
@@ -59,7 +59,7 @@ test('Test Task List', async () => {
     // But filtering for good space is OK!
     let tasksR5 = await Task.list(client, {
       id: embedR.task!.taskId,
-      spaceId: (await client.config).spaceId
+      workspaceId: (await client.config).workspaceId
     })
     expect(tasksR5.data).not.toBeFalsy()
     let tasks5 = tasksR5.data!

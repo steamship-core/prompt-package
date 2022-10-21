@@ -33,8 +33,8 @@ const _EXPECT_LIST = (client: ApiBase, data: unknown): TaskList => {
 export interface TaskListParams {
   // The task ID
   id?: string
-  // The space in which the task lives
-  spaceId?: string
+  // The workspace in which the task lives
+  workspaceId?: string
   // The state of the task
   state?: TaskState
 }
@@ -59,7 +59,7 @@ export class Task<T> implements TaskParams {
   client: ApiBase;
   taskId?: string;
   userId?: string;
-  spaceId?: string;
+  workspaceId?: string;
   version?: string;
   name?: string;
   input?: string;
@@ -101,7 +101,7 @@ export class Task<T> implements TaskParams {
     if (params) {
       this.taskId = params?.taskId;
       this.userId = params?.userId;
-      this.spaceId = params?.spaceId;
+      this.workspaceId = params?.workspaceId;
       this.version = params?.version;
       this.name = params?.name;
       this.input = params?.input;
@@ -311,8 +311,8 @@ export class ApiBase {
 
   _headers(
     config: Configuration,
-    spaceId?: string,
-    spaceHandle?: string,
+    workspaceId?: string,
+    workspaceHandle?: string,
     appOwner?: string,
     appCall?: boolean,
     appId?: string,
@@ -323,14 +323,14 @@ export class ApiBase {
       Authorization: `Bearer ${config.apiKey}`,
     };
 
-    if (spaceId) {
-      ret['X-Space-Id'] = spaceId;
-    } else if (config.spaceId) {
-      ret['X-Space-Id'] = config.spaceId;
-    } else if (spaceHandle) {
-      ret['X-Space-Handle'] = spaceHandle;
-    } else if (config.spaceHandle) {
-      ret['X-Space-Handle'] = config.spaceHandle;
+    if (workspaceId) {
+      ret['X-Workspace-Id'] = workspaceId;
+    } else if (config.workspaceId) {
+      ret['X-Workspace-Id'] = config.workspaceId;
+    } else if (workspaceHandle) {
+      ret['X-Workspace-Handle'] = workspaceHandle;
+    } else if (config.workspaceHandle) {
+      ret['X-Workspace-Handle'] = config.workspaceHandle;
     }
     if (appCall === true) {
       if (appOwner) {
@@ -451,8 +451,8 @@ export class ApiBase {
     const reqConfig = {
       headers: this._headers(
         baseConfig,
-        config?.spaceId,
-        config?.spaceHandle,
+        config?.workspaceId,
+        config?.workspaceHandle,
         config?.appOwner,
         config?.appCall,
         config?.appId,

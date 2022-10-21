@@ -40,7 +40,7 @@ export interface AppInstanceParams {
   updatedAt?: string;
   userId?: string;
   userHandle?: string;
-  spaceId?: string;
+  workspaceId?: string;
   invocationURL?: string;
   config?: Record<string, any>;
 }
@@ -50,7 +50,7 @@ export interface CreateAppInstance {
   handle?: string;
   appId?: string;
   appVersionId?: string;
-  spaceId?: string;
+  workspaceId?: string;
   upsert?: boolean;
   config?: Record<string, any>;
 }
@@ -60,7 +60,7 @@ export class AppInstance {
   handle?: string;
   appId?: string;
   appVersionId?: string;
-  spaceId?: string;
+  workspaceId?: string;
   userId?: string;
   userHandle?: string;
   description?: string;
@@ -76,7 +76,7 @@ export class AppInstance {
     this.handle = params.handle;
     this.appId = params.appId;
     this.appVersionId = params.appVersionId;
-    this.spaceId = params.spaceId;
+    this.workspaceId = params.workspaceId;
     this.userId = params.userId;
     this.userHandle = params.userHandle;
     this.createdAt = params.createdAt;
@@ -162,7 +162,7 @@ export class AppInstance {
         appId: this.appId,
         appInstanceId: this.id,
         rawResponse: true,
-        spaceId: this.spaceId
+        workspaceId: this.workspaceId
       }
     );
   }
@@ -182,7 +182,7 @@ export class AppInstance {
         appId: this.appId,
         appInstanceId: this.id,
         rawResponse: true,
-        spaceId: this.spaceId
+        workspaceId: this.workspaceId
       }
     );
   }

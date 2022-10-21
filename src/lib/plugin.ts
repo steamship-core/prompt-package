@@ -64,8 +64,8 @@ export interface CreatePluginParams {
   apiKey?: string;
   metadata?: unknown;
   upsert?: boolean;
-  spaceId?: string;
-  spaceHandle?: string;
+  workspaceId?: string;
+  workspaceHandle?: string;
 }
 
 export class Plugin {

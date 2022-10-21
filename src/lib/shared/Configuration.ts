@@ -8,8 +8,8 @@ export interface Configuration {
   apiBase?: string;
   appBase?: string;
   webBase?: string;
-  spaceId?: string;
-  spaceHandle?: string;
+  workspaceId?: string;
+  workspaceHandle?: string;
   profile?: string;
   profiles?: { [name: string]: Configuration };
 }
@@ -19,8 +19,8 @@ export interface LoadConfigParams {
   apiBase?: string; // https://api.steamship.com/api/v1
   appBase?: string; // https://steamship.run/
   webBase?: string; // https://app.steamship.com
-  spaceId?: string;
-  spaceHandle?: string;
+  workspaceId?: string;
+  workspaceHandle?: string;
   profile?: string;
   configFile?: string; // config file on disk
 }
@@ -30,8 +30,8 @@ export interface SaveConfigParams {
   apiBase?: string;
   appBase?: string;
   webBase?: string;
-  spaceId?: string;
-  spaceHandle?: string;
+  workspaceId?: string;
+  workspaceHandle?: string;
   profile?: string;
   profiles?: { [name: string]: Configuration }; // Only allowed if not modifying a profile
 }
@@ -174,11 +174,11 @@ class ConfigManager {
     if (config.apiKey) {
       this._config.apiKey = config.apiKey;
     }
-    if (config.spaceId) {
-      this._config.spaceId = config.spaceId;
+    if (config.workspaceId) {
+      this._config.workspaceId = config.workspaceId;
     }
-    if (config.spaceHandle) {
-      this._config.spaceHandle = config.spaceHandle;
+    if (config.workspaceHandle) {
+      this._config.workspaceHandle = config.workspaceHandle;
     }
     return true;
   }
@@ -208,11 +208,11 @@ class ConfigManager {
         if (process.env['STEAMSHIP_API_KEY']) {
           this._config.apiKey = process.env['STEAMSHIP_API_KEY'];
         }
-        if (process.env['STEAMSHIP_SPACE_ID']) {
-          this._config.spaceId = process.env['STEAMSHIP_SPACE_ID'];
+        if (process.env['STEAMSHIP_WORKSPACE_ID']) {
+          this._config.workspaceId = process.env['STEAMSHIP_WORKSPACE_ID'];
         }
-        if (process.env['STEAMSHIP_SPACE_HANDLE']) {
-          this._config.spaceHandle = process.env['STEAMSHIP_SPACE_HANDLE'];
+        if (process.env['STEAMSHIP_WORKSPACE_HANDLE']) {
+          this._config.workspaceHandle = process.env['STEAMSHIP_WORKSPACE_HANDLE'];
         }
       } catch {
         // pass
@@ -233,11 +233,11 @@ class ConfigManager {
     if (params?.apiKey) {
       this._config.apiKey = params?.apiKey;
     }
-    if (params?.spaceId) {
-      this._config.spaceId = params?.spaceId;
+    if (params?.workspaceId) {
+      this._config.workspaceId = params?.workspaceId;
     }
-    if (params?.spaceHandle) {
-      this._config.spaceHandle = params?.spaceHandle;
+    if (params?.workspaceHandle) {
+      this._config.workspaceHandle = params?.workspaceHandle;
     }
   }
 
