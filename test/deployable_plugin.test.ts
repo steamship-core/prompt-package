@@ -1,7 +1,6 @@
 // @ts-ignore
-import {steamshipClient} from './helper';
+import {randomName, steamshipClient} from './helper';
 import {Client, Plugin, PluginInstance, PluginVersion} from '../src'
-import {Corpus} from '../src/lib/corpus'
 import path from 'path'
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -18,16 +17,17 @@ export async function deployInstance(client: Client): Promise<[Plugin, PluginVer
 
 export async function deployVersion(client: Client): Promise<[Plugin, PluginVersion]> {
   const req1 = (await Plugin.create(client, {
-    type: "corpusImporter",
+    type: "tagger",
+    handle: randomName(),
     transport: "jsonOverHttp",
     isPublic: false,
-    description: "a test corpus importer",
+    description: "a test tagger",
     upsert: true,
     isTrainable: false
   }))
   const plugin1 = req1.data!
 
-  const filename = path.join(process.cwd(), 'testAssets', 'plugin_corpus_importer.zip')
+  const filename = path.join(process.cwd(), 'testAssets', 'plugin_configurable_tagger.zip')
 
   const version1t = (await PluginVersion.create(client, {
     pluginId: plugin1.id!,
@@ -43,7 +43,7 @@ export async function deployVersion(client: Client): Promise<[Plugin, PluginVers
 
 
 describe("Plugin", () => {
-  test('a deployed corpus_importer should be executable', async () => {
+  test('a deployed tagger should be executable', async () => {
     const steamship = steamshipClient();
 
     // Can list them
@@ -57,22 +57,10 @@ describe("Plugin", () => {
     })).data!
     expect(fileImporterInstance.handle).not.toBeUndefined()
 
-    const [plugin, pluginVersion, pluginInstance] = await deployInstance(steamship)
+    const [, , pluginInstance] = await deployInstance(steamship)
     expect(pluginInstance.handle).not.toBeUndefined()
 
-    const corpus = (await Corpus.create(steamship)).data!
-    expect(corpus.handle).not.toBeUndefined()
-
     //TODO: Currently no way to actually do an import!
-
     await pluginInstance.delete()
-    await pluginVersion.delete()
-    await plugin.delete()
-
-    // They should no longer be there.
-    await expect(
-      Plugin.get(steamship, {id: plugin.id})
-    ).rejects.toThrow()
-  }, 25000);
-
+  }, 25000)
 })

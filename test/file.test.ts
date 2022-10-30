@@ -1,3 +1,4 @@
+// @ts-ignore
 import {steamshipClient} from './helper';
 import {File} from '../src/lib/file'
 

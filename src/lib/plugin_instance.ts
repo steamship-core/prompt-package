@@ -1,5 +1,5 @@
-import {ApiBase, Response} from './api_base';
-import {Configuration} from './shared/Configuration';
+import { ApiBase, Response } from './api_base';
+import { Configuration } from './shared/Configuration';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new PluginInstance(client, data as PluginInstanceParams);
@@ -7,12 +7,14 @@ const _EXPECT = (client: ApiBase, data: unknown) => {
 
 const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
   if (!data) {
-    return []
+    return [];
   }
   return {
-    pluginInstances: ((data as any).pluginInstances as Array<any>).map(x => _EXPECT(client, x))
-  }
-}
+    pluginInstances: ((data as any).pluginInstances as Array<any>).map((x) =>
+      _EXPECT(client, x)
+    ),
+  };
+};
 
 export interface GetParams {
   id?: string;
@@ -21,12 +23,12 @@ export interface GetParams {
 }
 
 export interface PluginInstanceListParams {
-  pluginId?: string
-  pluginVersionId?: string
+  pluginId?: string;
+  pluginVersionId?: string;
 }
 
 export interface PluginInstanceList {
-  pluginInstances: PluginInstance[]
+  pluginInstances: PluginInstance[];
 }
 
 export interface PluginInstanceParams {
@@ -40,7 +42,7 @@ export interface PluginInstanceParams {
   updatedAt?: string;
   userId?: string;
   userHandle?: string;
-  spaceId?: string;
+  workspaceId?: string;
   config?: Record<string, any>;
 }
 
@@ -48,11 +50,11 @@ export interface CreatePluginInstance {
   id?: string;
   handle?: string;
   pluginId?: string;
-  pluginVersionId?: string;
   pluginHandle?: string;
+  pluginVersionId?: string;
   pluginVersionHandle?: string;
-  spaceId?: string;
-  upsert?: boolean;
+  workspaceId?: string;
+  fetchIfExists?: boolean;
   config?: Record<string, any>;
 }
 
@@ -61,7 +63,7 @@ export class PluginInstance {
   handle?: string;
   pluginId?: string;
   pluginVersionId?: string;
-  spaceId?: string;
+  workspaceId?: string;
   userId?: string;
   userHandle?: string;
   description?: string;
@@ -76,7 +78,7 @@ export class PluginInstance {
     this.handle = params.handle;
     this.pluginId = params.pluginId;
     this.pluginVersionId = params.pluginVersionId;
-    this.spaceId = params.pluginInstanceId;
+    this.workspaceId = params.pluginInstanceId;
     this.userId = params.userId;
     this.userHandle = params.userHandle;
     this.createdAt = params.createdAt;
@@ -92,7 +94,7 @@ export class PluginInstance {
   ): Promise<Response<PluginInstance>> {
     return (await client.post(
       'plugin/instance/create',
-      {...params},
+      { ...params },
       {
         ...config,
         expect: _EXPECT,
@@ -108,7 +110,7 @@ export class PluginInstance {
   ): Promise<Response<PluginInstance>> {
     return (await client.post(
       'plugin/instance/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'pluginInstance',
@@ -124,11 +126,11 @@ export class PluginInstance {
   ): Promise<Response<PluginInstanceList>> {
     return (await client.post(
       'plugin/instance/list',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT_LIST,
-        ...config
-      },
+        ...config,
+      }
     )) as Response<PluginInstanceList>;
   }
 
@@ -145,6 +147,4 @@ export class PluginInstance {
       }
     )) as Response<PluginInstance>;
   }
-
-
 }

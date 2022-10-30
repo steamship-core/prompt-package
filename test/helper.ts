@@ -20,23 +20,23 @@ export const DEFAULT_CONFIG: Configuration = {
   apiKey: '1234-5678-9123-4567',
   apiBase: 'https://api.steamship.com/api/v1/',
   appBase: 'https://steamship.com/api/v1/',
-  spaceId: '9876-5432-100',
+  workspaceId: '9876-5432-100',
 };
 
 export const DEFAULT_CONFIG_WITH_PROFILE: Configuration = {
   apiKey: 'some new key',
   apiBase: 'https://api.steamship.com/api/v1/',
   appBase: 'https://steamship.com/api/v1/',
-  spaceId: 'some space id',
-  spaceHandle: 'the space name',
+  workspaceId: 'some space id',
+  workspaceHandle: 'the space name',
   // profile: this key will be attached upon load
   profiles: {
     my_profile: {
       apiKey: 'some special profile api key',
       apiBase: 'https://other.steamship.com/api/v1/',
       appBase: 'https://other.steamship.com/api/v1/',
-      spaceId: 'some new space id',
-      spaceHandle: 'the new space name',
+      workspaceId: 'some new space id',
+      workspaceHandle: 'the new space name',
     },
   },
 };

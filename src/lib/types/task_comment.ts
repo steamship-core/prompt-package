@@ -1,4 +1,4 @@
-import {Metadata} from './base';
+import { Metadata } from './base';
 
 export interface AddTaskCommentRequest {
   taskId?: string;
@@ -6,7 +6,6 @@ export interface AddTaskCommentRequest {
   externalType?: string;
   externalGroup?: string;
   metadata?: Metadata;
-  upsert?: boolean;
 }
 
 export interface DeleteTaskCommentRequest {

@@ -1,39 +1,39 @@
 export interface RemoteErrorProps {
-  statusCode?: string
-  statusMessage?: string
-  statusSuggestion?: string
-  origMessage?: string
+  statusCode?: string;
+  statusMessage?: string;
+  statusSuggestion?: string;
+  origMessage?: string;
 }
 
-export class RemoteError extends Error {
-  statusCode?: string
-  statusSuggestion?: string
-  origMessage?: string
+export class SteamshipError extends Error {
+  statusCode?: string;
+  statusSuggestion?: string;
+  origMessage?: string;
 
   constructor(props?: RemoteErrorProps) {
-    const parts = []
+    const parts = [];
     if (props?.statusCode) {
-      parts.push(props?.statusCode)
+      parts.push(props?.statusCode);
     }
     if (props?.statusMessage) {
-      parts.push(`Message: ${props?.statusMessage}`)
+      parts.push(`Message: ${props?.statusMessage}`);
     }
     if (props?.statusSuggestion) {
-      parts.push(`Suggestion: ${props?.statusSuggestion}`)
+      parts.push(`Suggestion: ${props?.statusSuggestion}`);
     }
     if (props?.origMessage) {
-      parts.push(`WrappedError: ${props?.origMessage}`)
+      parts.push(`WrappedError: ${props?.origMessage}`);
     }
 
-    let baseMessage = 'Unknown server error.'
+    let baseMessage = 'Unknown server error.';
     if (parts.length > 0) {
-      baseMessage = parts.join('\n')
+      baseMessage = parts.join('\n');
     }
-    super(baseMessage)
-    this.statusCode = props?.statusCode
-    this.origMessage = props?.origMessage
-    this.message = baseMessage
-    this.statusSuggestion = props?.statusSuggestion
-    Object.setPrototypeOf(this, RemoteError.prototype);
+    super(baseMessage);
+    this.statusCode = props?.statusCode;
+    this.origMessage = props?.origMessage;
+    this.message = baseMessage;
+    this.statusSuggestion = props?.statusSuggestion;
+    Object.setPrototypeOf(this, SteamshipError.prototype);
   }
 }

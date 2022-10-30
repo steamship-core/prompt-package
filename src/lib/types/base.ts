@@ -8,7 +8,7 @@ export enum TaskState {
 export interface TaskParams {
   taskId?: string;
   userId?: string;
-  spaceId?: string;
+  workspaceId?: string;
   version?: string;
   name?: string;
   input?: string;
@@ -23,16 +23,16 @@ export interface TaskParams {
   taskExecutor?: string;
   taskType?: string;
   assignedWorker?: string;
-  startedAt?: string
+  startedAt?: string;
 }
 
 export type Metadata = unknown;
 
 export interface QueryResult<T> {
-  value?: T
-  score?: number
-  index?: number
-  id?: string
+  value?: T;
+  score?: number;
+  index?: number;
+  id?: string;
 }
 
 export interface QueryResults<T> {

@@ -1,7 +1,7 @@
-import {ApiBase, Response} from './api_base';
-import {readFile} from './file';
-import {Configuration} from './shared/Configuration';
-import {MimeTypes} from './types/file';
+import { ApiBase, Response } from './api_base';
+import { readFile } from './file';
+import { Configuration } from './shared/Configuration';
+import { MimeTypes } from './types/file';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new PluginVersion(client, data as PluginVersionParams);
@@ -9,12 +9,14 @@ const _EXPECT = (client: ApiBase, data: unknown) => {
 
 const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
   if (!data) {
-    return []
+    return [];
   }
   return {
-    pluginVersions: ((data as any).pluginVersions as Array<any>).map(x => _EXPECT(client, x))
-  }
-}
+    pluginVersions: ((data as any).pluginVersions as Array<any>).map((x) =>
+      _EXPECT(client, x)
+    ),
+  };
+};
 
 export interface GetParams {
   id?: string;
@@ -23,11 +25,11 @@ export interface GetParams {
 }
 
 export interface PluginVersionListParams {
-  pluginId?: string
+  pluginId?: string;
 }
 
 export interface PluginVersionList {
-  pluginVersions: PluginVersion[]
+  pluginVersions: PluginVersion[];
 }
 
 export interface PluginVersionParams {
@@ -38,14 +40,14 @@ export interface PluginVersionParams {
   createdAt?: string;
   updatedAt?: string;
   isDefault?: boolean;
-  configTemplate?: Record<string, any>
+  configTemplate?: Record<string, any>;
 }
 
 export interface CreateParams {
   filename: string;
   pluginId: string;
   handle?: string;
-  configTemplate?: Record<string, any>
+  configTemplate?: Record<string, any>;
 }
 
 export class PluginVersion {
@@ -57,7 +59,7 @@ export class PluginVersion {
   isDefault?: boolean;
   description?: string;
   client: ApiBase;
-  configTemplate?: Record<string, any>
+  configTemplate?: Record<string, any>;
 
   constructor(client: ApiBase, params: PluginVersionParams) {
     this.client = client;
@@ -77,7 +79,9 @@ export class PluginVersion {
     config?: Configuration
   ): Promise<Response<PluginVersion>> {
     if (!params.filename) {
-      throw Error('A filename must be provided to create a new plugin version.');
+      throw Error(
+        'A filename must be provided to create a new plugin version.'
+      );
     }
     if (!params.filename.toLowerCase().endsWith('.zip')) {
       throw Error(
@@ -95,7 +99,7 @@ export class PluginVersion {
         handle: params.handle,
         mimeType: MimeTypes.ZIP,
         pluginId: params.pluginId,
-        configTemplate: JSON.stringify(params.configTemplate)
+        configTemplate: JSON.stringify(params.configTemplate),
       },
       {
         ...config,
@@ -114,7 +118,7 @@ export class PluginVersion {
   ): Promise<Response<PluginVersion>> {
     return (await client.post(
       'plugin/version/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'pluginVersion',
@@ -130,11 +134,11 @@ export class PluginVersion {
   ): Promise<Response<PluginVersionList>> {
     return (await client.post(
       'plugin/version/list',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT_LIST,
-        ...config
-      },
+        ...config,
+      }
     )) as Response<PluginVersionList>;
   }
 

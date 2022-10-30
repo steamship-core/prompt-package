@@ -1,103 +1,65 @@
-export {Client} from './lib/client';
-export {RemoteError} from './lib/steamship_error';
-
-// Embedding
-export {EmbeddingIndex} from './lib/embedding_index';
+export { default as regeneratorRuntime } from 'regenerator-runtime';
+export { Response, Task } from './lib/api_base';
+export { Client } from './lib/client';
+export { File } from './lib/file';
+export { Package } from './lib/package';
+export { PackageInstance } from './lib/package_instance';
 export type {
-  CreateIndexRequest,
-  EmbeddingHit,
-  SearchRequest,
-  InsertRequest,
-  InsertResult,
-  IndexSnapshotRequest,
-  IndexSnapshotResponse,
-} from './lib/types/embedding';
-
+  CreatePackageInstance,
+  PackageInstanceList,
+  PackageInstanceListParams,
+  PackageInstanceParams,
+} from './lib/package_instance';
+export { PackageVersion } from './lib/package_version';
 export type {
-  TaskState as TaskStatus,
-  TaskParams,
-  QueryResult,
-  QueryResults,
-  Metadata,
-} from './lib/types/base';
-
+  PackageVersionList,
+  PackageVersionListParams,
+  PackageVersionParams,
+} from './lib/package_version';
+export { Plugin } from './lib/plugin';
 export type {
-  AddTaskCommentRequest,
-  TaskCommentResponse,
-  ListTaskCommentRequest,
-  ListTaskCommentResponse,
-  DeleteTaskCommentRequest,
-} from './lib/types/task_comment';
-
-export {Task, Response} from './lib/api_base';
-
-export type {
-  CreateModelRequest,
-  Model,
-  ModelAdapterType,
-  ModelType,
-  ListModelsResponse,
-  ListPrivateModelsRequest,
-  ListPublicModelsRequest,
-  DeleteModelRequest,
-} from './lib/types/models';
-
-export {App} from './lib/app';
-export {
-  AppVersion
-} from './lib/app_version';
-export type {
-  AppVersionList, AppVersionListParams, AppVersionParams
-} from './lib/app_version';
-export {
-  AppInstance
-} from './lib/app_instance';
-export type {
-  AppInstanceList,
-  AppInstanceListParams,
-  AppInstanceParams,
-  CreateAppInstance
-} from './lib/app_instance';
-export type {
-  TrainingPlatform,
+  PluginTransport,
   PluginType,
-  PluginTransport
+  TrainingPlatform,
 } from './lib/plugin';
-export {
-  Plugin,
-} from './lib/plugin';
-export {
-  PluginInstance
-} from './lib/plugin_instance';
+export { PluginInstance } from './lib/plugin_instance';
 export type {
+  CreatePluginInstance,
   PluginInstanceList,
   PluginInstanceListParams,
   PluginInstanceParams,
-  CreatePluginInstance
 } from './lib/plugin_instance';
-export {
-  PluginVersion
-} from './lib/plugin_version';
+export { PluginVersion } from './lib/plugin_version';
 export type {
   PluginVersionList,
   PluginVersionListParams,
-  PluginVersionParams
+  PluginVersionParams,
 } from './lib/plugin_version';
-export {User} from './lib/user';
-
-export {Space} from './lib/space';
-
-export type {
-  Configuration,
-  LoadConfigParams,
-  SaveConfigParams,
-} from './lib/shared/Configuration';
-
 export {
   CONFIG_FILENAME,
   DEFAULT_CONFIG,
   loadConfiguration,
   saveConfiguration,
 } from './lib/shared/Configuration';
-
-export {default as regeneratorRuntime} from 'regenerator-runtime';
+export type {
+  Configuration,
+  LoadConfigParams,
+  SaveConfigParams,
+} from './lib/shared/Configuration';
+export { SteamshipError } from './lib/steamship_error';
+export type {
+  Metadata,
+  QueryResult,
+  QueryResults,
+  TaskParams,
+  TaskState as TaskStatus,
+} from './lib/types/base';
+export type {
+  AddTaskCommentRequest,
+  DeleteTaskCommentRequest,
+  ListTaskCommentRequest,
+  ListTaskCommentResponse,
+  TaskCommentResponse,
+} from './lib/types/task_comment';
+export { User } from './lib/user';
+export { Workspace } from './lib/workspace';
