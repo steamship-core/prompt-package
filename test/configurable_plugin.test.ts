@@ -1,3 +1,4 @@
+// @ts-ignore
 import {steamshipClient} from './helper';
 import {Plugin} from '../src/lib/plugin'
 import {PluginVersion} from '../src/lib/plugin_version'
@@ -85,7 +86,6 @@ describe("Plugin", () => {
     await instance2.delete()
     await pluginInstance.delete()
     await pluginVersion.delete()
-    await plugin.delete()
 
     // They should no longer be there.
     expect(

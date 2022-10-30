@@ -1,6 +1,6 @@
-import {ApiBase, Response} from './api_base';
-import {Configuration} from './shared/Configuration';
-import {GetParams} from "./shared/Requests";
+import { ApiBase, Response } from './api_base';
+import { Configuration } from './shared/Configuration';
+import { GetParams } from './shared/Requests';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new Plugin(client, data as PluginParams);
@@ -8,22 +8,24 @@ const _EXPECT = (client: ApiBase, data: unknown) => {
 
 const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
   return {
-    plugins: ((data as any).plugins as Array<any>).map(x => _EXPECT(client, x))
-  }
-}
+    plugins: ((data as any).plugins as Array<any>).map((x) =>
+      _EXPECT(client, x)
+    ),
+  };
+};
 
 export type PluginType =
-    'fileImporter' |
-    'corpusImporter' |
-    'corpusExporter' |
-    'blockifier' |
-    'tagger' |
-    'embedder' |
-    'exporter'
+  | 'fileImporter'
+  | 'corpusImporter'
+  | 'corpusExporter'
+  | 'blockifier'
+  | 'tagger'
+  | 'embedder'
+  | 'exporter';
 
-export type PluginTransport = 'jsonOverHttp'
+export type PluginTransport = 'jsonOverHttp';
 
-export type TrainingPlatform = 'ecs' | 'lambda'
+export type TrainingPlatform = 'ecs' | 'lambda';
 
 export interface PluginParams {
   id?: string;
@@ -42,11 +44,8 @@ export interface PluginParams {
   metadata?: unknown;
 }
 
-export interface ListParams {
-}
-
 export interface PluginList {
-  plugins?: Plugin[]
+  plugins?: Plugin[];
 }
 
 export interface CreatePluginParams {
@@ -63,7 +62,7 @@ export interface CreatePluginParams {
   limitUnit?: string;
   apiKey?: string;
   metadata?: unknown;
-  upsert?: boolean;
+  fetchIfExists?: boolean;
   workspaceId?: string;
   workspaceHandle?: string;
 }
@@ -75,7 +74,7 @@ export class Plugin {
   transport?: PluginTransport;
   isPublic?: boolean;
   isTrainable?: boolean;
-  trainingPlatform?: TrainingPlatform
+  trainingPlatform?: TrainingPlatform;
   handle?: string;
   description?: string;
   dimensionality?: number;
@@ -113,7 +112,7 @@ export class Plugin {
     }
     return (await client.post(
       'plugin/create',
-      {...params},
+      { ...params },
       {
         ...config,
         expect: _EXPECT,
@@ -129,44 +128,27 @@ export class Plugin {
   ): Promise<Response<Plugin>> {
     return (await client.post(
       'plugin/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'plugin',
-        ...config
-      },
-    )) as Response<Plugin>;
-  }
-
-
-  static async list(
-    client: ApiBase,
-    params?: ListParams,
-    config?: Configuration
-  ): Promise<Response<PluginList>> {
-    return (await client.post(
-      "plugin/list",
-      {...params},
-      {
-        expect: _EXPECT_LIST,
-        ...config
-      },
-    )) as Response<PluginList>;
-  }
-
-  async delete(
-    config?: Configuration) {
-    return (await this.client.post(
-      'plugin/delete',
-      {
-        id: this.id,
-      },
-      {
-        expect: _EXPECT,
-        responsePath: 'plugin',
-        ...config
+        ...config,
       }
     )) as Response<Plugin>;
   }
 
+  static async list(
+    client: ApiBase,
+    params?: any,
+    config?: Configuration
+  ): Promise<Response<PluginList>> {
+    return (await client.post(
+      'plugin/list',
+      { ...params },
+      {
+        expect: _EXPECT_LIST,
+        ...config,
+      }
+    )) as Response<PluginList>;
+  }
 }
