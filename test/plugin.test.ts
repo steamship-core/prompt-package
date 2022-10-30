@@ -1,3 +1,4 @@
+// @ts-ignore
 import {steamshipClient} from './helper';
 import {Plugin} from '../src/lib/plugin'
 
@@ -27,13 +28,6 @@ describe("Plugin", () => {
     expect(listOf2.plugins).not.toBeUndefined()
     expect(listOf2.plugins?.length).toBe(1 + startSize)
     expect((listOf2.plugins![listOf2.plugins!.length - 1] as Plugin).handle).toBe(plugin1.handle)
-
-    await plugin1.delete()
-
-    // They should no longer be there.
-    expect(
-      Plugin.get(steamship, {id: plugin1.id})
-    ).rejects.toThrow()
   }, 10000);
 
 })

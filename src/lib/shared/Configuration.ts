@@ -19,10 +19,10 @@ export interface LoadConfigParams {
   apiBase?: string; // https://api.steamship.com/api/v1
   appBase?: string; // https://steamship.run/
   webBase?: string; // https://app.steamship.com
-  workspaceId?: string;
-  workspaceHandle?: string;
+  workspace?: string;
   profile?: string;
   configFile?: string; // config file on disk
+  failIfWorkspaceExists?: boolean;
 }
 
 export interface SaveConfigParams {
@@ -36,10 +36,14 @@ export interface SaveConfigParams {
   profiles?: { [name: string]: Configuration }; // Only allowed if not modifying a profile
 }
 
-export const DEFAULT_CONFIG: { apiBase: string; appBase: string; webBase: string } = {
+export const DEFAULT_CONFIG: {
+  apiBase: string;
+  appBase: string;
+  webBase: string;
+} = {
   apiBase: 'https://api.steamship.com/api/v1/',
   appBase: 'https://steamship.run/',
-  webBase: 'https://app.steamship.com/'
+  webBase: 'https://app.steamship.com/',
 };
 
 // const defaultStagingCredentials = {
@@ -150,7 +154,7 @@ class ConfigManager {
     this._config = {
       apiBase: DEFAULT_CONFIG.apiBase,
       appBase: DEFAULT_CONFIG.appBase,
-      webBase: DEFAULT_CONFIG.webBase
+      webBase: DEFAULT_CONFIG.webBase,
     };
   }
 
@@ -212,7 +216,8 @@ class ConfigManager {
           this._config.workspaceId = process.env['STEAMSHIP_WORKSPACE_ID'];
         }
         if (process.env['STEAMSHIP_WORKSPACE_HANDLE']) {
-          this._config.workspaceHandle = process.env['STEAMSHIP_WORKSPACE_HANDLE'];
+          this._config.workspaceHandle =
+            process.env['STEAMSHIP_WORKSPACE_HANDLE'];
         }
       } catch {
         // pass
@@ -233,11 +238,8 @@ class ConfigManager {
     if (params?.apiKey) {
       this._config.apiKey = params?.apiKey;
     }
-    if (params?.workspaceId) {
-      this._config.workspaceId = params?.workspaceId;
-    }
-    if (params?.workspaceHandle) {
-      this._config.workspaceHandle = params?.workspaceHandle;
+    if (params?.workspace) {
+      this._config.workspaceHandle = params?.workspace;
     }
   }
 
@@ -321,7 +323,7 @@ class ConfigManager {
       configFile = path.join(os.homedir(), CONFIG_FILENAME);
     }
     const str = this._readFile(configFile);
-    let newConfig: Configuration = {...DEFAULT_CONFIG};
+    let newConfig: Configuration = { ...DEFAULT_CONFIG };
     if (str) {
       try {
         newConfig = JSON.parse(str) as Configuration;
@@ -337,7 +339,7 @@ class ConfigManager {
         newConfig.profiles = {}; // Add the profiles field if it does not exist
       }
       if (!Object.keys(newConfig.profiles).includes(profile)) {
-        newConfig.profiles[profile] = {profile: profile}; // Adds this specific profile
+        newConfig.profiles[profile] = { profile: profile }; // Adds this specific profile
       }
       Object.keys(values).forEach((key: string) => {
         if (key === 'profiles') {

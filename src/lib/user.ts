@@ -1,12 +1,12 @@
-import {ApiBase, Response} from './api_base';
-import {Configuration} from './shared/Configuration';
+import { ApiBase, Response } from './api_base';
+import { Configuration } from './shared/Configuration';
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
   if ((data as any).user) {
-    data = (data as any).user
+    data = (data as any).user;
   }
-  return new User(client, data as UserParams)
-}
+  return new User(client, data as UserParams);
+};
 
 export interface UserParams {
   id?: string;
@@ -43,7 +43,7 @@ export class User {
     this.nickName = params.nickName;
     this.handle = params.handle;
     this.plan = params.plan;
-    this.handleSet = params.handleSet
+    this.handleSet = params.handleSet;
   }
 
   static async current(
@@ -55,8 +55,8 @@ export class User {
       {},
       {
         expect: _EXPECT,
-        ...config
-      },
+        ...config,
+      }
     )) as Response<User>;
   }
 
@@ -64,13 +64,9 @@ export class User {
     params?: UpdateParams,
     config?: Configuration
   ): Promise<Response<User>> {
-    return (await this.client.post(
-      'account/update',
-      params || {},
-      {
-        expect: _EXPECT,
-        ...config
-      },
-    )) as Response<User>;
+    return (await this.client.post('account/update', params || {}, {
+      expect: _EXPECT,
+      ...config,
+    })) as Response<User>;
   }
 }

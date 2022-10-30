@@ -1,6 +1,6 @@
 export interface CreateParams {
   handle?: string;
-  upsert?: boolean;
+  fetchIfExists?: boolean;
 }
 
 export interface GetParams {

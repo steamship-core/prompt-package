@@ -1,6 +1,6 @@
-import {ApiBase, Response} from './api_base';
-import {Configuration} from './shared/Configuration';
-import {CreateParams, GetParams} from './shared/Requests';
+import { ApiBase, Response } from './api_base';
+import { Configuration } from './shared/Configuration';
+import { CreateParams, GetParams } from './shared/Requests';
 
 export interface WorkspaceParams {
   id?: string;
@@ -88,8 +88,7 @@ export class Workspace {
     )) as Response<WorkspaceList>;
   }
 
-  async delete(
-    config?: Configuration) {
+  async delete(config?: Configuration) {
     return (await this.client.post(
       'workspace/delete',
       {
@@ -98,7 +97,7 @@ export class Workspace {
       {
         expect: _EXPECT,
         responsePath: 'workspace',
-        ...config
+        ...config,
       }
     )) as Response<Workspace>;
   }

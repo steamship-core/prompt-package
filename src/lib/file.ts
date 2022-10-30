@@ -1,18 +1,17 @@
-import {ApiBase, Response} from './api_base';
-import {Configuration} from './shared/Configuration';
-
+import { ApiBase, Response } from './api_base';
+import { Configuration } from './shared/Configuration';
 
 export async function readFile(filename: string): Promise<Buffer> {
-  const fs = await import('fs')
-  const util = await import('util')
+  const fs = await import('fs');
+  const util = await import('util');
   const readFile = util.promisify(fs.readFile);
-  const content = await readFile(filename)
-  return content
+  const content = await readFile(filename);
+  return content;
 }
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
-  return new File(client, data as FileParams)
-}
+  return new File(client, data as FileParams);
+};
 
 export interface FileParams {
   id?: string;
@@ -25,7 +24,7 @@ export interface FileParams {
 export interface UploadParams {
   filename?: string;
   content?: string | Buffer;
-  type?: "file" | "url" | "value"
+  type?: 'file' | 'url' | 'value';
   handle?: string;
   mimeType?: string;
   corpusId?: string;
@@ -60,10 +59,10 @@ export class File {
     let buffer: Buffer | undefined = undefined;
 
     if (params.filename) {
-      params.type = "file"
+      params.type = 'file';
       buffer = await readFile(params.filename);
     } else {
-      params.type = "value"
+      params.type = 'value';
     }
 
     return (await client.post(
@@ -82,7 +81,7 @@ export class File {
         expect: _EXPECT,
         responsePath: 'file',
         file: buffer,
-        filename: params.filename
+        filename: params.filename,
       }
     )) as Response<File>;
   }
@@ -96,7 +95,7 @@ export class File {
       {
         expect: _EXPECT,
         responsePath: 'file',
-        ...config
+        ...config,
       }
     )) as Response<File>;
   }
@@ -109,7 +108,7 @@ export class File {
       },
       {
         ...config,
-        rawResponse: true
+        rawResponse: true,
       }
     )) as Response<unknown>;
   }
@@ -123,7 +122,7 @@ export class File {
       {
         expect: _EXPECT,
         responsePath: 'config',
-        ...config
+        ...config,
       }
     )) as Response<File>;
   }
