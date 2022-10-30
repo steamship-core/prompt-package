@@ -11,17 +11,19 @@ export interface WorkspaceParams {
 }
 
 const _EXPECT = (client: ApiBase, data: unknown) => {
-  return new Workspace(client, data as WorkspaceParams)
-}
+  return new Workspace(client, data as WorkspaceParams);
+};
 
 const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
   return {
-    workspaces: ((data as any).workspaces as Array<any>).map(x => _EXPECT(client, x))
-  }
-}
+    workspaces: ((data as any).workspaces as Array<any>).map((x) =>
+      _EXPECT(client, x)
+    ),
+  };
+};
 
 export interface WorkspaceList {
-  workspaces: Workspace[]
+  workspaces: Workspace[];
 }
 
 export class Workspace {
@@ -48,12 +50,12 @@ export class Workspace {
   ): Promise<Response<Workspace>> {
     return (await client.post(
       'workspace/create',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'workspace',
-        ...config
-      },
+        ...config,
+      }
     )) as Response<Workspace>;
   }
 
@@ -64,12 +66,12 @@ export class Workspace {
   ): Promise<Response<Workspace>> {
     return (await client.post(
       'workspace/get',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT,
         responsePath: 'workspace',
-        ...config
-      },
+        ...config,
+      }
     )) as Response<Workspace>;
   }
 
@@ -80,11 +82,11 @@ export class Workspace {
   ): Promise<Response<WorkspaceList>> {
     return (await client.post(
       'workspace/list',
-      {...params},
+      { ...params },
       {
         expect: _EXPECT_LIST,
-        ...config
-      },
+        ...config,
+      }
     )) as Response<WorkspaceList>;
   }
 
