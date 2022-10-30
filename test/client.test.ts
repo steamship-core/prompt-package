@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {Client} from '../src/lib/client';
+import {Steamship} from '../src/lib/steamship';
 import {mockDefaultConfigFile, restoreMocks, steamshipClient} from './helper';
 
 describe('Steamship Client', () => {
@@ -23,7 +23,7 @@ describe('Steamship Client', () => {
       },
     });
 
-    const client = new Client();
+    const client = new Steamship();
     const createTokenResponse = await client.createLoginAttempt();
     expect(createTokenResponse.data!.token).toEqual('hello');
     restoreMocks();

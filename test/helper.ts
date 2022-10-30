@@ -1,4 +1,4 @@
-import {Client} from '../src/lib/client';
+import {Steamship} from '../src/lib/steamship';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -12,8 +12,8 @@ export function randomName(): string {
   return `test_${id}`;
 }
 
-export function steamshipClient(): Client {
-  return new Client({profile: 'test'});
+export function steamshipClient(): Steamship {
+  return new Steamship({profile: 'test'});
 }
 
 export const DEFAULT_CONFIG: Configuration = {

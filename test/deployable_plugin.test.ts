@@ -1,11 +1,11 @@
 // @ts-ignore
 import {randomName, steamshipClient} from './helper';
-import {Client, Plugin, PluginInstance, PluginVersion} from '../src'
+import {Steamship, Plugin, PluginInstance, PluginVersion} from '../src'
 import path from 'path'
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-export async function deployInstance(client: Client): Promise<[Plugin, PluginVersion, PluginInstance]> {
+export async function deployInstance(client: Steamship): Promise<[Plugin, PluginVersion, PluginInstance]> {
   const [plugin1, version1] = await deployVersion(client)
   const instance1r = (await PluginInstance.create(client, {
     pluginId: plugin1.id!,
@@ -15,7 +15,7 @@ export async function deployInstance(client: Client): Promise<[Plugin, PluginVer
   return [plugin1, version1, instance1]
 }
 
-export async function deployVersion(client: Client): Promise<[Plugin, PluginVersion]> {
+export async function deployVersion(client: Steamship): Promise<[Plugin, PluginVersion]> {
   const req1 = (await Plugin.create(client, {
     type: "tagger",
     handle: randomName(),

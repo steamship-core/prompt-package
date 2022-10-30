@@ -3,12 +3,12 @@ import {steamshipClient} from './helper';
 import {Plugin} from '../src/lib/plugin'
 import {PluginVersion} from '../src/lib/plugin_version'
 import {PluginInstance} from '../src/lib/plugin_instance'
-import {Client} from '../src/lib/client';
+import {Steamship} from '../src/lib/steamship';
 import path from 'path'
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-export async function deployInstance(client: Client): Promise<[Plugin, PluginVersion, PluginInstance]> {
+export async function deployInstance(client: Steamship): Promise<[Plugin, PluginVersion, PluginInstance]> {
   const [plugin1, version1] = await deployVersion(client)
   const instance1r = (await PluginInstance.create(client, {
     pluginId: plugin1.id!, pluginVersionId: version1.id!, config: {
@@ -22,7 +22,7 @@ export async function deployInstance(client: Client): Promise<[Plugin, PluginVer
   return [plugin1, version1, instance1]
 }
 
-export async function deployVersion(client: Client): Promise<[Plugin, PluginVersion]> {
+export async function deployVersion(client: Steamship): Promise<[Plugin, PluginVersion]> {
   const req1 = (await Plugin.create(client, {
     type: "tagger",
     transport: "jsonOverHttp",

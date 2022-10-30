@@ -2,15 +2,15 @@ import {randomName, steamshipClient} from './helper';
 import {Package} from '../src/lib/package'
 import {PackageVersion} from '../src/lib/package_version'
 import path from 'path'
-import {Client} from '../src/lib/client';
+import {Steamship} from '../src/lib/steamship';
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-export async function helloWorld(client: Client): Promise<[Package, PackageVersion]> {
+export async function helloWorld(client: Steamship): Promise<[Package, PackageVersion]> {
   return deployPackageVersion(client, 'demo-package.zip')
 }
 
-export async function deployPackageVersion(client: Client, packageZip: string, configTemplate: Record<string, any> = {}): Promise<[Package, PackageVersion]> {
+export async function deployPackageVersion(client: Steamship, packageZip: string, configTemplate: Record<string, any> = {}): Promise<[Package, PackageVersion]> {
   const req1 = (await Package.create(client, {handle: randomName()}))
   const app1 = req1.data!
 
