@@ -1,6 +1,6 @@
 export { default as regeneratorRuntime } from 'regenerator-runtime';
 export { Response, Task } from './lib/api_base';
-export { Client } from './lib/client';
+export { Steamship } from './lib/steamship';
 export { File } from './lib/file';
 export { Package } from './lib/package';
 export { PackageInstance } from './lib/package_instance';
