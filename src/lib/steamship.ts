@@ -5,7 +5,7 @@ import { LoadConfigParams } from './shared/Configuration';
 import { SteamshipError } from './steamship_error';
 import { CreateLoginAttemptResponse } from './types/account';
 
-export class Client extends ApiBase {
+export class Steamship extends ApiBase {
   public constructor(config?: LoadConfigParams) {
     super(config);
   }
@@ -54,7 +54,7 @@ export class Client extends ApiBase {
     const configArgs: LoadConfigParams = {
       workspace: workspaceHandle || instanceHandle,
     };
-    const client = new Client(configArgs);
+    const client = new Steamship(configArgs);
     return client.use(packageHandle, instanceHandle, config, version, reuse);
   }
 
@@ -114,7 +114,7 @@ export class Client extends ApiBase {
     const configArgs: LoadConfigParams = {
       workspace: workspaceHandle || instanceHandle,
     };
-    const client = new Client(configArgs);
+    const client = new Steamship(configArgs);
     return client.usePlugin(
       pluginHandle,
       instanceHandle,

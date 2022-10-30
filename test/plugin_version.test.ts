@@ -2,15 +2,15 @@ import {randomName, steamshipClient} from './helper';
 import {Plugin} from '../src/lib/plugin'
 import {PluginVersion} from '../src/lib/plugin_version'
 import path from 'path'
-import {Client} from '../src/lib/client';
+import {Steamship} from '../src/lib/steamship';
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-export async function csvBlockifier(client: Client): Promise<[Plugin, PluginVersion]> {
+export async function csvBlockifier(client: Steamship): Promise<[Plugin, PluginVersion]> {
   return deployPluginVersion(client, 'csv-blockifier.zip')
 }
 
-export async function deployPluginVersion(client: Client, packageZip: string, configTemplate: Record<string, any> = {}): Promise<[Plugin, PluginVersion]> {
+export async function deployPluginVersion(client: Steamship, packageZip: string, configTemplate: Record<string, any> = {}): Promise<[Plugin, PluginVersion]> {
   const req1 = (await Plugin.create(client, {
     handle: randomName(),
     type: 'blockifier',
