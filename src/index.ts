@@ -1,6 +1,5 @@
 export { default as regeneratorRuntime } from 'regenerator-runtime';
 export { Response, Task } from './lib/api_base';
-export { Steamship } from './lib/steamship';
 export { File } from './lib/file';
 export { Package } from './lib/package';
 export { PackageInstance } from './lib/package_instance';
@@ -46,6 +45,7 @@ export type {
   LoadConfigParams,
   SaveConfigParams,
 } from './lib/shared/Configuration';
+export { Steamship } from './lib/steamship';
 export { SteamshipError } from './lib/steamship_error';
 export type {
   Metadata,
