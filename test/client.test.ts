@@ -1,6 +1,11 @@
 import axios from 'axios';
 import {Steamship} from '../src/lib/steamship';
-import {mockDefaultConfigFile, restoreMocks, steamshipClient} from './helper';
+import {
+  mockDefaultConfigFile,
+  randomName,
+  restoreMocks,
+  steamshipClient
+} from './helper';
 
 describe('Steamship Client', () => {
   test('it should be running with the `test` profile', async () => {
@@ -28,4 +33,17 @@ describe('Steamship Client', () => {
     expect(createTokenResponse.data!.token).toEqual('hello');
     restoreMocks();
   });
+
+  test('Specifying a workspace should create it', async () => {
+    let workspaceName = randomName()
+    const steamship = steamshipClient(workspaceName);
+    let config = await steamship.config;
+
+    const steamshipDefault = steamshipClient();
+    let configDefault = await steamshipDefault.config;
+
+    expect(config.workspaceHandle).toBe(workspaceName);
+    expect(config.workspaceHandle).not.toBe(configDefault);
+  });
+
 });

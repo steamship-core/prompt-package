@@ -35,6 +35,13 @@ export async function deployPluginVersion(client: Steamship, packageZip: string,
 }
 
 describe("Plugin Version", () => {
+  test('it should be usable via Steamship.use', async () => {
+    const steamship = steamshipClient();
+    const [app1] = await csvBlockifier(steamship)
+    const instance1 = await Steamship.usePlugin(app1.handle!)
+    expect(instance1.id).not.toBeUndefined()
+  }, 25000);
+
   test('it should be creatable and deletable', async () => {
     const steamship = steamshipClient();
     const [app1, version1] = await csvBlockifier(steamship)

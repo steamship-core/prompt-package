@@ -9,11 +9,11 @@ const generateRandomString = (length = 6) =>
 
 export function randomName(): string {
   const id = generateRandomString(10);
-  return `test_${id}`;
+  return `test-${id}`;
 }
 
-export function steamshipClient(): Steamship {
-  return new Steamship({profile: 'test'});
+export function steamshipClient(workspace?: string): Steamship {
+  return new Steamship({profile: 'test', workspace});
 }
 
 export const DEFAULT_CONFIG: Configuration = {

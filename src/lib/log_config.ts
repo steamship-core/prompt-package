@@ -1,7 +1,8 @@
-import { Category, CategoryProvider } from 'typescript-logging-category-style';
+import { LogLevel } from 'typescript-logging';
+import { CategoryProvider } from 'typescript-logging-category-style';
 
-const provider = CategoryProvider.createProvider('Steamship');
+const provider = CategoryProvider.createProvider('ExampleProvider', {
+  level: LogLevel.Debug,
+});
 
-export function getLogger(name: string): Category {
-  return provider.getCategory(name);
-}
+export const logger = provider.getCategory('main');

@@ -54,6 +54,7 @@
     "@babel/runtime": "^7.20.0",
     "axios": "^0.21.1",
     "regenerator-runtime": "^0.13.9",
+    "typescript-logging": "^2.0.2",
     "typescript-logging-category-style": "^2.0.2"
   },
   "devDependencies": {

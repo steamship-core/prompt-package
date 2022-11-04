@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Category } from 'typescript-logging-category-style/dist/bundle/src/typescript/main/api/Category';
 
-import { getLogger } from './log_config';
+import { logger } from './log_config';
 import {
   Configuration,
   LoadConfigParams,
@@ -332,9 +332,8 @@ export class ApiBase {
   config: Promise<Configuration>;
   logger: Category;
   public constructor(params?: LoadConfigParams) {
-    this.logger = getLogger('Steamship');
+    this.logger = logger.getChildCategory('ApiBase');
     this.config = loadConfiguration(params);
-
     this.config.then(() => {
       this.switchWorkspace({
         workspaceHandle: params?.workspace,
