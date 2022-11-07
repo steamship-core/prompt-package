@@ -1,11 +1,11 @@
 {
   "name": "@steamship/client",
-  "version": "2.2.1-beta4",
-  "description": "Steamship is a cloud-hosted database that helps developers get work done with natural language content.",
+  "version": "2.2.1",
+  "description": "Steamship is the fastest way to add Language AI to your software.",
   "main": "build/main/index.js",
   "typings": "build/module/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/nludb/typescript-client",
+  "repository": "https://github.com/steamship-core/typescript-client",
   "license": "MIT",
   "keywords": [],
   "contributors": [
