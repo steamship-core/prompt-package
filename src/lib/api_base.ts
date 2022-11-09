@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { Category } from 'typescript-logging-category-style/dist/bundle/src/typescript/main/api/Category';
+import { Logger } from 'tslog';
 
-import { logger } from './log_config';
 import {
   Configuration,
   LoadConfigParams,
@@ -15,6 +14,8 @@ import {
   ListTaskCommentResponse,
   TaskCommentResponse,
 } from './types/task_comment';
+
+const log: Logger = new Logger({ name: 'Steamship:ApiBase' });
 
 const MAX_BODY_LENGTH = 100000 * 1000;
 
@@ -324,22 +325,41 @@ export class Response<T> {
 
 export interface SwitchWorkspaceParams {
   workspaceHandle?: string;
-  workspaceId?: string;
   failIfWorkspaceExists?: boolean;
+}
+
+export interface SwitchConfigWorkspaceParams {
+  workspaceHandle?: string;
+  failIfWorkspaceExists?: boolean;
+  config: Configuration;
 }
 
 export class ApiBase {
   config: Promise<Configuration>;
-  logger: Category;
+
   public constructor(params?: LoadConfigParams) {
-    this.logger = logger.getChildCategory('ApiBase');
-    this.config = loadConfiguration(params);
-    this.config.then(() => {
-      this.switchWorkspace({
-        workspaceHandle: params?.workspace,
-        failIfWorkspaceExists: params?.failIfWorkspaceExists === true,
-      });
+    this.config = loadConfiguration(params).then((config) => {
+      if (config.apiKey) {
+        return this._switchConfigWorkspace({
+          workspaceHandle: params?.workspace,
+          failIfWorkspaceExists: params?.failIfWorkspaceExists === true,
+          config,
+        });
+      } else {
+        return config;
+      }
     });
+  }
+
+  async switchWorkspace(params?: SwitchWorkspaceParams) {
+    const config = await this._switchConfigWorkspace({
+      ...params,
+      config: await this.config,
+    });
+    this.config = Promise.resolve(config);
+    log.info(
+      `Switched to workspace ${config.workspaceHandle}/${config.workspaceId}`
+    );
   }
 
   /*
@@ -350,54 +370,43 @@ export class ApiBase {
     - Note that the default workspace is technically not necessary for API usage; it will be assumed by the Engine
       in the absense of a Workspace ID or Handle being manually specified in request headers.
    */
-  async switchWorkspace(params?: SwitchWorkspaceParams) {
+  async _switchConfigWorkspace(
+    params: SwitchConfigWorkspaceParams
+  ): Promise<Configuration> {
     let workspace: any | undefined = undefined;
     const p: SwitchWorkspaceParams = { ...params };
 
-    if (!p.workspaceHandle && !p.workspaceId) {
-      // Switch to the default workspace since no named or ID'ed workspace was provided
+    if (!p.workspaceHandle) {
       p.workspaceHandle = 'default';
     }
 
     if (p.failIfWorkspaceExists) {
-      this.logger.info(
-        `Creating workspace with handle/id: ${p.workspaceHandle}/${p.workspaceId}.`
-      );
+      log.info(`Creating workspace with handle: ${p.workspaceHandle}.`);
     } else {
-      this.logger.info(
-        `Creating/Fetching workspace with handle/id: ${p.workspaceHandle}/${p.workspaceId}.`
+      log.info(
+        `Creating/Fetching workspace with handle: ${p.workspaceHandle}.`
       );
     }
 
     // Zero out the workspace_handle on the config block in case we're being invoked from
     // `init` (otherwise we'll attempt to create the sapce IN that nonexistant workspace)
-    const oldWorkspaceHandle = (await this.config).workspaceHandle;
-    (await this.config).workspaceHandle = undefined;
+    const oldConfig = params.config;
 
-    try {
-      if (p.workspaceHandle && p.workspaceId) {
-        const getParams = {
-          handle: p.workspaceHandle,
-          id: p.workspaceId,
-        };
-        workspace = await this.post('workspace/get', getParams);
-      } else if (p.workspaceHandle) {
-        const getParams = {
-          handle: p.workspaceHandle,
-          id: p.workspaceId,
-          fetchIfExists: !(p.failIfWorkspaceExists === true),
-        };
-        workspace = await this.post('workspace/create', getParams);
-      } else if (p.workspaceId) {
-        const getParams = {
-          id: p.workspaceId,
-        };
-        workspace = await this.post('workspace/get', getParams);
-      }
-    } catch (e) {
-      (await this.config).workspaceHandle = oldWorkspaceHandle;
-      throw e;
-    }
+    const activeConfig = {
+      ...oldConfig,
+      workspaceHandle: undefined,
+      workspaceId: undefined,
+    };
+
+    workspace = await this.post(
+      'workspace/create',
+      {
+        handle: p.workspaceHandle,
+        fetchIfExists: !(p.failIfWorkspaceExists === true),
+      },
+      undefined,
+      activeConfig
+    );
 
     if (!workspace) {
       throw new SteamshipError({
@@ -406,8 +415,8 @@ export class ApiBase {
       });
     }
 
-    let returnId = null;
-    let returnHandle = null;
+    let returnId: string | null = null;
+    let returnHandle: string | null = null;
 
     if (workspace && workspace['data'] && workspace['data']['workspace']) {
       returnId = workspace['data']['workspace']['id'];
@@ -415,17 +424,24 @@ export class ApiBase {
     }
 
     if (!returnHandle || !returnId) {
+      log.error(workspace);
       throw new SteamshipError({
-        statusMessage:
-          'Was unable to switch to new workspace: server returned empty ID and Handle.',
+        statusMessage: `${JSON.stringify(
+          workspace
+        )} Unable to switch to workspace ${
+          p.workspaceHandle
+        } with failIfWorkspaceExists ${
+          p.failIfWorkspaceExists
+        }: server returned empty ID and Handle.`,
       });
     }
 
     // Finally, set the new workspace
-    // (await this.config).workspaceHandle = returnHandle
-    // (await this.config).workspaceId = returnId
-
-    this.logger.info(`Switched to workspace ${returnHandle}/${returnId}`);
+    return {
+      ...oldConfig,
+      workspaceHandle: returnHandle,
+      workspaceId: returnId,
+    };
   }
 
   _headers<T>(
@@ -532,9 +548,10 @@ export class ApiBase {
   async post<T>(
     operation: string,
     payload: unknown,
-    config?: PostConfig<T>
+    config?: PostConfig<T>,
+    overrideConfig?: Configuration
   ): Promise<Response<T>> {
-    return this.call('POST', operation, payload, config);
+    return this.call('POST', operation, payload, config, overrideConfig);
   }
 
   async get<T>(
@@ -549,9 +566,11 @@ export class ApiBase {
     verb: Verb,
     operation: string,
     payload: unknown,
-    config?: PostConfig<T>
+    config?: PostConfig<T>,
+    overrideConfig?: Configuration
   ): Promise<Response<T>> {
-    const baseConfig = await this.config;
+    // This overrideConfig var is necessary for the switch config operation at init
+    const baseConfig = overrideConfig || (await this.config);
     if (!baseConfig.apiKey) {
       throw new SteamshipError({
         statusCode: 'Authentication',

@@ -1,5 +1,5 @@
 // @ts-ignore
-import {steamshipClient} from './helper';
+import {randomName, steamshipClient} from './helper';
 import {PackageInstance} from '../src/lib/package_instance'
 import {User} from '../src/lib/user'
 // @ts-ignore
@@ -7,7 +7,7 @@ import {
   deployPackageVersion,
   helloWorld as _helloWorld
 } from './package_version.test'
-import {Steamship} from "../build/module";
+import {Steamship} from "../src/lib/steamship";
 
 
 describe("Package Instance", () => {
@@ -31,7 +31,22 @@ describe("Package Instance", () => {
     expect(instance1.userId).toBe(app1.userId)
     expect(instance1.userHandle).toBe(user.handle)
     expect(instance1.id).not.toBeUndefined()
-  }, 35000);
+    expect(instance1.workspaceId).not.toBeUndefined()
+    expect((await instance1.client.config).workspaceId).toBe(instance1.workspaceId)
+    expect((await instance1.client.config).workspaceHandle).toBe(app1.handle!)
+
+    // It's the same one!
+    const instance1a = await Steamship.use(app1.handle!)
+    expect((await instance1a.client.config).workspaceId).toBe(instance1.workspaceId)
+    expect((await instance1a.client.config).workspaceHandle).toBe(app1.handle!)
+
+    const handle2 = randomName()
+    const instance2 = await Steamship.use(app1.handle!, handle2)
+    const instance2a = await Steamship.use(app1.handle!, handle2)
+    expect((await instance2.client.config).workspaceHandle).toBe(handle2)
+    expect((await instance2a.client.config).workspaceHandle).toBe(handle2)
+
+  }, 55000);
 
   test('it should be creatable, gettable, usable, and deletable', async () => {
     const steamship = steamshipClient();

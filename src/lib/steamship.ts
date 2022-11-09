@@ -1,9 +1,13 @@
+import { Logger } from 'tslog';
+
 import { ApiBase, Response } from './api_base';
 import { PackageInstance } from './package_instance';
 import { PluginInstance } from './plugin_instance';
 import { LoadConfigParams } from './shared/Configuration';
 import { SteamshipError } from './steamship_error';
 import { CreateLoginAttemptResponse } from './types/account';
+
+const log: Logger = new Logger({ name: 'Steamship' });
 
 export class Steamship extends ApiBase {
   public constructor(config?: LoadConfigParams) {
@@ -51,11 +55,19 @@ export class Steamship extends ApiBase {
     reuse?: boolean,
     workspaceHandle?: string
   ): Promise<PackageInstance> {
-    const configArgs: LoadConfigParams = {
-      workspace: workspaceHandle || instanceHandle,
-    };
-    const client = new Steamship(configArgs);
-    return client.use(packageHandle, instanceHandle, config, version, reuse);
+    const fixedInstanceHandle = instanceHandle || packageHandle;
+    const workspace = workspaceHandle || fixedInstanceHandle;
+    log.info(
+      `Steamship.use using workspace ${workspace}, instanceHandle ${fixedInstanceHandle}`
+    );
+    const client = new Steamship({ workspace });
+    return client.use(
+      packageHandle,
+      fixedInstanceHandle,
+      config,
+      version,
+      reuse
+    );
   }
 
   /**
@@ -71,8 +83,12 @@ export class Steamship extends ApiBase {
     version?: string,
     reuse?: boolean
   ): Promise<PackageInstance> {
+    const fixedInstanceHandle = instanceHandle || packageHandle;
+    if (typeof reuse == 'undefined') {
+      reuse = true;
+    }
     const response = await PackageInstance.create(this, {
-      handle: instanceHandle,
+      handle: fixedInstanceHandle,
       packageHandle: packageHandle,
       packageVersionHandle: version,
       fetchIfExists: reuse,
@@ -111,13 +127,14 @@ export class Steamship extends ApiBase {
     reuse?: boolean,
     workspaceHandle?: string
   ): Promise<PluginInstance> {
+    const fixedInstanceHandle = instanceHandle || pluginHandle;
     const configArgs: LoadConfigParams = {
-      workspace: workspaceHandle || instanceHandle,
+      workspace: workspaceHandle || fixedInstanceHandle,
     };
     const client = new Steamship(configArgs);
     return client.usePlugin(
       pluginHandle,
-      instanceHandle,
+      fixedInstanceHandle,
       config,
       version,
       reuse
@@ -137,8 +154,12 @@ export class Steamship extends ApiBase {
     version?: string,
     reuse?: boolean
   ): Promise<PluginInstance> {
+    const fixedInstanceHandle = instanceHandle || pluginHandle;
+    if (typeof reuse == 'undefined') {
+      reuse = true;
+    }
     const response = await PluginInstance.create(this, {
-      handle: instanceHandle,
+      handle: fixedInstanceHandle,
       pluginHandle: pluginHandle,
       pluginVersionHandle: version,
       fetchIfExists: reuse,

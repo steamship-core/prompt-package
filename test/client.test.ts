@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {Steamship} from '../src/lib/steamship';
+import {File} from '../src/lib/file';
 import {
-  mockDefaultConfigFile,
   randomName,
   restoreMocks,
   steamshipClient
@@ -15,7 +15,8 @@ describe('Steamship Client', () => {
   });
 
   test('it should be able to create a login attempt token', async () => {
-    mockDefaultConfigFile();
+    const client = new Steamship();
+    await client.config;
 
     jest.spyOn(axios, 'post');
 
@@ -28,7 +29,6 @@ describe('Steamship Client', () => {
       },
     });
 
-    const client = new Steamship();
     const createTokenResponse = await client.createLoginAttempt();
     expect(createTokenResponse.data!.token).toEqual('hello');
     restoreMocks();
@@ -44,6 +44,24 @@ describe('Steamship Client', () => {
 
     expect(config.workspaceHandle).toBe(workspaceName);
     expect(config.workspaceHandle).not.toBe(configDefault);
+
+    // Make sure we can get it again
+    const steamship2 = steamshipClient(workspaceName);
+    let config2 = await steamship2.config;
+    expect(config.workspaceHandle).toBe(config2.workspaceHandle);
+    expect(config.workspaceId).toBe(config2.workspaceId);
+
+    // Now make sure we can use it
+    const content = 'A'
+    const res = await File.upload(steamship, {
+      content,
+      mimeType: "text/markdown"
+    })
+    expect(res.data).not.toBeUndefined()
+    expect(res.data?.id).not.toBeUndefined()
+    expect(res.data?.mimeType).toBe("text/markdown")
+    expect(res.data?.workspaceId).toBe(config.workspaceId)
+    // await res.data?.delete()
   });
 
 });

@@ -1,6 +1,6 @@
 {
   "name": "@steamship/client",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "Steamship is the fastest way to add Language AI to your software.",
   "main": "build/main/index.js",
   "typings": "build/module/index.d.ts",
@@ -55,8 +55,7 @@
     "axios": "^0.21.1",
     "form-data": "^4.0.0",
     "regenerator-runtime": "^0.13.9",
-    "typescript-logging": "^2.0.2",
-    "typescript-logging-category-style": "^2.0.2"
+    "tslog": "^3.3.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.8",
