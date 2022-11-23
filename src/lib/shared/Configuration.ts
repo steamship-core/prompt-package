@@ -1,3 +1,5 @@
+import { isNode } from '../utils.js';
+
 /*
  * The goal of this file is to provide a credential-loading system
  * that is safe in BOTH the command line and the browser.
@@ -52,18 +54,6 @@ export const DEFAULT_CONFIG: {
 // }
 
 export const CONFIG_FILENAME = '.steamship.json';
-
-/** Returns true if this is running using Node.js (vs the browser) */
-function isNode(): boolean {
-  if (
-    typeof process !== 'undefined' &&
-    process.release.name.search(/node|io.js/) !== -1
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-}
 
 class ConfigManager {
   _readFile: undefined | ((filePath: string) => string | undefined) = undefined;

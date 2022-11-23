@@ -1,13 +1,14 @@
 import { Logger } from 'tslog';
 
 import { ApiBase, Response } from './api_base';
+import getLogger from './log';
 import { PackageInstance } from './package_instance';
 import { PluginInstance } from './plugin_instance';
 import { LoadConfigParams } from './shared/Configuration';
 import { SteamshipError } from './steamship_error';
 import { CreateLoginAttemptResponse } from './types/account';
 
-const log: Logger = new Logger({ name: 'Steamship' });
+const log: Logger = getLogger('Steamship');
 
 export class Steamship extends ApiBase {
   public constructor(config?: LoadConfigParams) {

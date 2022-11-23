@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Logger } from 'tslog';
 
+import getLogger from './log';
 import {
   Configuration,
   LoadConfigParams,
@@ -15,7 +16,7 @@ import {
   TaskCommentResponse,
 } from './types/task_comment';
 
-const log: Logger = new Logger({ name: 'Steamship:ApiBase' });
+const log: Logger = getLogger('Steamship:ApiBase');
 
 const MAX_BODY_LENGTH = 100000 * 1000;
 
