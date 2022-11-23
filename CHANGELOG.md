@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.10](https://github.com/steamship-core/typescript-client/compare/v2.2.8...v2.2.10) (2022-11-23)
+
+### [2.2.8](https://github.com/steamship-core/typescript-client/compare/v2.0.2...v2.2.8) (2022-11-23)
+
 ## [2.1.0](https://github.com/nludb/typescript-client/compare/v2.0.2...v2.1.0) (2022-10-22)
 
 ### [1.0.29](https://github.com/nludb/typescript-client/compare/v1.0.27...v1.0.29) (2021-09-08)
