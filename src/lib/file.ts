@@ -2,6 +2,10 @@ import { ApiBase, Response } from './api_base';
 import { IBlock } from './block';
 import { Configuration } from './shared/Configuration';
 import { GetParams } from './shared/Requests';
+import { ITag } from './tag';
+
+const generateRandomString = (length = 6) =>
+  Math.random().toString(20).substr(2, length);
 
 export async function readFile(filename: string): Promise<Buffer> {
   const fs = await import('fs');
@@ -33,15 +37,16 @@ export interface FileParams {
   tenantId?: string;
   userId?: string;
   blocks?: IBlock[];
+  tags?: ITag[];
 }
 
 export interface UploadParams {
   filename?: string;
   content?: string | Buffer;
   type?: 'file' | 'url' | 'value';
+  tags?: ITag[];
   handle?: string;
   mimeType?: string;
-  corpusId?: string;
   workspaceId?: string;
 }
 
@@ -52,6 +57,7 @@ export class File {
   userId?: string;
   workspaceId?: string;
   blocks?: IBlock[];
+  tags?: ITag[];
   client: ApiBase;
 
   constructor(client: ApiBase, params: FileParams) {
@@ -61,6 +67,7 @@ export class File {
     this.mimeType = params.mimeType;
     this.workspaceId = params.workspaceId;
     this.blocks = params.blocks;
+    this.tags = params.tags;
     this.userId = params.userId;
   }
 
@@ -77,6 +84,11 @@ export class File {
     if (params.filename) {
       params.type = 'file';
       buffer = await readFile(params.filename);
+      delete params.content;
+    } else if (params.content instanceof Buffer) {
+      params.type = 'file';
+      buffer = params.content;
+      delete params.content;
     } else {
       params.type = 'value';
     }
@@ -87,9 +99,9 @@ export class File {
         type: params.type,
         filename: params.filename,
         handle: params.handle,
+        tags: params.tags,
         value: params.content,
         mimeType: params.mimeType,
-        corpusId: params.corpusId,
         workspaceId: params.workspaceId,
       },
       {
@@ -97,7 +109,9 @@ export class File {
         expect: _EXPECT,
         responsePath: 'file',
         file: buffer,
-        filename: params.filename,
+        // Filename MUST be non-undefined! Otherwise the request library will
+        // not work.
+        filename: params.filename || params.handle || generateRandomString(),
       }
     )) as Response<File>;
   }

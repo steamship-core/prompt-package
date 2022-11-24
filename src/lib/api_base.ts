@@ -50,6 +50,33 @@ const _IS_LOCAL = (base: string): boolean => {
   return false;
 };
 
+/* Should be a FormData object */
+function addMultiparts(formData: any, path: string, value: any) {
+  /* Decode any object into a series of HTTP Multi-part segments that Vapor will consume.
+    https://github.com/vapor/multipart-kit
+
+    When sending a JSON object in a MultiPart request, Vapor wishes to see multi part segments as follows:
+    single_key
+    array_key[idx]
+    obj_key[prop]
+
+    So a File with a list of one tag with kind=Foo would be transmitted as setting the part:
+    [tags][0][kind]
+  */
+  const type = typeof value;
+  if (type == 'string' || type == 'boolean' || type == 'number') {
+    formData.append(path, value);
+  } else if (Array.isArray(value)) {
+    value.forEach((subValue, index) => {
+      addMultiparts(formData, `${path}[${index}]`, subValue);
+    });
+  } else {
+    for (const key in value) {
+      addMultiparts(formData, `${path}[${key}]`, value[key]);
+    }
+  }
+}
+
 export type Verb = 'POST' | 'GET';
 
 export interface TaskListParams {
@@ -601,9 +628,7 @@ export class ApiBase {
       const pp = payload as { [key: string]: undefined };
       for (const key of Object.keys(pp)) {
         const value = pp[key];
-        if (value) {
-          formData.append(key, value);
-        }
+        addMultiparts(formData, key, value);
       }
       finalPayload = formData;
       const boundary = formData.getBoundary();
