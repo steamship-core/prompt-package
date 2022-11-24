@@ -1,5 +1,7 @@
 import { ApiBase, Response } from './api_base';
+import { IBlock } from './block';
 import { Configuration } from './shared/Configuration';
+import { GetParams } from './shared/Requests';
 
 export async function readFile(filename: string): Promise<Buffer> {
   const fs = await import('fs');
@@ -9,8 +11,18 @@ export async function readFile(filename: string): Promise<Buffer> {
   return content;
 }
 
+export interface FileList {
+  files: File[];
+}
+
 const _EXPECT = (client: ApiBase, data: unknown) => {
   return new File(client, data as FileParams);
+};
+
+const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+  return {
+    files: ((data as any).files as Array<any>).map((x) => _EXPECT(client, x)),
+  };
 };
 
 export interface FileParams {
@@ -19,6 +31,7 @@ export interface FileParams {
   mimeType?: string;
   corpusId?: string;
   workspaceId?: string;
+  blocks?: IBlock[];
 }
 
 export interface UploadParams {
@@ -37,6 +50,7 @@ export class File {
   mimeType?: string;
   corpusId?: string;
   workspaceId?: string;
+  blocks?: IBlock[];
   client: ApiBase;
 
   constructor(client: ApiBase, params: FileParams) {
@@ -46,6 +60,7 @@ export class File {
     this.mimeType = params.mimeType;
     this.corpusId = params.corpusId;
     this.workspaceId = params.workspaceId;
+    this.blocks = params.blocks;
   }
 
   static async upload(
@@ -125,5 +140,20 @@ export class File {
         ...config,
       }
     )) as Response<File>;
+  }
+
+  static async list(
+    client: ApiBase,
+    params?: GetParams,
+    config?: Configuration
+  ): Promise<Response<FileList>> {
+    return (await client.post(
+      'file/list',
+      { ...params },
+      {
+        expect: _EXPECT_LIST,
+        ...config,
+      }
+    )) as Response<FileList>;
   }
 }

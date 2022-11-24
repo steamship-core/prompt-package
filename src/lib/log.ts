@@ -1,6 +1,6 @@
 import { Logger } from 'tslog';
 
-import { isNode } from './utils.js';
+import { isNode } from './utils';
 
 export default function getLogger(name: string) {
   if (isNode()) {

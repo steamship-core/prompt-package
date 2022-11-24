@@ -1,4 +1,4 @@
-import { isNode } from '../utils.js';
+import { isNode } from '../utils';
 
 /*
  * The goal of this file is to provide a credential-loading system

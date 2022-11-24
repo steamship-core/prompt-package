@@ -5,6 +5,9 @@ import {File} from '../src/lib/file'
 describe("File", () => {
   test('it should be uploadable via content', async () => {
     const client = steamshipClient();
+
+    const files1 = await File.list(client)
+
     const content = 'A'
     const res = await File.upload(client, {
       content,
@@ -14,10 +17,17 @@ describe("File", () => {
     expect(res.data?.id).not.toBeUndefined()
     expect(res.data?.mimeType).toBe("text/markdown")
 
+    const files2 = await File.list(client)
+
     // Now get the raw file
     const raw = await res.data?.raw()
     expect(raw?.data).toBe(content)
-  });
+
+    expect(files1.data?.files).not.toBeUndefined()
+    expect(files2.data?.files).not.toBeUndefined()
+    expect(files2.data?.files.length).toBeGreaterThan(0)
+    expect(files2.data?.files.length).toEqual((files1.data?.files.length || 0) + 1)
+  }, 20000);
 
   test('it should be uploadable via filename', async () => {
     const client = steamshipClient();
