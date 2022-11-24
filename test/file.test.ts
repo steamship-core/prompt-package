@@ -46,6 +46,10 @@ describe("File", () => {
     // Now get the raw file
     const raw = await res.data?.raw()
     expect(raw!.data).toBe(content.toString())
+    expect(res.data?.handle).not.toBeUndefined()
+    expect(res.data?.handle).not.toBeNull()
+    const f2 = await File.get(client, {handle: res.data?.handle})
+    expect(f2.data?.id).toEqual(res.data?.id)
   });
 
 })

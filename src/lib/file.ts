@@ -29,8 +29,9 @@ export interface FileParams {
   id?: string;
   handle?: string;
   mimeType?: string;
-  corpusId?: string;
   workspaceId?: string;
+  tenantId?: string;
+  userId?: string;
   blocks?: IBlock[];
 }
 
@@ -48,7 +49,7 @@ export class File {
   id?: string;
   handle?: string;
   mimeType?: string;
-  corpusId?: string;
+  userId?: string;
   workspaceId?: string;
   blocks?: IBlock[];
   client: ApiBase;
@@ -58,9 +59,9 @@ export class File {
     this.id = params.id;
     this.handle = params.handle;
     this.mimeType = params.mimeType;
-    this.corpusId = params.corpusId;
     this.workspaceId = params.workspaceId;
     this.blocks = params.blocks;
+    this.userId = params.userId;
   }
 
   static async upload(
@@ -155,5 +156,21 @@ export class File {
         ...config,
       }
     )) as Response<FileList>;
+  }
+
+  static async get(
+    client: ApiBase,
+    params?: GetParams,
+    config?: Configuration
+  ): Promise<Response<File>> {
+    return (await client.post(
+      'file/get',
+      { ...params },
+      {
+        expect: _EXPECT,
+        responsePath: 'file',
+        ...config,
+      }
+    )) as Response<File>;
   }
 }
