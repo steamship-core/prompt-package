@@ -30,7 +30,7 @@ describe("File", () => {
     expect(files2.data?.files.length).toEqual((files1.data?.files.length || 0) + 1)
   }, 20000);
 
-  test('it should be uploadable via content buffer', async () => {
+  test('it should be uploadable via Uint8Array', async () => {
     const client = steamshipClient();
 
     const content = 'A'
@@ -38,10 +38,10 @@ describe("File", () => {
     const textEncoder = new TextEncoder();
     const utf8 = new Uint8Array(content.length);
     textEncoder.encodeInto(content, utf8);
-    const buffer = Buffer.from(utf8);
+    // const buffer = Buffer.from(utf8);
 
     const res = await File.upload(client, {
-      content: buffer,
+      content: utf8,
       mimeType: "text/markdown"
     })
     expect(res.data).not.toBeUndefined()
@@ -53,16 +53,19 @@ describe("File", () => {
     expect(raw?.data).toBe(content)
   }, 20000);
 
-  test('it should be uploadable via content buffer with tags', async () => {
+
+  test('it should be uploadable via Uint8Array with tags', async () => {
     const client = steamshipClient();
+
     const content = 'A'
+
     const textEncoder = new TextEncoder();
     const utf8 = new Uint8Array(content.length);
     textEncoder.encodeInto(content, utf8);
-    const buffer = Buffer.from(utf8);
+    // const buffer = Buffer.from(utf8);
 
     const res = await File.upload(client, {
-      content: buffer,
+      content: utf8,
       mimeType: "text/markdown",
       tags: [
         {kind: "HI"}
@@ -73,6 +76,27 @@ describe("File", () => {
     expect(res.data?.mimeType).toBe("text/markdown")
     expect(res.data?.tags).not.toBeUndefined()
     expect(res.data?.tags?.length).toEqual(1)
+
+    // Now get the raw file
+    const raw = await res.data?.raw()
+    expect(raw?.data).toBe(content)
+  }, 20000);
+
+  test('it should be uploadable via content buffer', async () => {
+    const client = steamshipClient();
+    const content = 'ABC'
+    const textEncoder = new TextEncoder();
+    const utf8 = new Uint8Array(content.length);
+    textEncoder.encodeInto(content, utf8);
+    const buffer = Buffer.from(utf8);
+
+    const res = await File.upload(client, {
+      content: buffer,
+      mimeType: "text/markdown",
+    })
+    expect(res.data).not.toBeUndefined()
+    expect(res.data?.id).not.toBeUndefined()
+    expect(res.data?.mimeType).toBe("text/markdown")
 
     // Now get the raw file
     const raw = await res.data?.raw()

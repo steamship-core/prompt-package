@@ -42,7 +42,7 @@ export interface FileParams {
 
 export interface UploadParams {
   filename?: string;
-  content?: string | Buffer;
+  content?: string | Buffer | Blob | Uint8Array;
   type?: 'file' | 'url' | 'value';
   tags?: ITag[];
   handle?: string;
@@ -79,15 +79,19 @@ export class File {
     if (!params.filename && !params.content) {
       throw Error('Either filename or content must be provided');
     }
-    let buffer: Buffer | undefined = undefined;
+
+    let buffer: Buffer | Blob | Uint8Array | undefined = undefined;
 
     if (params.filename) {
       params.type = 'file';
       buffer = await readFile(params.filename);
       delete params.content;
-    } else if (params.content instanceof Buffer) {
+    } else if (
+      params.content instanceof Buffer ||
+      params.content instanceof Uint8Array
+    ) {
       params.type = 'file';
-      buffer = params.content;
+      buffer = params.content as any;
       delete params.content;
     } else {
       params.type = 'value';

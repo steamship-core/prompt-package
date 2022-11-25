@@ -95,7 +95,7 @@ export interface TaskList {
 export interface PostConfig<T> extends Configuration {
   responsePath?: string;
   rawResponse?: boolean;
-  file?: Buffer;
+  file?: Buffer | Blob | Uint8Array;
   filename?: string;
   expect?: (client: ApiBase, data: unknown) => T;
   isPackageCall?: boolean;
@@ -620,21 +620,20 @@ export class ApiBase {
     let finalPayload: undefined | unknown | { [key: string]: undefined } =
       undefined;
     if (verb == 'POST' && config?.file) {
-      // Because on the server this isn't available (unlike the browser.)
-      // TODO: We might not be able to import this in the browser..
       const FormData = await import('form-data');
       const formData = new FormData.default();
-      formData.append('file', config?.file, { filename: config?.filename });
+      formData.append('file', Buffer.from(config.file as any), {
+        filename: config?.filename,
+      });
       const pp = payload as { [key: string]: undefined };
       for (const key of Object.keys(pp)) {
         const value = pp[key];
         addMultiparts(formData, key, value);
       }
       finalPayload = formData;
-      const boundary = formData.getBoundary();
-      reqConfig.headers[
-        'Content-Type'
-      ] = `multipart/form-data; boundary=${boundary}`;
+      // Important so proper boundary can be set;
+      delete reqConfig.headers['Content-Type'];
+      reqConfig.headers = { ...reqConfig.headers, ...formData.getHeaders() };
     } else {
       finalPayload = payload;
     }
