@@ -15,6 +15,7 @@ import {
   ListTaskCommentResponse,
   TaskCommentResponse,
 } from './types/task_comment';
+import { isNode } from './utils';
 
 const log: Logger = getLogger('Steamship:ApiBase');
 
@@ -622,9 +623,15 @@ export class ApiBase {
     if (verb == 'POST' && config?.file) {
       const FormData = await import('form-data');
       const formData = new FormData.default();
-      formData.append('file', Buffer.from(config.file as any), {
-        filename: config?.filename,
-      });
+      if (isNode()) {
+        formData.append('file', Buffer.from(config.file as any), {
+          filename: config?.filename,
+        });
+      } else {
+        formData.append('file', new Blob(config.file as any), {
+          filename: config?.filename,
+        });
+      }
       const pp = payload as { [key: string]: undefined };
       for (const key of Object.keys(pp)) {
         const value = pp[key];
@@ -633,7 +640,13 @@ export class ApiBase {
       finalPayload = formData;
       // Important so proper boundary can be set;
       delete reqConfig.headers['Content-Type'];
-      reqConfig.headers = { ...reqConfig.headers, ...formData.getHeaders() };
+      if (isNode()) {
+        // This only needs to happen on Node.
+        // And the .getHeaders method is unavilabile in the browser.
+        // NOTE: This is untested in the unit tests; it will show up as a failure in the browser.
+        // TODO: We need to start running tests inside a browser runtime too.
+        reqConfig.headers = { ...reqConfig.headers, ...formData.getHeaders() };
+      }
     } else {
       finalPayload = payload;
     }

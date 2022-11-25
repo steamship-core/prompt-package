@@ -3,6 +3,7 @@ import { IBlock } from './block';
 import { Configuration } from './shared/Configuration';
 import { GetParams } from './shared/Requests';
 import { ITag } from './tag';
+import { isNode } from './utils';
 
 const generateRandomString = (length = 6) =>
   Math.random().toString(20).substr(2, length);
@@ -80,16 +81,26 @@ export class File {
       throw Error('Either filename or content must be provided');
     }
 
+    let contentIsFile = false;
+    if (isNode()) {
+      contentIsFile =
+        params.content instanceof Buffer ||
+        params.content instanceof Uint8Array;
+    } else {
+      // In browser
+      contentIsFile =
+        params.content instanceof Buffer ||
+        params.content instanceof Uint8Array ||
+        params.content instanceof Blob;
+    }
+
     let buffer: Buffer | Blob | Uint8Array | undefined = undefined;
 
     if (params.filename) {
       params.type = 'file';
       buffer = await readFile(params.filename);
       delete params.content;
-    } else if (
-      params.content instanceof Buffer ||
-      params.content instanceof Uint8Array
-    ) {
+    } else if (contentIsFile) {
       params.type = 'file';
       buffer = params.content as any;
       delete params.content;
