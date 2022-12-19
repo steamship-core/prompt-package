@@ -1,0 +1,17 @@
+{
+  "type": "package",
+  "handle": "prompt-package",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "entrypoint": "api.handler",
+  "public": true,
+  "build_config": {
+    "ignore": [
+      "tests",
+      "examples"
+    ]
+  },
+  "configTemplate": {
+  }
+}

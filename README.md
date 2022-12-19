@@ -1,6 +1,6 @@
-# Steamship Package Template 
+# Steamship Prompt Package Template 
 
-This repository contains a starter template showing you how to develop and use a package.
+This repository contains a starter template showing you how to develop and use a package that runs a simple templated LLM Prompt.
 
 ## Quick Start
 
@@ -33,7 +33,7 @@ Wait about 30 seconds after deployment finishes for the package to become availa
 Then, create an instance.
 
 ```bash
-ship package:instance:create --default_name="Beautiful"
+ship package:instance:create
 ```
 
 That keyword argument above is part of the required configuration.
@@ -44,7 +44,7 @@ The response will let you know what your **Instance Handle** is.
 Finally, invoke a method!
 
 ```bash
-ship package:instance:invoke --instance="INSTANCE_HANDLE" --method="greet"    
+ship package:instance:invoke --instance="INSTANCE_HANDLE" --method="generate" --topic="Food"    
 ```
 
 ### Invoke your Package from Python
@@ -57,11 +57,9 @@ Create a new instance and invoke it with:
 from steamship import Steamship
 
 # TODO: Replace with your package and instance handle below
-instance = Steamship.use("PACKAGE_HANDLE", "INSTANCE_HANDLE", config={
-    "default_name": "Beautiful"
-})
+instance = Steamship.use("PACKAGE_HANDLE", "INSTANCE_HANDLE")
 
-print(instance.invoke("greet"))
+print(instance.invoke("generate", topic="Food"))
 ```
 
 ## Extending on your own
