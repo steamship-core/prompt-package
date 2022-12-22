@@ -26,6 +26,8 @@ export interface GetParams {
 export interface PackageInstanceListParams {
   packageId?: string;
   packageVersionId?: string;
+  includeWorkspace?: boolean;
+  acrossWorkspaces?: boolean;
 }
 
 export interface PackageInstanceList {
@@ -36,8 +38,10 @@ export interface PackageInstanceParams {
   id?: string;
   handle?: string;
   packageId?: string;
+  packageHandle?: string;
   packageInstanceId?: string;
   packageVersionId?: string;
+  packageVersionHandle?: string;
   description?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -65,7 +69,9 @@ export class PackageInstance {
   id?: string;
   handle?: string;
   packageId?: string;
+  packageHandle?: string;
   packageVersionId?: string;
+  packageVersionHandle?: string;
   workspaceId?: string;
   workspaceHandle?: string;
   userId?: string;
@@ -82,7 +88,9 @@ export class PackageInstance {
     this.id = params.id;
     this.handle = params.handle;
     this.packageId = params.packageId;
+    this.packageHandle = params.packageHandle;
     this.packageVersionId = params.packageVersionId;
+    this.packageVersionHandle = params.packageVersionHandle;
     this.workspaceId = params.workspaceId;
     this.workspaceHandle = params.workspaceHandle;
     this.userId = params.userId;

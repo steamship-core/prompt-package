@@ -25,6 +25,8 @@ export interface GetParams {
 export interface PluginInstanceListParams {
   pluginId?: string;
   pluginVersionId?: string;
+  includeWorkspace?: boolean;
+  acrossWorkspaces?: boolean;
 }
 
 export interface PluginInstanceList {
@@ -35,7 +37,9 @@ export interface PluginInstanceParams {
   id?: string;
   handle?: string;
   pluginId?: string;
+  pluginHandle?: string;
   pluginInstanceId?: string;
+  pluginVersionHandle?: string;
   pluginVersionId?: string;
   description?: string;
   createdAt?: string;
@@ -43,6 +47,7 @@ export interface PluginInstanceParams {
   userId?: string;
   userHandle?: string;
   workspaceId?: string;
+  workspaceHandle?: string;
   config?: Record<string, any>;
 }
 
@@ -62,8 +67,11 @@ export class PluginInstance {
   id?: string;
   handle?: string;
   pluginId?: string;
+  pluginHandle?: string;
   pluginVersionId?: string;
+  pluginVersionHandle?: string;
   workspaceId?: string;
+  workspaceHandle?: string;
   userId?: string;
   userHandle?: string;
   description?: string;
@@ -77,8 +85,11 @@ export class PluginInstance {
     this.id = params.id;
     this.handle = params.handle;
     this.pluginId = params.pluginId;
+    this.pluginHandle = params.pluginHandle;
     this.pluginVersionId = params.pluginVersionId;
+    this.pluginVersionHandle = params.pluginVersionHandle;
     this.workspaceId = params.pluginInstanceId;
+    this.workspaceHandle = params.workspaceHandle;
     this.userId = params.userId;
     this.userHandle = params.userHandle;
     this.createdAt = params.createdAt;

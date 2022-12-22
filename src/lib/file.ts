@@ -1,9 +1,8 @@
-import { ApiBase, Response } from './api_base';
+import { AllowedFileTypes, ApiBase, Response } from './api_base';
 import { IBlock } from './block';
 import { Configuration } from './shared/Configuration';
 import { GetParams } from './shared/Requests';
 import { ITag } from './tag';
-import { isNode } from './utils';
 
 const generateRandomString = (length = 6) =>
   Math.random().toString(20).substr(2, length);
@@ -43,7 +42,7 @@ export interface FileParams {
 
 export interface UploadParams {
   filename?: string;
-  content?: string | Buffer | Blob | Uint8Array;
+  content?: AllowedFileTypes;
   type?: 'file' | 'url' | 'value';
   tags?: ITag[];
   handle?: string;
@@ -77,30 +76,15 @@ export class File {
     params: UploadParams,
     config?: Configuration
   ): Promise<Response<File>> {
-    if (!params.filename && !params.content) {
-      throw Error('Either filename or content must be provided');
+    if (!params.content) {
+      throw Error('Content must be provided');
     }
 
-    let contentIsFile = false;
-    if (isNode()) {
-      contentIsFile =
-        params.content instanceof Buffer ||
-        params.content instanceof Uint8Array;
-    } else {
-      // In browser
-      contentIsFile =
-        params.content instanceof Buffer ||
-        params.content instanceof Uint8Array ||
-        params.content instanceof Blob;
-    }
+    const contentIsFile = !((params.content as any) instanceof String);
 
-    let buffer: Buffer | Blob | Uint8Array | undefined = undefined;
+    let buffer: AllowedFileTypes | undefined = undefined;
 
-    if (params.filename) {
-      params.type = 'file';
-      buffer = await readFile(params.filename);
-      delete params.content;
-    } else if (contentIsFile) {
+    if (contentIsFile) {
       params.type = 'file';
       buffer = params.content as any;
       delete params.content;

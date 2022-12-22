@@ -1,3 +1,5 @@
+
+// @ts-ignore
 import {steamshipClient} from './helper';
 import {Workspace} from '../src/lib/workspace'
 

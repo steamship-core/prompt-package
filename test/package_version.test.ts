@@ -22,7 +22,7 @@ export async function deployPackageVersion(client: Steamship, packageZip: string
     configTemplate: configTemplate,
   }))
   await version1t.wait()
-  await delay(15000) // TODO: When our task system awaits the Lambda deployment, we can remove this.
+  await delay(5000) // TODO: When our task system awaits the Lambda deployment, we can remove this.
 
   const version1 = version1t.data!
   return [app1, version1]
@@ -30,6 +30,7 @@ export async function deployPackageVersion(client: Steamship, packageZip: string
 
 describe("Package Version", () => {
   test('it should be creatable and deletable', async () => {
+    jest.setTimeout(55000);
     const steamship = steamshipClient();
     const [app1, version1] = await helloWorld(steamship)
 
@@ -46,5 +47,5 @@ describe("Package Version", () => {
     const app1l = app1lr.data!
     expect(app1l.packageVersions.length).toBe(1)
 
-  }, 25000);
+  }, 55000);
 })

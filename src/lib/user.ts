@@ -16,6 +16,8 @@ export interface UserParams {
   handle?: string;
   plan?: string;
   handleSet?: boolean;
+  profile?: any;
+  profilePhoto?: string;
 }
 
 export interface UpdateParams {
@@ -34,6 +36,8 @@ export class User {
   handle?: string;
   plan?: string;
   handleSet?: boolean;
+  profile?: any;
+  profilePhoto?: string;
 
   constructor(client: ApiBase, params: UserParams) {
     this.client = client;
@@ -44,6 +48,8 @@ export class User {
     this.handle = params.handle;
     this.plan = params.plan;
     this.handleSet = params.handleSet;
+    this.profile = params.profile;
+    this.profilePhoto = params.profilePhoto;
   }
 
   static async current(

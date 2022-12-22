@@ -1,3 +1,4 @@
+// @ts-ignore
 import {randomName, steamshipClient} from './helper';
 import {Plugin} from '../src/lib/plugin'
 import {PluginVersion} from '../src/lib/plugin_version'

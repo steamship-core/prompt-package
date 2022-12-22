@@ -42,6 +42,15 @@ export interface PluginParams {
   limitUnit?: string;
   apiKey?: string;
   metadata?: unknown;
+  readme?: string;
+  profile?: any;
+  featured?: boolean;
+}
+
+export interface ListPluginParams {
+  featured?: boolean;
+  public?: boolean;
+  type?: PluginType;
 }
 
 export interface PluginList {
@@ -65,6 +74,16 @@ export interface CreatePluginParams {
   fetchIfExists?: boolean;
   workspaceId?: string;
   workspaceHandle?: string;
+  readme?: string;
+  profile?: any;
+}
+
+export interface UpdatePluginParams {
+  id?: string;
+  handle?: string;
+  readme?: string;
+  profile?: any;
+  description?: string;
 }
 
 export class Plugin {
@@ -76,11 +95,14 @@ export class Plugin {
   isTrainable?: boolean;
   trainingPlatform?: TrainingPlatform;
   handle?: string;
+  profile?: any;
+  readme?: string;
   description?: string;
   dimensionality?: number;
   limitAmount?: number;
   limitUnit?: string;
   apiKey?: string;
+  featured?: boolean;
   metadata?: unknown;
   client: ApiBase;
 
@@ -100,6 +122,9 @@ export class Plugin {
     this.limitUnit = params.limitUnit;
     this.apiKey = params.apiKey;
     this.metadata = params.metadata;
+    this.readme = params.readme;
+    this.profile = params.profile;
+    this.featured = params.featured;
   }
 
   static async create(
@@ -139,7 +164,7 @@ export class Plugin {
 
   static async list(
     client: ApiBase,
-    params?: any,
+    params?: ListPluginParams,
     config?: Configuration
   ): Promise<Response<PluginList>> {
     return (await client.post(
@@ -150,5 +175,24 @@ export class Plugin {
         ...config,
       }
     )) as Response<PluginList>;
+  }
+
+  async update(config?: Configuration): Promise<Response<Plugin>> {
+    const params: UpdatePluginParams = {
+      id: this.id,
+      handle: this.handle,
+      readme: this.readme,
+      profile: this.profile,
+      description: this.description,
+    };
+    return (await this.client.post(
+      'package/update',
+      { ...params },
+      {
+        expect: _EXPECT,
+        responsePath: 'package',
+        ...config,
+      }
+    )) as Response<Plugin>;
   }
 }

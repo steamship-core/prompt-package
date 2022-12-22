@@ -18,6 +18,11 @@ export interface PackageList {
   packages: Package[];
 }
 
+export interface ListPackageParams {
+  featured?: boolean;
+  public?: boolean;
+}
+
 export interface PackageParams {
   id?: string;
   handle?: string;
@@ -27,17 +32,31 @@ export interface PackageParams {
   updatedAt?: string;
   isPublic?: boolean;
   fetchIfExists?: boolean;
+  readme?: string;
+  profile?: any;
+  featured?: boolean;
+}
+
+export interface UpdatePackageParams {
+  id?: string;
+  handle?: string;
+  readme?: string;
+  profile?: any;
+  description?: string;
 }
 
 export class Package {
   id?: string;
   handle?: string;
+  description?: string;
+  profile?: any;
+  readme?: string;
   isPublic?: boolean;
   userId?: string;
   userHandle?: string;
-  description?: string;
   createdAt?: string;
   updatedAt?: string;
+  featured?: boolean;
   client: ApiBase;
 
   constructor(client: ApiBase, params: PackageParams) {
@@ -49,6 +68,9 @@ export class Package {
     this.updatedAt = params.updatedAt;
     this.isPublic = params.isPublic;
     this.description = params.description;
+    this.readme = params.readme;
+    this.profile = params.profile;
+    this.featured = params.featured;
   }
 
   static async create(
@@ -83,9 +105,28 @@ export class Package {
     )) as Response<Package>;
   }
 
+  async update(config?: Configuration): Promise<Response<Package>> {
+    const params: UpdatePackageParams = {
+      id: this.id,
+      handle: this.handle,
+      readme: this.readme,
+      profile: this.profile,
+      description: this.description,
+    };
+    return (await this.client.post(
+      'package/update',
+      { ...params },
+      {
+        expect: _EXPECT,
+        responsePath: 'package',
+        ...config,
+      }
+    )) as Response<Package>;
+  }
+
   static async list(
     client: ApiBase,
-    params?: GetParams,
+    params?: ListPackageParams,
     config?: Configuration
   ): Promise<Response<PackageList>> {
     return (await client.post(

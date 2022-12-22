@@ -53,6 +53,7 @@ describe('Steamship Client', () => {
 
     // Now make sure we can use it
     const content = 'A'
+
     const res = await File.upload(steamship, {
       content,
       mimeType: "text/markdown"
@@ -62,6 +63,6 @@ describe('Steamship Client', () => {
     expect(res.data?.mimeType).toBe("text/markdown")
     expect(res.data?.workspaceId).toBe(config.workspaceId)
     // await res.data?.delete()
-  });
+  }, 10000);
 
 });

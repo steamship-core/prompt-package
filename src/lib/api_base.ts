@@ -41,6 +41,8 @@ const _IS_LOCAL = (base: string): boolean => {
     'localhost',
     '127.0.0.1',
     '0:0:0:0',
+    ':3000',
+    'steamship.local',
     'host.docker.internal',
     '/test:',
   ]) {
@@ -93,10 +95,12 @@ export interface TaskList {
   tasks: Task<any>[];
 }
 
+export type AllowedFileTypes = Blob | File | string | Buffer;
+
 export interface PostConfig<T> extends Configuration {
   responsePath?: string;
   rawResponse?: boolean;
-  file?: Buffer | Blob | Uint8Array;
+  file?: AllowedFileTypes;
   filename?: string;
   expect?: (client: ApiBase, data: unknown) => T;
   isPackageCall?: boolean;
@@ -621,31 +625,50 @@ export class ApiBase {
     let finalPayload: undefined | unknown | { [key: string]: undefined } =
       undefined;
     if (verb == 'POST' && config?.file) {
-      const FormData = await import('form-data');
-      const formData = new FormData.default();
-      if (isNode()) {
-        formData.append('file', Buffer.from(config.file as any), {
-          filename: config?.filename,
-        });
-      } else {
-        formData.append('file', new Blob(config.file as any), {
-          filename: config?.filename,
-        });
+      let contentType = undefined;
+      if (typeof config.file != 'string') {
+        contentType = 'binary/octet-stream';
       }
-      const pp = payload as { [key: string]: undefined };
-      for (const key of Object.keys(pp)) {
-        const value = pp[key];
-        addMultiparts(formData, key, value);
-      }
-      finalPayload = formData;
+
       // Important so proper boundary can be set;
       delete reqConfig.headers['Content-Type'];
+
       if (isNode()) {
+        const FormDataNode = await import('form-data');
+        const formData = new FormDataNode.default();
+        formData.append('file', Buffer.from(config.file as any), {
+          filename: config?.filename,
+          contentType: contentType,
+        });
+        const pp = payload as { [key: string]: undefined };
+        for (const key of Object.keys(pp)) {
+          const value = pp[key];
+          addMultiparts(formData, key, value);
+        }
+        finalPayload = formData;
+
         // This only needs to happen on Node.
         // And the .getHeaders method is unavilabile in the browser.
         // NOTE: This is untested in the unit tests; it will show up as a failure in the browser.
         // TODO: We need to start running tests inside a browser runtime too.
         reqConfig.headers = { ...reqConfig.headers, ...formData.getHeaders() };
+      } else {
+        const formData = new FormData();
+        /*
+         * The config.file as any cast below is because FormData does not support Buffer.
+         * In general, file as a Buffer should only be done from within the NodeJS environment,
+         * not from within the browser. In the browser, Blob should be used instead.
+         *
+         * TODO: Figure out if there's a way to strongly type (or at least runtime check) this
+         * so that we get back intelligent errors that are environment-dependent.
+         */
+        formData.append('file', config.file as any, config?.filename);
+        const pp = payload as { [key: string]: undefined };
+        for (const key of Object.keys(pp)) {
+          const value = pp[key];
+          addMultiparts(formData, key, value);
+        }
+        finalPayload = formData;
       }
     } else {
       finalPayload = payload;

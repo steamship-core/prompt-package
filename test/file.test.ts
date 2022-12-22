@@ -1,9 +1,34 @@
 // @ts-ignore
 import {steamshipClient} from './helper';
-import {File} from '../src/lib/file'
+import {File} from '../src'
 import { TextEncoder } from 'util';
 
 describe("File", () => {
+  test("it should Javascript text encoding works", async () => {
+    const client = steamshipClient();
+
+    const content = "Hi there"
+
+    const resp = await client.post(
+    'file/create',
+    {
+      type: 'file',
+    },
+    {
+      responsePath: 'file',
+      file: content,
+      // Filename MUST be non-undefined! Otherwise the request library will
+      // not work.
+      filename: "foo"
+    })
+
+    const f = new File(client, resp.data as any)
+
+    // Now get the raw file
+    const raw = await f.raw()
+    expect(raw?.data).toBe(content)
+  })
+
   test('it should be uploadable via content', async () => {
     const client = steamshipClient();
 
@@ -30,29 +55,6 @@ describe("File", () => {
     expect(files2.data?.files.length).toEqual((files1.data?.files.length || 0) + 1)
   }, 20000);
 
-  test('it should be uploadable via Uint8Array', async () => {
-    const client = steamshipClient();
-
-    const content = 'A'
-
-    const textEncoder = new TextEncoder();
-    const utf8 = new Uint8Array(content.length);
-    textEncoder.encodeInto(content, utf8);
-    // const buffer = Buffer.from(utf8);
-
-    const res = await File.upload(client, {
-      content: utf8,
-      mimeType: "text/markdown"
-    })
-    expect(res.data).not.toBeUndefined()
-    expect(res.data?.id).not.toBeUndefined()
-    expect(res.data?.mimeType).toBe("text/markdown")
-
-    // Now get the raw file
-    const raw = await res.data?.raw()
-    expect(raw?.data).toBe(content)
-  }, 20000);
-
 
   test('it should be uploadable via Uint8Array with tags', async () => {
     const client = steamshipClient();
@@ -62,10 +64,10 @@ describe("File", () => {
     const textEncoder = new TextEncoder();
     const utf8 = new Uint8Array(content.length);
     textEncoder.encodeInto(content, utf8);
-    // const buffer = Buffer.from(utf8);
+    const buffer = Buffer.from(utf8);
 
     const res = await File.upload(client, {
-      content: utf8,
+      content: buffer,
       mimeType: "text/markdown",
       tags: [
         {kind: "HI"}
@@ -111,6 +113,7 @@ describe("File", () => {
     const content = fs.readFileSync(filename)
     const res = await File.upload(client, {
       filename,
+      content,
       mimeType: "text/markdown"
     })
     expect(res.data).not.toBeUndefined()
