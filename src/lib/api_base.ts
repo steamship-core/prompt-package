@@ -17,6 +17,17 @@ import {
 } from './types/task_comment';
 import { isNode } from './utils';
 
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    // We really want to throw the error so it is handled and we don't get
+    // an unhandledrejection error. By throwing here, we are handling the
+    // rejection, and bubbling up to the closest error handler (try/catch or
+    // catch method call on a promise).
+    throw error
+  }
+);
+
 const log: Logger = getLogger('Steamship:ApiBase');
 
 const MAX_BODY_LENGTH = 100000 * 1000;
@@ -368,7 +379,7 @@ export interface SwitchConfigWorkspaceParams {
 }
 
 export class ApiBase {
-  config: Promise<Configuration>;
+  config: Promise<Configuration> | Configuration;
 
   public constructor(params?: LoadConfigParams) {
     this.config = loadConfiguration(params).then((config) => {
