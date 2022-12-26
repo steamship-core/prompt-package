@@ -11,7 +11,6 @@ export class SteamshipError extends Error {
   origMessage?: string;
 
   constructor(props?: RemoteErrorProps) {
-    console.log(props);
     const parts = [];
     if (props?.statusCode) {
       parts.push(`[${props?.statusCode}]`);

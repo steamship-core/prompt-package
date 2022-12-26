@@ -48,4 +48,36 @@ describe("Package Version", () => {
     expect(app1l.packageVersions.length).toBe(1)
 
   }, 55000);
+
+  test('it can not be double deployed with the same version handle', async () => {
+    jest.setTimeout(55000);
+    const steamship = steamshipClient();
+
+    const req1 = (await Package.create(steamship, {handle: randomName()}))
+    const app1 = req1.output!
+
+    const filename = path.join(process.cwd(), 'testAssets', 'demo-package.zip')
+
+    const version1t = (await PackageVersion.create(steamship, {
+      packageId: app1.id!,
+      filename: filename,
+      configTemplate: {},
+      handle: '1.0.0'
+    }))
+    await version1t.wait()
+    await delay(5000) // TODO: When our task system awaits the Lambda deployment, we can remove this.
+
+    expect(app1.id).not.toBeUndefined()
+    expect(version1t?.output?.handle).not.toBeUndefined()
+
+    let p = PackageVersion.create(steamship, {
+      packageId: app1.id!,
+      filename: filename,
+      configTemplate: {},
+      handle: '1.0.0' // It's the same!
+    })
+
+    await expect(p)
+      .rejects.toThrow(/.*ObjectExists.*/)
+  }, 55000);
 })
