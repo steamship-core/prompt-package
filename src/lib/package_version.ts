@@ -1,13 +1,14 @@
-import { ApiBase, Response } from './api_base';
 import { readFile } from './file';
+import { IApiBase } from './shared/BaseInterfaces';
 import { Configuration } from './shared/Configuration';
+import { Task } from './task';
 import { MimeTypes } from './types/file';
 
-const _EXPECT = (client: ApiBase, data: unknown) => {
+const _EXPECT = (client: IApiBase, data: unknown) => {
   return new PackageVersion(client, data as PackageVersionParams);
 };
 
-const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+const _EXPECT_LIST = (client: IApiBase, data: unknown) => {
   if (!data) {
     return [];
   }
@@ -58,10 +59,10 @@ export class PackageVersion {
   updatedAt?: string;
   isDefault?: boolean;
   description?: string;
-  client: ApiBase;
+  client: IApiBase;
   configTemplate?: Record<string, any>;
 
-  constructor(client: ApiBase, params: PackageVersionParams) {
+  constructor(client: IApiBase, params: PackageVersionParams) {
     this.client = client;
     this.id = params.id;
     this.handle = params.handle;
@@ -74,10 +75,10 @@ export class PackageVersion {
   }
 
   static async create(
-    client: ApiBase,
+    client: IApiBase,
     params: CreateParams,
     config?: Configuration
-  ): Promise<Response<PackageVersion>> {
+  ): Promise<Task<PackageVersion>> {
     if (!params.filename) {
       throw Error(
         'A filename must be provided to create a new package version.'
@@ -108,14 +109,14 @@ export class PackageVersion {
         file: buffer,
         filename: params.filename,
       }
-    )) as Response<PackageVersion>;
+    )) as Task<PackageVersion>;
   }
 
   static async get(
-    client: ApiBase,
+    client: IApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<PackageVersion>> {
+  ): Promise<Task<PackageVersion>> {
     return (await client.post(
       'package/version/get',
       { ...params },
@@ -124,14 +125,14 @@ export class PackageVersion {
         responsePath: 'packageVersion',
         ...config,
       }
-    )) as Response<PackageVersion>;
+    )) as Task<PackageVersion>;
   }
 
   static async list(
-    client: ApiBase,
+    client: IApiBase,
     params?: PackageVersionListParams,
     config?: Configuration
-  ): Promise<Response<PackageVersionList>> {
+  ): Promise<Task<PackageVersionList>> {
     return (await client.post(
       'package/version/list',
       { ...params },
@@ -139,6 +140,6 @@ export class PackageVersion {
         expect: _EXPECT_LIST,
         ...config,
       }
-    )) as Response<PackageVersionList>;
+    )) as Task<PackageVersionList>;
   }
 }

@@ -19,14 +19,13 @@ describe("File", () => {
       file: content,
       // Filename MUST be non-undefined! Otherwise the request library will
       // not work.
-      filename: "foo"
+      filename: "foo",
+      expect: (client, data) => { return new File(client, data as any) }
     })
 
-    const f = new File(client, resp.data as any)
-
     // Now get the raw file
-    const raw = await f.raw()
-    expect(raw?.data).toBe(content)
+    const raw = await (resp as any).output.raw()
+    expect(await raw.text()).toBe(content)
   })
 
   test('it should be uploadable via content', async () => {
@@ -39,20 +38,20 @@ describe("File", () => {
       content,
       mimeType: "text/markdown"
     })
-    expect(res.data).not.toBeUndefined()
-    expect(res.data?.id).not.toBeUndefined()
-    expect(res.data?.mimeType).toBe("text/markdown")
+    expect(res.output).not.toBeUndefined()
+    expect(res.output?.id).not.toBeUndefined()
+    expect(res.output?.mimeType).toBe("text/markdown")
 
     const files2 = await File.list(client)
 
     // Now get the raw file
-    const raw = await res.data?.raw()
-    expect(raw?.data).toBe(content)
+    const raw = await res.output?.raw()
+    expect(await (raw as any).text()).toBe(content)
 
-    expect(files1.data?.files).not.toBeUndefined()
-    expect(files2.data?.files).not.toBeUndefined()
-    expect(files2.data?.files.length).toBeGreaterThan(0)
-    expect(files2.data?.files.length).toEqual((files1.data?.files.length || 0) + 1)
+    expect(files1.output?.files).not.toBeUndefined()
+    expect(files2.output?.files).not.toBeUndefined()
+    expect(files2.output?.files.length).toBeGreaterThan(0)
+    expect(files2.output?.files.length).toEqual((files1.output?.files.length || 0) + 1)
   }, 20000);
 
 
@@ -73,15 +72,15 @@ describe("File", () => {
         {kind: "HI"}
       ]
     })
-    expect(res.data).not.toBeUndefined()
-    expect(res.data?.id).not.toBeUndefined()
-    expect(res.data?.mimeType).toBe("text/markdown")
-    expect(res.data?.tags).not.toBeUndefined()
-    expect(res.data?.tags?.length).toEqual(1)
+    expect(res.output).not.toBeUndefined()
+    expect(res.output?.id).not.toBeUndefined()
+    expect(res.output?.mimeType).toBe("text/markdown")
+    expect(res.output?.tags).not.toBeUndefined()
+    expect(res.output?.tags?.length).toEqual(1)
 
     // Now get the raw file
-    const raw = await res.data?.raw()
-    expect(raw?.data).toBe(content)
+    const raw = await res.output!.raw()
+    expect(await raw.text()).toBe(content)
   }, 20000);
 
   test('it should be uploadable via content buffer', async () => {
@@ -96,13 +95,13 @@ describe("File", () => {
       content: buffer,
       mimeType: "text/markdown",
     })
-    expect(res.data).not.toBeUndefined()
-    expect(res.data?.id).not.toBeUndefined()
-    expect(res.data?.mimeType).toBe("text/markdown")
+    expect(res.output).not.toBeUndefined()
+    expect(res.output?.id).not.toBeUndefined()
+    expect(res.output?.mimeType).toBe("text/markdown")
 
     // Now get the raw file
-    const raw = await res.data?.raw()
-    expect(raw?.data).toBe(content)
+    const raw = await res.output!.raw()
+    expect(await raw.text()).toBe(content)
   }, 20000);
 
   test('it should be uploadable via filename', async () => {
@@ -116,17 +115,17 @@ describe("File", () => {
       content,
       mimeType: "text/markdown"
     })
-    expect(res.data).not.toBeUndefined()
-    expect(res.data?.id).not.toBeUndefined()
-    expect(res.data?.mimeType).toBe("text/markdown")
+    expect(res.output).not.toBeUndefined()
+    expect(res.output?.id).not.toBeUndefined()
+    expect(res.output?.mimeType).toBe("text/markdown")
 
     // Now get the raw file
-    const raw = await res.data?.raw()
-    expect(raw!.data).toBe(content.toString())
-    expect(res.data?.handle).not.toBeUndefined()
-    expect(res.data?.handle).not.toBeNull()
-    const f2 = await File.get(client, {handle: res.data?.handle})
-    expect(f2.data?.id).toEqual(res.data?.id)
+    const raw = await (await res.output!.raw()).text()
+    expect(raw).toBe(content.toString())
+    expect(res.output?.handle).not.toBeUndefined()
+    expect(res.output?.handle).not.toBeNull()
+    const f2 = await File.get(client, {handle: res.output?.handle})
+    expect(f2.output?.id).toEqual(res.output?.id)
   });
 
 })

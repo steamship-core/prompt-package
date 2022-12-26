@@ -1,5 +1,4 @@
 export { default as regeneratorRuntime } from 'regenerator-runtime';
-export { Response, Task } from './lib/api_base';
 export { File } from './lib/file';
 export { Package } from './lib/package';
 export { PackageInstance } from './lib/package_instance';
@@ -34,6 +33,15 @@ export type {
   PluginVersionListParams,
   PluginVersionParams,
 } from './lib/plugin_version';
+export type {
+  AllowedFileTypes,
+  IApiBase,
+  ITask,
+  PostConfig,
+  SwitchWorkspaceParams,
+  TaskList,
+  TaskListParams,
+} from './lib/shared/BaseInterfaces';
 export {
   CONFIG_FILENAME,
   DEFAULT_CONFIG,
@@ -47,6 +55,7 @@ export type {
 } from './lib/shared/Configuration';
 export { Steamship } from './lib/steamship';
 export { SteamshipError } from './lib/steamship_error';
+export { Task } from './lib/task';
 export type {
   Metadata,
   QueryResult,

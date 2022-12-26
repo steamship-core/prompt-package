@@ -44,7 +44,7 @@ describe("Package Instance", () => {
     app1.profile = profile;
     await app1.update();
 
-    const app2 = (await Package.get(steamship, {id: app1.id})).data
+    const app2 = (await Package.get(steamship, {id: app1.id})).output
     expect(app2).not.toBeUndefined()
     expect(app2!.description).toBe(desc)
     expect(app2!.readme).toBe(readme)
@@ -57,7 +57,7 @@ describe("Package Instance", () => {
     // Note: it's important that we use steamship.use here instead of Steamship.usee
     // in order to stay within the testing configuration.
     const instance1 = await steamship.use(app1.handle!)
-    const user = (await User.current(steamship)).data!
+    const user = (await User.current(steamship)).output!
 
     expect(instance1.handle).not.toBeUndefined()
     expect(instance1.packageVersionId).toBe(version1.id)
@@ -74,6 +74,12 @@ describe("Package Instance", () => {
     expect((await instance1a.client.config).workspaceId).toBe(instance1.workspaceId)
     // expect((await instance1a.client.config).workspaceHandle).toBe(app1.handle!)
 
+    let pl1 = await PackageInstance.list(steamship, {acrossWorkspaces: true, includeWorkspace: true})
+    expect(pl1.output?.packageInstances.length).toBe(1)
+    for (const p of pl1.output!.packageInstances) {
+      expect(p.workspaceHandle).not.toBeUndefined()
+    }
+
     // const handle2 = randomName()
     // const instance2 = await Steamship.use(app1.handle!, handle2)
     // const instance2a = await Steamship.use(app1.handle!, handle2)
@@ -81,12 +87,8 @@ describe("Package Instance", () => {
     // expect((await instance2a.client.config).workspaceHandle).toBe(handle2)
 
     const steamship2 = steamshipClient(randomName()); // Another workspace!
-    let pl1 = await PackageInstance.list(steamship2, {acrossWorkspaces: true, includeWorkspace: true})
-    expect(pl1.data?.packageInstances.length).toBe(1)
-    for (const p of pl1.data!.packageInstances) {
-      expect(p.workspaceHandle).not.toBeUndefined()
-    }
-
+    let pl2 = await PackageInstance.list(steamship2, {acrossWorkspaces: true, includeWorkspace: true})
+    expect(pl2.output?.packageInstances.length).toBe(0)
   }, 55000);
 
   test('it should be creatable, gettable, usable, and deletable', async () => {
@@ -102,7 +104,7 @@ describe("Package Instance", () => {
     expect(app1.handle).not.toBeNull()
 
     const instance1 = await steamship.use(app1.handle!)
-    const user = (await User.current(steamship)).data!
+    const user = (await User.current(steamship)).output!
 
     expect(instance1.handle).not.toBeUndefined()
     expect(instance1.packageVersionId).toBe(version1.id)
@@ -112,13 +114,13 @@ describe("Package Instance", () => {
     expect(instance1.id).not.toBeUndefined()
 
     // Can get them!
-    const instance1a = (await PackageInstance.get(steamship, {id: instance1.id})).data!
+    const instance1a = (await PackageInstance.get(steamship, {id: instance1.id})).output!
     expect(instance1a.id).toBe(instance1.id)
     expect(instance1a.handle).toBe(instance1.handle)
 
     // Can list them
     const app1lr = await PackageInstance.list(steamship, {packageId: app1.id!})
-    const app1l = app1lr.data!
+    const app1l = app1lr.output!
     expect(app1l.packageInstances.length).toBe(1)
 
     await instance1.delete()

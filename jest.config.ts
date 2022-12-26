@@ -7,6 +7,9 @@ const config: Config.InitialOptions = {
   testEnvironment: 'node',
   testMatch: ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],
   testPathIgnorePatterns: ["/node_modules/"],
-  maxWorkers: 1
+  maxWorkers: 1,
+  transform: {
+    '^.+\\.ts?$': 'ts-jest',
+  },
 };
 export default config;

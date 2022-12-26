@@ -1,3 +1,5 @@
+import { IApiBase } from '../shared/BaseInterfaces';
+
 export enum TaskState {
   waiting = 'waiting',
   running = 'running',
@@ -5,7 +7,7 @@ export enum TaskState {
   failed = 'failed',
 }
 
-export interface TaskParams {
+export interface TaskParams<T> {
   taskId?: string;
   userId?: string;
   workspaceId?: string;
@@ -14,6 +16,7 @@ export interface TaskParams {
   input?: string;
   maxRetries?: number;
   retries?: number;
+  output?: any;
   state?: TaskState;
   statusMessage?: string;
   statusCode?: string;
@@ -24,6 +27,9 @@ export interface TaskParams {
   taskType?: string;
   assignedWorker?: string;
   startedAt?: string;
+  responsePath?: string;
+  rawResponse?: boolean;
+  objectConstructor?: (client: IApiBase, data: unknown) => T;
 }
 
 export type Metadata = unknown;

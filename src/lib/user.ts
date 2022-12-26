@@ -1,7 +1,8 @@
-import { ApiBase, Response } from './api_base';
+import { IApiBase } from './shared/BaseInterfaces';
 import { Configuration } from './shared/Configuration';
+import { Task } from './task';
 
-const _EXPECT = (client: ApiBase, data: unknown) => {
+const _EXPECT = (client: IApiBase, data: unknown) => {
   if ((data as any).user) {
     data = (data as any).user;
   }
@@ -28,7 +29,7 @@ export interface UpdateParams {
 }
 
 export class User {
-  client: ApiBase;
+  client: IApiBase;
   id?: string;
   firstName?: string;
   lastName?: string;
@@ -39,7 +40,7 @@ export class User {
   profile?: any;
   profilePhoto?: string;
 
-  constructor(client: ApiBase, params: UserParams) {
+  constructor(client: IApiBase, params: UserParams) {
     this.client = client;
     this.id = params.id;
     this.firstName = params.firstName;
@@ -53,9 +54,9 @@ export class User {
   }
 
   static async current(
-    client: ApiBase,
+    client: IApiBase,
     config?: Configuration
-  ): Promise<Response<User>> {
+  ): Promise<Task<User>> {
     return (await client.get(
       'account/current',
       {},
@@ -63,16 +64,16 @@ export class User {
         expect: _EXPECT,
         ...config,
       }
-    )) as Response<User>;
+    )) as Task<User>;
   }
 
   async update(
     params?: UpdateParams,
     config?: Configuration
-  ): Promise<Response<User>> {
+  ): Promise<Task<User>> {
     return (await this.client.post('account/update', params || {}, {
       expect: _EXPECT,
       ...config,
-    })) as Response<User>;
+    })) as Task<User>;
   }
 }

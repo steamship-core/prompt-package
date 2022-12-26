@@ -7,7 +7,7 @@ describe("Plugin", () => {
     const steamship = steamshipClient();
 
     // Can list them
-    const listOf = (await Plugin.list(steamship, {public: false})).data!
+    const listOf = (await Plugin.list(steamship, {public: false})).output!
     expect(listOf).not.toBeUndefined()
     expect(listOf.plugins).not.toBeUndefined()
     const startSize = listOf.plugins!.length
@@ -20,11 +20,11 @@ describe("Plugin", () => {
       isPublic: false,
       description: "test",
       isTrainable: false
-    })).data!
+    })).output!
     expect(plugin1.handle).not.toBeUndefined()
 
     // Can list them
-    const listOf2 = (await Plugin.list(steamship, {public: false})).data!
+    const listOf2 = (await Plugin.list(steamship, {public: false})).output!
     expect(listOf2.plugins).not.toBeUndefined()
     expect(listOf2.plugins?.length).toBe(1 + startSize)
     expect((listOf2.plugins![listOf2.plugins!.length - 1] as Plugin).handle).toBe(plugin1.handle)

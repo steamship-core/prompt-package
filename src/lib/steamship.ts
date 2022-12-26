@@ -1,11 +1,12 @@
 import { Logger } from 'tslog';
 
-import { ApiBase, Response } from './api_base';
+import { ApiBase } from './api_base';
 import getLogger from './log';
 import { PackageInstance } from './package_instance';
 import { PluginInstance } from './plugin_instance';
 import { LoadConfigParams } from './shared/Configuration';
 import { SteamshipError } from './steamship_error';
+import { Task } from './task';
 import { CreateLoginAttemptResponse } from './types/account';
 
 const log: Logger = getLogger('Steamship');
@@ -19,8 +20,11 @@ export class Steamship extends ApiBase {
    * Create a login attempt token, useful for logging in a client from the CLI
    * @returns A response object with a "token" field
    */
-  async createLoginAttempt(): Promise<Response<CreateLoginAttemptResponse>> {
-    return await this.post('account/create_login_attempt', {});
+  async createLoginAttempt(): Promise<Task<CreateLoginAttemptResponse>> {
+    return (await this.post(
+      'account/create_login_attempt',
+      {}
+    )) as Task<CreateLoginAttemptResponse>;
   }
 
   /**
@@ -95,13 +99,13 @@ export class Steamship extends ApiBase {
       fetchIfExists: reuse,
       config: config,
     });
-    if (!response.data) {
+    if (!response.output) {
       throw new SteamshipError({
         statusMessage:
           'Unable to create an instance of your package -- an empty object was returned.',
       });
     }
-    return response.data;
+    return response.output;
   }
 
   /**
@@ -166,12 +170,12 @@ export class Steamship extends ApiBase {
       fetchIfExists: reuse,
       config: config,
     });
-    if (!response.data) {
+    if (!response.output) {
       throw new SteamshipError({
         statusMessage:
-          'Unable to create an instance of your package -- an empty object was returned.',
+          'Unable to create an instance of your plugin -- an empty object was returned.',
       });
     }
-    return response.data;
+    return response.output;
   }
 }

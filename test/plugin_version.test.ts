@@ -19,19 +19,20 @@ export async function deployPluginVersion(client: Steamship, packageZip: string,
     isPublic: false,
     description: ''
   }))
-  const app1 = req1.data!
+  const app1 = req1.output!
 
   const filename = path.join(process.cwd(), 'testAssets', packageZip)
 
   const version1t = (await PluginVersion.create(client, {
     pluginId: app1.id!,
+    handle: randomName(),
     filename: filename,
     configTemplate: configTemplate,
   }))
   await version1t.wait()
   await delay(15000) // TODO: When our task system awaits the Lambda deployment, we can remove this.
 
-  const version1 = version1t.data!
+  const version1 = version1t.output!
   return [app1, version1]
 }
 
@@ -44,14 +45,14 @@ describe("Plugin Version", () => {
     expect(version1.handle).not.toBeUndefined()
 
     // Can get them!
-    const version1a = (await PluginVersion.get(steamship, {id: version1.id})).data!
+    const version1a = (await PluginVersion.get(steamship, {id: version1.id})).output!
     expect(version1a.id).toBe(version1.id)
     expect(version1a.handle).toBe(version1.handle)
 
     // Can list them
     const app1lr = await PluginVersion.list(steamship, {pluginId: app1.id!})
-    const app1l = app1lr.data!
+    const app1l = app1lr.output!
     expect(app1l.pluginVersions.length).toBe(1)
 
-  }, 25000);
+  }, 45000);
 })

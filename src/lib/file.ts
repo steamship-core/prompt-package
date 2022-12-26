@@ -1,8 +1,9 @@
-import { AllowedFileTypes, ApiBase, Response } from './api_base';
 import { IBlock } from './block';
+import { AllowedFileTypes, IApiBase } from './shared/BaseInterfaces';
 import { Configuration } from './shared/Configuration';
 import { GetParams } from './shared/Requests';
 import { ITag } from './tag';
+import { Task } from './task';
 
 const generateRandomString = (length = 6) =>
   Math.random().toString(20).substr(2, length);
@@ -19,11 +20,11 @@ export interface FileList {
   files: File[];
 }
 
-const _EXPECT = (client: ApiBase, data: unknown) => {
+const _EXPECT = (client: IApiBase, data: unknown) => {
   return new File(client, data as FileParams);
 };
 
-const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+const _EXPECT_LIST = (client: IApiBase, data: unknown) => {
   return {
     files: ((data as any).files as Array<any>).map((x) => _EXPECT(client, x)),
   };
@@ -58,9 +59,9 @@ export class File {
   workspaceId?: string;
   blocks?: IBlock[];
   tags?: ITag[];
-  client: ApiBase;
+  client: IApiBase;
 
-  constructor(client: ApiBase, params: FileParams) {
+  constructor(client: IApiBase, params: FileParams) {
     this.client = client;
     this.id = params.id;
     this.handle = params.handle;
@@ -72,10 +73,10 @@ export class File {
   }
 
   static async upload(
-    client: ApiBase,
+    client: IApiBase,
     params: UploadParams,
     config?: Configuration
-  ): Promise<Response<File>> {
+  ): Promise<Task<File>> {
     if (!params.content) {
       throw Error('Content must be provided');
     }
@@ -112,10 +113,10 @@ export class File {
         // not work.
         filename: params.filename || params.handle || generateRandomString(),
       }
-    )) as Response<File>;
+    )) as Task<File>;
   }
 
-  async delete(config?: Configuration): Promise<Response<File>> {
+  async delete(config?: Configuration): Promise<Task<File>> {
     return (await this.client.post(
       'file/delete',
       {
@@ -126,10 +127,10 @@ export class File {
         responsePath: 'file',
         ...config,
       }
-    )) as Response<File>;
+    )) as Task<File>;
   }
 
-  async raw(config?: Configuration): Promise<Response<unknown>> {
+  async raw(config?: Configuration): Promise<Response> {
     return (await this.client.post(
       'file/raw',
       {
@@ -139,10 +140,10 @@ export class File {
         ...config,
         rawResponse: true,
       }
-    )) as Response<unknown>;
+    )) as Response;
   }
 
-  async clear(config?: Configuration): Promise<Response<File>> {
+  async clear(config?: Configuration): Promise<Task<File>> {
     return (await this.client.post(
       'file/clear',
       {
@@ -153,14 +154,14 @@ export class File {
         responsePath: 'config',
         ...config,
       }
-    )) as Response<File>;
+    )) as Task<File>;
   }
 
   static async list(
-    client: ApiBase,
+    client: IApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<FileList>> {
+  ): Promise<Task<FileList>> {
     return (await client.post(
       'file/list',
       { ...params },
@@ -168,14 +169,14 @@ export class File {
         expect: _EXPECT_LIST,
         ...config,
       }
-    )) as Response<FileList>;
+    )) as Task<FileList>;
   }
 
   static async get(
-    client: ApiBase,
+    client: IApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<File>> {
+  ): Promise<Task<File>> {
     return (await client.post(
       'file/get',
       { ...params },
@@ -184,6 +185,6 @@ export class File {
         responsePath: 'file',
         ...config,
       }
-    )) as Response<File>;
+    )) as Task<File>;
   }
 }

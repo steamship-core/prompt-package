@@ -1,12 +1,13 @@
-import { ApiBase, Response } from './api_base';
+import { IApiBase } from './shared/BaseInterfaces';
 import { Configuration } from './shared/Configuration';
 import { GetParams } from './shared/Requests';
+import { Task } from './task';
 
-const _EXPECT = (client: ApiBase, data: unknown) => {
+const _EXPECT = (client: IApiBase, data: unknown) => {
   return new Package(client, data as PackageParams);
 };
 
-const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+const _EXPECT_LIST = (client: IApiBase, data: unknown) => {
   return {
     packages: ((data as any).packages as Array<any>).map((x) =>
       _EXPECT(client, x)
@@ -57,9 +58,9 @@ export class Package {
   createdAt?: string;
   updatedAt?: string;
   featured?: boolean;
-  client: ApiBase;
+  client: IApiBase;
 
-  constructor(client: ApiBase, params: PackageParams) {
+  constructor(client: IApiBase, params: PackageParams) {
     this.client = client;
     this.id = params.id;
     this.handle = params.handle;
@@ -74,10 +75,10 @@ export class Package {
   }
 
   static async create(
-    client: ApiBase,
+    client: IApiBase,
     params?: PackageParams,
     config?: Configuration
-  ): Promise<Response<Package>> {
+  ): Promise<Task<Package>> {
     return (await client.post(
       'package/create',
       { ...params },
@@ -86,14 +87,14 @@ export class Package {
         expect: _EXPECT,
         responsePath: 'package',
       }
-    )) as Response<Package>;
+    )) as Task<Package>;
   }
 
   static async get(
-    client: ApiBase,
+    client: IApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<Package>> {
+  ): Promise<Task<Package>> {
     return (await client.post(
       'package/get',
       { ...params },
@@ -102,10 +103,10 @@ export class Package {
         responsePath: 'package',
         ...config,
       }
-    )) as Response<Package>;
+    )) as Task<Package>;
   }
 
-  async update(config?: Configuration): Promise<Response<Package>> {
+  async update(config?: Configuration): Promise<Task<Package>> {
     const params: UpdatePackageParams = {
       id: this.id,
       handle: this.handle,
@@ -121,14 +122,14 @@ export class Package {
         responsePath: 'package',
         ...config,
       }
-    )) as Response<Package>;
+    )) as Task<Package>;
   }
 
   static async list(
-    client: ApiBase,
+    client: IApiBase,
     params?: ListPackageParams,
     config?: Configuration
-  ): Promise<Response<PackageList>> {
+  ): Promise<Task<PackageList>> {
     return (await client.post(
       'package/list',
       { ...params },
@@ -136,6 +137,6 @@ export class Package {
         expect: _EXPECT_LIST,
         ...config,
       }
-    )) as Response<PackageList>;
+    )) as Task<PackageList>;
   }
 }

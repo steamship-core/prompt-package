@@ -1,11 +1,12 @@
-import { ApiBase, Response } from './api_base';
+import { IApiBase } from './shared/BaseInterfaces';
 import { Configuration } from './shared/Configuration';
+import { Task } from './task';
 
-const _EXPECT = (client: ApiBase, data: unknown) => {
+const _EXPECT = (client: IApiBase, data: unknown) => {
   return new PluginInstance(client, data as PluginInstanceParams);
 };
 
-const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+const _EXPECT_LIST = (client: IApiBase, data: unknown) => {
   if (!data) {
     return [];
   }
@@ -77,10 +78,10 @@ export class PluginInstance {
   description?: string;
   createdAt?: string;
   updatedAt?: string;
-  client: ApiBase;
+  client: IApiBase;
   config?: Record<string, any>;
 
-  constructor(client: ApiBase, params: PluginInstanceParams) {
+  constructor(client: IApiBase, params: PluginInstanceParams) {
     this.client = client;
     this.id = params.id;
     this.handle = params.handle;
@@ -99,10 +100,10 @@ export class PluginInstance {
   }
 
   static async create(
-    client: ApiBase,
+    client: IApiBase,
     params: CreatePluginInstance,
     config?: Configuration
-  ): Promise<Response<PluginInstance>> {
+  ): Promise<Task<PluginInstance>> {
     return (await client.post(
       'plugin/instance/create',
       { ...params },
@@ -111,14 +112,14 @@ export class PluginInstance {
         expect: _EXPECT,
         responsePath: 'pluginInstance',
       }
-    )) as Response<PluginInstance>;
+    )) as Task<PluginInstance>;
   }
 
   static async get(
-    client: ApiBase,
+    client: IApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<PluginInstance>> {
+  ): Promise<Task<PluginInstance>> {
     return (await client.post(
       'plugin/instance/get',
       { ...params },
@@ -127,14 +128,14 @@ export class PluginInstance {
         responsePath: 'pluginInstance',
         ...config,
       }
-    )) as Response<PluginInstance>;
+    )) as Task<PluginInstance>;
   }
 
   static async list(
-    client: ApiBase,
+    client: IApiBase,
     params?: PluginInstanceListParams,
     config?: Configuration
-  ): Promise<Response<PluginInstanceList>> {
+  ): Promise<Task<PluginInstanceList>> {
     return (await client.post(
       'plugin/instance/list',
       { ...params },
@@ -142,10 +143,10 @@ export class PluginInstance {
         expect: _EXPECT_LIST,
         ...config,
       }
-    )) as Response<PluginInstanceList>;
+    )) as Task<PluginInstanceList>;
   }
 
-  async delete(config?: Configuration): Promise<Response<PluginInstance>> {
+  async delete(config?: Configuration): Promise<Task<PluginInstance>> {
     return (await this.client.post(
       'plugin/instance/delete',
       {
@@ -156,6 +157,6 @@ export class PluginInstance {
         responsePath: 'pluginInstance',
         ...config,
       }
-    )) as Response<PluginInstance>;
+    )) as Task<PluginInstance>;
   }
 }

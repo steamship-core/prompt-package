@@ -11,12 +11,13 @@ export class SteamshipError extends Error {
   origMessage?: string;
 
   constructor(props?: RemoteErrorProps) {
+    console.log(props);
     const parts = [];
     if (props?.statusCode) {
-      parts.push(props?.statusCode);
+      parts.push(`[${props?.statusCode}]`);
     }
     if (props?.statusMessage) {
-      parts.push(`Message: ${props?.statusMessage}`);
+      parts.push(`${props?.statusMessage}`);
     }
     if (props?.statusSuggestion) {
       parts.push(`Suggestion: ${props?.statusSuggestion}`);
@@ -27,7 +28,7 @@ export class SteamshipError extends Error {
 
     let baseMessage = 'Unknown server error.';
     if (parts.length > 0) {
-      baseMessage = parts.join('\n');
+      baseMessage = parts.join(' ');
     }
     super(baseMessage);
     this.statusCode = props?.statusCode;

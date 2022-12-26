@@ -1,12 +1,13 @@
-import { ApiBase, Response, Verb } from './api_base';
+import { IApiBase, Verb } from './shared/BaseInterfaces';
 import { Configuration } from './shared/Configuration';
+import { Task } from './task';
 import { Workspace } from './workspace';
 
-const _EXPECT = (client: ApiBase, data: unknown) => {
+const _EXPECT = (client: IApiBase, data: unknown) => {
   return new PackageInstance(client, data as PackageInstanceParams);
 };
 
-const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+const _EXPECT_LIST = (client: IApiBase, data: unknown) => {
   if (!data) {
     return [];
   }
@@ -79,11 +80,11 @@ export class PackageInstance {
   description?: string;
   createdAt?: string;
   updatedAt?: string;
-  client: ApiBase;
+  client: IApiBase;
   invocationURL?: string;
   config?: Record<string, any>;
 
-  constructor(client: ApiBase, params: PackageInstanceParams) {
+  constructor(client: IApiBase, params: PackageInstanceParams) {
     this.client = client;
     this.id = params.id;
     this.handle = params.handle;
@@ -103,10 +104,10 @@ export class PackageInstance {
   }
 
   public static async create(
-    client: ApiBase,
+    client: IApiBase,
     params: CreatePackageInstance,
     config?: Configuration
-  ): Promise<Response<PackageInstance>> {
+  ): Promise<Task<PackageInstance>> {
     return (await client.post(
       'package/instance/create',
       { ...params },
@@ -115,14 +116,14 @@ export class PackageInstance {
         expect: _EXPECT,
         responsePath: 'packageInstance',
       }
-    )) as Response<PackageInstance>;
+    )) as Task<PackageInstance>;
   }
 
   public static async get(
-    client: ApiBase,
+    client: IApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<PackageInstance>> {
+  ): Promise<Task<PackageInstance>> {
     return (await client.post(
       'package/instance/get',
       { ...params },
@@ -131,14 +132,14 @@ export class PackageInstance {
         responsePath: 'packageInstance',
         ...config,
       }
-    )) as Response<PackageInstance>;
+    )) as Task<PackageInstance>;
   }
 
   public static async list(
-    client: ApiBase,
+    client: IApiBase,
     params?: PackageInstanceListParams,
     config?: Configuration
-  ): Promise<Response<PackageInstanceList>> {
+  ): Promise<Task<PackageInstanceList>> {
     return (await client.post(
       'package/instance/list',
       { ...params },
@@ -146,12 +147,10 @@ export class PackageInstance {
         expect: _EXPECT_LIST,
         ...config,
       }
-    )) as Response<PackageInstanceList>;
+    )) as Task<PackageInstanceList>;
   }
 
-  public async delete(
-    config?: Configuration
-  ): Promise<Response<PackageInstance>> {
+  public async delete(config?: Configuration): Promise<Task<PackageInstance>> {
     return (await this.client.post(
       'package/instance/delete',
       {
@@ -162,7 +161,7 @@ export class PackageInstance {
         responsePath: 'packageInstance',
         ...config,
       }
-    )) as Response<PackageInstance>;
+    )) as Task<PackageInstance>;
   }
 
   private async loadMissingWorkspaceHandle() {
@@ -170,8 +169,8 @@ export class PackageInstance {
       const workspace = await Workspace.get(this.client, {
         id: this.workspaceId,
       });
-      if (workspace && workspace.data) {
-        this.workspaceHandle = workspace.data.handle;
+      if (workspace && workspace.output) {
+        this.workspaceHandle = workspace.output.handle;
       }
     }
   }

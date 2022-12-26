@@ -1,12 +1,13 @@
-import { ApiBase, Response } from './api_base';
+import { IApiBase } from './shared/BaseInterfaces';
 import { Configuration } from './shared/Configuration';
 import { GetParams } from './shared/Requests';
+import { Task } from './task';
 
-const _EXPECT = (client: ApiBase, data: unknown) => {
+const _EXPECT = (client: IApiBase, data: unknown) => {
   return new Plugin(client, data as PluginParams);
 };
 
-const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+const _EXPECT_LIST = (client: IApiBase, data: unknown) => {
   return {
     plugins: ((data as any).plugins as Array<any>).map((x) =>
       _EXPECT(client, x)
@@ -104,9 +105,9 @@ export class Plugin {
   apiKey?: string;
   featured?: boolean;
   metadata?: unknown;
-  client: ApiBase;
+  client: IApiBase;
 
-  constructor(client: ApiBase, params: PluginParams) {
+  constructor(client: IApiBase, params: PluginParams) {
     this.client = client;
     this.id = params.id;
     this.type = params.type;
@@ -128,10 +129,10 @@ export class Plugin {
   }
 
   static async create(
-    client: ApiBase,
+    client: IApiBase,
     params: CreatePluginParams,
     config?: Configuration
-  ): Promise<Response<Plugin>> {
+  ): Promise<Task<Plugin>> {
     if (params.metadata != undefined) {
       params.metadata = JSON.stringify(params.metadata);
     }
@@ -143,14 +144,14 @@ export class Plugin {
         expect: _EXPECT,
         responsePath: 'plugin',
       }
-    )) as Response<Plugin>;
+    )) as Task<Plugin>;
   }
 
   static async get(
-    client: ApiBase,
+    client: IApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<Plugin>> {
+  ): Promise<Task<Plugin>> {
     return (await client.post(
       'plugin/get',
       { ...params },
@@ -159,14 +160,14 @@ export class Plugin {
         responsePath: 'plugin',
         ...config,
       }
-    )) as Response<Plugin>;
+    )) as Task<Plugin>;
   }
 
   static async list(
-    client: ApiBase,
+    client: IApiBase,
     params?: ListPluginParams,
     config?: Configuration
-  ): Promise<Response<PluginList>> {
+  ): Promise<Task<PluginList>> {
     return (await client.post(
       'plugin/list',
       { ...params },
@@ -174,10 +175,10 @@ export class Plugin {
         expect: _EXPECT_LIST,
         ...config,
       }
-    )) as Response<PluginList>;
+    )) as Task<PluginList>;
   }
 
-  async update(config?: Configuration): Promise<Response<Plugin>> {
+  async update(config?: Configuration): Promise<Task<Plugin>> {
     const params: UpdatePluginParams = {
       id: this.id,
       handle: this.handle,
@@ -193,6 +194,6 @@ export class Plugin {
         responsePath: 'package',
         ...config,
       }
-    )) as Response<Plugin>;
+    )) as Task<Plugin>;
   }
 }

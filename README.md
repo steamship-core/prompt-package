@@ -201,3 +201,4 @@ npm run version -- --first-release
 # And don't forget to push the docs to GitHub pages:
 npm run doc:publish
 ```
+# prompt-package

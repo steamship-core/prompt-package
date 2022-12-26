@@ -1,10 +1,10 @@
-import axios from 'axios';
-import {Steamship} from '../src/lib/steamship';
-import {File} from '../src/lib/file';
+import {Steamship} from '../src';
+import {File} from '../src';
+// @ts-ignore
 import {
   randomName,
-  restoreMocks,
   steamshipClient
+// @ts-ignore
 } from './helper';
 
 describe('Steamship Client', () => {
@@ -17,21 +17,8 @@ describe('Steamship Client', () => {
   test('it should be able to create a login attempt token', async () => {
     const client = new Steamship();
     await client.config;
-
-    jest.spyOn(axios, 'post');
-
-    // @ts-ignore
-    axios.post.mockResolvedValue({
-      data: {
-        data: {
-          token: 'hello',
-        },
-      },
-    });
-
     const createTokenResponse = await client.createLoginAttempt();
-    expect(createTokenResponse.data!.token).toEqual('hello');
-    restoreMocks();
+    expect(createTokenResponse.output!.token).not.toBeUndefined();
   });
 
   test('Specifying a workspace should create it', async () => {
@@ -58,10 +45,10 @@ describe('Steamship Client', () => {
       content,
       mimeType: "text/markdown"
     })
-    expect(res.data).not.toBeUndefined()
-    expect(res.data?.id).not.toBeUndefined()
-    expect(res.data?.mimeType).toBe("text/markdown")
-    expect(res.data?.workspaceId).toBe(config.workspaceId)
+    expect(res.output).not.toBeUndefined()
+    expect(res.output?.id).not.toBeUndefined()
+    expect(res.output?.mimeType).toBe("text/markdown")
+    expect(res.output?.workspaceId).toBe(config.workspaceId)
     // await res.data?.delete()
   }, 10000);
 

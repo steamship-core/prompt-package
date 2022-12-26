@@ -1,6 +1,7 @@
-import { ApiBase, Response } from './api_base';
+import { IApiBase } from './shared/BaseInterfaces';
 import { Configuration } from './shared/Configuration';
 import { CreateParams, GetParams } from './shared/Requests';
+import { Task } from './task';
 
 export interface WorkspaceParams {
   id?: string;
@@ -10,11 +11,11 @@ export interface WorkspaceParams {
   updatedAt?: string;
 }
 
-const _EXPECT = (client: ApiBase, data: unknown) => {
+const _EXPECT = (client: IApiBase, data: unknown) => {
   return new Workspace(client, data as WorkspaceParams);
 };
 
-const _EXPECT_LIST = (client: ApiBase, data: unknown) => {
+const _EXPECT_LIST = (client: IApiBase, data: unknown) => {
   return {
     workspaces: ((data as any).workspaces as Array<any>).map((x) =>
       _EXPECT(client, x)
@@ -27,14 +28,14 @@ export interface WorkspaceList {
 }
 
 export class Workspace {
-  client: ApiBase;
+  client: IApiBase;
   id?: string;
   handle?: string;
   description?: string;
   createdAt?: string;
   updatedAt?: string;
 
-  constructor(client: ApiBase, params: WorkspaceParams) {
+  constructor(client: IApiBase, params: WorkspaceParams) {
     this.client = client;
     this.id = params.id;
     this.handle = params.handle;
@@ -44,10 +45,10 @@ export class Workspace {
   }
 
   static async create(
-    client: ApiBase,
+    client: IApiBase,
     params?: CreateParams,
     config?: Configuration
-  ): Promise<Response<Workspace>> {
+  ): Promise<Task<Workspace>> {
     return (await client.post(
       'workspace/create',
       { ...params },
@@ -56,14 +57,14 @@ export class Workspace {
         responsePath: 'workspace',
         ...config,
       }
-    )) as Response<Workspace>;
+    )) as Task<Workspace>;
   }
 
   static async get(
-    client: ApiBase,
+    client: IApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<Workspace>> {
+  ): Promise<Task<Workspace>> {
     return (await client.post(
       'workspace/get',
       { ...params },
@@ -72,14 +73,14 @@ export class Workspace {
         responsePath: 'workspace',
         ...config,
       }
-    )) as Response<Workspace>;
+    )) as Task<Workspace>;
   }
 
   static async list(
-    client: ApiBase,
+    client: IApiBase,
     params?: GetParams,
     config?: Configuration
-  ): Promise<Response<WorkspaceList>> {
+  ): Promise<Task<WorkspaceList>> {
     return (await client.post(
       'workspace/list',
       { ...params },
@@ -87,7 +88,7 @@ export class Workspace {
         expect: _EXPECT_LIST,
         ...config,
       }
-    )) as Response<WorkspaceList>;
+    )) as Task<WorkspaceList>;
   }
 
   async delete(config?: Configuration) {
@@ -101,6 +102,6 @@ export class Workspace {
         responsePath: 'workspace',
         ...config,
       }
-    )) as Response<Workspace>;
+    )) as Task<Workspace>;
   }
 }
