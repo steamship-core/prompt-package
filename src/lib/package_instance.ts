@@ -1,7 +1,7 @@
-import { IApiBase, Verb } from './shared/BaseInterfaces';
-import { Configuration } from './shared/Configuration';
-import { Task } from './task';
-import { Workspace } from './workspace';
+import { IApiBase, Verb } from './shared/BaseInterfaces.js';
+import { Configuration } from './shared/Configuration.js';
+import { Task } from './task.js';
+import { Workspace } from './workspace.js';
 
 const _EXPECT = (client: IApiBase, data: unknown) => {
   return new PackageInstance(client, data as PackageInstanceParams);

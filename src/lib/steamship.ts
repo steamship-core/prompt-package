@@ -1,13 +1,13 @@
 import { Logger } from 'tslog';
 
-import { ApiBase } from './api_base';
-import getLogger from './log';
-import { PackageInstance } from './package_instance';
-import { PluginInstance } from './plugin_instance';
-import { LoadConfigParams } from './shared/Configuration';
-import { SteamshipError } from './steamship_error';
-import { Task } from './task';
-import { CreateLoginAttemptResponse } from './types/account';
+import { ApiBase } from './api_base.js';
+import getLogger from './log.js';
+import { PackageInstance } from './package_instance.js';
+import { PluginInstance } from './plugin_instance.js';
+import { LoadConfigParams } from './shared/Configuration.js';
+import { SteamshipError } from './steamship_error.js';
+import { Task } from './task.js';
+import { CreateLoginAttemptResponse } from './types/account.js';
 
 const log: Logger = getLogger('Steamship');
 

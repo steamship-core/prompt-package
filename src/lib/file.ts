@@ -1,9 +1,9 @@
-import { IBlock } from './block';
-import { AllowedFileTypes, IApiBase } from './shared/BaseInterfaces';
-import { Configuration } from './shared/Configuration';
-import { GetParams } from './shared/Requests';
-import { ITag } from './tag';
-import { Task } from './task';
+import { IBlock } from './block.js';
+import { AllowedFileTypes, IApiBase } from './shared/BaseInterfaces.js';
+import { Configuration } from './shared/Configuration.js';
+import { GetParams } from './shared/Requests.js';
+import { ITag } from './tag.js';
+import { Task } from './task.js';
 
 const generateRandomString = (length = 6) =>
   Math.random().toString(20).substr(2, length);

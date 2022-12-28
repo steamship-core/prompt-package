@@ -1,4 +1,4 @@
-import { IApiBase } from '../shared/BaseInterfaces';
+import { IApiBase } from '../shared/BaseInterfaces.js';
 
 export enum TaskState {
   waiting = 'waiting',

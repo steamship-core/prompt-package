@@ -1,4 +1,4 @@
-import { ITag } from './tag';
+import { ITag } from './tag.js';
 
 export interface IBlock {
   id?: string;

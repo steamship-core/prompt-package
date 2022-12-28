@@ -1,6 +1,6 @@
-import { IApiBase } from './shared/BaseInterfaces';
-import { Configuration } from './shared/Configuration';
-import { Task } from './task';
+import { IApiBase } from './shared/BaseInterfaces.js';
+import { Configuration } from './shared/Configuration.js';
+import { Task } from './task.js';
 
 const _EXPECT = (client: IApiBase, data: unknown) => {
   if ((data as any).user) {

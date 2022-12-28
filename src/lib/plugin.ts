@@ -1,7 +1,7 @@
-import { IApiBase } from './shared/BaseInterfaces';
-import { Configuration } from './shared/Configuration';
-import { GetParams } from './shared/Requests';
-import { Task } from './task';
+import { IApiBase } from './shared/BaseInterfaces.js';
+import { Configuration } from './shared/Configuration.js';
+import { GetParams } from './shared/Requests.js';
+import { Task } from './task.js';
 
 const _EXPECT = (client: IApiBase, data: unknown) => {
   return new Plugin(client, data as PluginParams);

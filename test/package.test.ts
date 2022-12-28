@@ -1,16 +1,16 @@
 // @ts-ignore
 import {randomName, steamshipClient} from './helper';
-import {Package} from '../src'
-import {SteamshipError} from '../src'
+import {Package} from '../src/lib/package.js'
+import {SteamshipError} from '../src/lib/steamship_error.js'
 
 describe("Package", () => {
   test('it should throw when one tries to load a bad package', async () => {
     const steamship = steamshipClient();
-    const t = async () => {
-      await Package.get(steamship, {id: randomName()})
-    };
-    expect(t).rejects.toThrow(SteamshipError);
-  })
+    await steamship.config;
+    expect(
+      Package.get(steamship, {id: randomName()})
+    ).rejects.toThrow(SteamshipError);
+  }, 25000)
 
   test('it should be creatable and deletable', async () => {
     const steamship = steamshipClient();

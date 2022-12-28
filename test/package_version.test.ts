@@ -1,3 +1,4 @@
+// @ts-ignore
 import {randomName, steamshipClient} from './helper';
 import {Package} from '../src/lib/package'
 import {PackageVersion} from '../src/lib/package_version'
@@ -30,7 +31,6 @@ export async function deployPackageVersion(client: Steamship, packageZip: string
 
 describe("Package Version", () => {
   test('it should be creatable and deletable', async () => {
-    jest.setTimeout(55000);
     const steamship = steamshipClient();
     const [app1, version1] = await helloWorld(steamship)
 
@@ -50,7 +50,6 @@ describe("Package Version", () => {
   }, 55000);
 
   test('it can not be double deployed with the same version handle', async () => {
-    jest.setTimeout(55000);
     const steamship = steamshipClient();
 
     const req1 = (await Package.create(steamship, {handle: randomName()}))
@@ -77,7 +76,6 @@ describe("Package Version", () => {
       handle: '1.0.0' // It's the same!
     })
 
-    await expect(p)
-      .rejects.toThrow(/.*ObjectExists.*/)
-  }, 55000);
+    expect(p).rejects.toThrow(/.*ObjectExists.*/)
+  }, 65000);
 })

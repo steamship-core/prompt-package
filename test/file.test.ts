@@ -1,31 +1,16 @@
 // @ts-ignore
 import {steamshipClient} from './helper';
-import {File} from '../src'
+import {File} from '../src/lib/file.js'
 import { TextEncoder } from 'util';
 
 describe("File", () => {
   test("it should Javascript text encoding works", async () => {
     const client = steamshipClient();
-
     const content = "Hi there"
-
-    const resp = await client.post(
-    'file/create',
-    {
-      type: 'file',
-    },
-    {
-      responsePath: 'file',
-      file: content,
-      // Filename MUST be non-undefined! Otherwise the request library will
-      // not work.
-      filename: "foo",
-      expect: (client, data) => { return new File(client, data as any) }
-    })
-
+    const resp = await File.upload(client, {content: content})
     // Now get the raw file
     const raw = await (resp as any).output.raw()
-    expect(await raw.text()).toBe(content)
+    expect(await raw.body).toBe(content)
   })
 
   test('it should be uploadable via content', async () => {
@@ -46,14 +31,13 @@ describe("File", () => {
 
     // Now get the raw file
     const raw = await res.output?.raw()
-    expect(await (raw as any).text()).toBe(content)
+    expect(await (raw as any).body).toBe(content)
 
     expect(files1.output?.files).not.toBeUndefined()
     expect(files2.output?.files).not.toBeUndefined()
     expect(files2.output?.files.length).toBeGreaterThan(0)
     expect(files2.output?.files.length).toEqual((files1.output?.files.length || 0) + 1)
-  }, 20000);
-
+  }, 30000);
 
   test('it should be uploadable via Uint8Array with tags', async () => {
     const client = steamshipClient();
@@ -80,7 +64,7 @@ describe("File", () => {
 
     // Now get the raw file
     const raw = await res.output!.raw()
-    expect(await raw.text()).toBe(content)
+    expect(await raw.body).toBe(content)
   }, 20000);
 
   test('it should be uploadable via content buffer', async () => {
@@ -101,7 +85,7 @@ describe("File", () => {
 
     // Now get the raw file
     const raw = await res.output!.raw()
-    expect(await raw.text()).toBe(content)
+    expect(await raw.body).toBe(content)
   }, 20000);
 
   test('it should be uploadable via filename', async () => {
@@ -120,7 +104,7 @@ describe("File", () => {
     expect(res.output?.mimeType).toBe("text/markdown")
 
     // Now get the raw file
-    const raw = await (await res.output!.raw()).text()
+    const raw = await (await res.output!.raw()).body
     expect(raw).toBe(content.toString())
     expect(res.output?.handle).not.toBeUndefined()
     expect(res.output?.handle).not.toBeNull()

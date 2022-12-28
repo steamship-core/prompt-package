@@ -1,40 +1,46 @@
 import { Logger } from 'tslog';
 
-import getLogger from './log';
+import getLogger from './log.js';
 import {
   IApiBase,
   ITask,
   PostConfig,
   SwitchWorkspaceParams,
   Verb,
-} from './shared/BaseInterfaces';
+} from './shared/BaseInterfaces.js';
 import {
   Configuration,
   LoadConfigParams,
   loadConfiguration,
-} from './shared/Configuration';
-import { SteamshipError } from './steamship_error';
-import { Task } from './task';
-import { TaskParams, TaskState } from './types/base';
-import { isNode } from './utils';
+} from './shared/Configuration.js';
+import { SteamshipError } from './steamship_error.js';
+import { Task } from './task.js';
+import { TaskParams, TaskState } from './types/base.js';
+import { isNode } from './utils.js';
 
-type FetchType = (url: any, opts: any) => Promise<Response>;
+// type FetchType = (url: any, opts: any) => Promise<Response>;
+type FetchType = (opts: any) => Promise<Response>;
 type NodeFetchType = { default: FetchType };
 let _nodeFetch: NodeFetchType;
 
+// async function doFetch(url: any, opts: any): Promise<Response> {
+//   if (!_nodeFetch) {
+//     _nodeFetch = (await import('got-fetch')) as any as NodeFetchType;
+//   }
+//   return _nodeFetch.default(url, opts);
+// }
+
 async function doFetch(url: any, opts: any): Promise<Response> {
-  if (isNode()) {
-    if (typeof fetch == 'undefined') {
-      if (!_nodeFetch) {
-        _nodeFetch = (await import('node-fetch')) as any as NodeFetchType;
-      }
-      return _nodeFetch.default(url, opts);
-    } else {
-      return fetch(url, opts);
-    }
-  } else {
-    return fetch(url, opts);
+  if (!_nodeFetch) {
+    _nodeFetch = (await import('got')) as any as NodeFetchType;
   }
+  const gotOpts = {
+    url,
+    headers: opts.headers,
+    body: opts.body,
+    method: opts.method,
+  };
+  return _nodeFetch.default(gotOpts);
 }
 
 const log: Logger = getLogger('Steamship:ApiBase');
@@ -415,7 +421,8 @@ export class ApiBase implements IApiBase {
 
     let json: any;
     try {
-      json = await response.json();
+      json = JSON.parse((response as any).body);
+      // json = await response.json(); // for the fetch style
     } catch (error: any) {
       throw await this._makeError({ error });
     }

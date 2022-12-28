@@ -13,7 +13,6 @@ import {
 
 describe("Package Instance", () => {
   test('it should be be usable via Steamship.use', async () => {
-    jest.setTimeout(55000);
     const steamship = steamshipClient(randomName());
     const configTemplate = {}
 
@@ -92,7 +91,6 @@ describe("Package Instance", () => {
   }, 55000);
 
   test('it should be creatable, gettable, usable, and deletable', async () => {
-    jest.setTimeout(55000);
     const steamship = steamshipClient();
     const configTemplate = {}
 
@@ -124,5 +122,5 @@ describe("Package Instance", () => {
     expect(app1l.packageInstances.length).toBe(1)
 
     await instance1.delete()
-  }, 35000);
+  }, 65000);
 })

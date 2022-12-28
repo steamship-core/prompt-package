@@ -1,8 +1,8 @@
-import {Steamship} from '../src/lib/steamship';
+import {Steamship} from '../src/lib/steamship.js';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import {CONFIG_FILENAME, Configuration,} from '../src/lib/shared/Configuration';
+import {CONFIG_FILENAME, Configuration,} from '../src/lib/shared/Configuration.js';
 
 const generateRandomString = (length = 6) =>
   Math.random().toString(20).substr(2, length);

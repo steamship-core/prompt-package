@@ -1,7 +1,7 @@
-import { IApiBase } from './shared/BaseInterfaces';
-import { Configuration } from './shared/Configuration';
-import { CreateParams, GetParams } from './shared/Requests';
-import { Task } from './task';
+import { IApiBase } from './shared/BaseInterfaces.js';
+import { Configuration } from './shared/Configuration.js';
+import { CreateParams, GetParams } from './shared/Requests.js';
+import { Task } from './task.js';
 
 export interface WorkspaceParams {
   id?: string;

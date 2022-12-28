@@ -1,8 +1,8 @@
-import { readFile } from './file';
-import { IApiBase } from './shared/BaseInterfaces';
-import { Configuration } from './shared/Configuration';
-import { Task } from './task';
-import { MimeTypes } from './types/file';
+import { readFile } from './file.js';
+import { IApiBase } from './shared/BaseInterfaces.js';
+import { Configuration } from './shared/Configuration.js';
+import { Task } from './task.js';
+import { MimeTypes } from './types/file.js';
 
 const _EXPECT = (client: IApiBase, data: unknown) => {
   return new PluginVersion(client, data as PluginVersionParams);

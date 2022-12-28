@@ -1,4 +1,4 @@
-import { isNode } from '../utils';
+import { isNode } from '../utils.js';
 
 /*
  * The goal of this file is to provide a credential-loading system
@@ -87,20 +87,12 @@ class ConfigManager {
         // First search for .steamship.json in the current tree.
         const os = await import('os');
         const path = await import('path');
-
-        if (process && process.cwd) {
-          let cwd = process.cwd();
-          while (cwd.length > 0 && cwd != path.sep) {
-            this._configSearchPath.push(path.join(cwd, CONFIG_FILENAME));
-            const parts = cwd.split(path.sep);
-            parts.pop();
-            cwd = parts.join(path.sep).trim();
-          }
-        }
         // Try the home folder last.
         this._configSearchPath.push(path.join(os.homedir(), CONFIG_FILENAME));
       }
-    } catch {
+    } catch (ex) {
+      console.log(ex);
+      console.log('Unable to load config from search path');
       // pass
     }
   }

@@ -1,4 +1,4 @@
-import { Metadata } from './base';
+import { Metadata } from './base.js';
 
 export interface AddTaskCommentRequest {
   taskId?: string;

@@ -1,6 +1,6 @@
-import { TaskParams, TaskState } from '../types/base';
+import { TaskParams, TaskState } from '../types/base.js';
 
-import { Configuration } from './Configuration';
+import { Configuration } from './Configuration.js';
 
 export interface ITask<T> extends TaskParams<T> {
   update(params?: TaskParams<T>): ITask<T>;

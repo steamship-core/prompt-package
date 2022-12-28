@@ -1,6 +1,6 @@
 // @ts-ignore
 import {steamshipClient} from './helper';
-import {User} from '../src/lib/user'
+import {User} from '../src/lib/user.js'
 
 describe("User", () => {
   test('it should be fetchable', async () => {

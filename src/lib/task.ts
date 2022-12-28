@@ -3,15 +3,15 @@ import {
   ITask,
   TaskList,
   TaskListParams,
-} from './shared/BaseInterfaces';
-import { Configuration } from './shared/Configuration';
-import { TaskParams, TaskState } from './types/base';
+} from './shared/BaseInterfaces.js';
+import { Configuration } from './shared/Configuration.js';
+import { TaskParams, TaskState } from './types/base.js';
 import {
   AddTaskCommentRequest,
   DeleteTaskCommentRequest,
   ListTaskCommentResponse,
   TaskCommentResponse,
-} from './types/task_comment';
+} from './types/task_comment.js';
 
 const _EXPECT_TASK = (client: IApiBase, data: unknown): ITask<unknown> => {
   return new Task(client, data as TaskParams<unknown>);

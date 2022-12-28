@@ -1,9 +1,9 @@
 import { Logger } from 'tslog';
 
-import { IApiBase } from './shared/BaseInterfaces';
-import { Configuration } from './shared/Configuration';
-import { Task } from './task';
-import { isNode } from './utils';
+import { IApiBase } from './shared/BaseInterfaces.js';
+import { Configuration } from './shared/Configuration.js';
+import { Task } from './task.js';
+import { isNode } from './utils.js';
 
 export default function getLogger(name: string) {
   if (isNode()) {
