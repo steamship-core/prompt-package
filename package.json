@@ -10,7 +10,14 @@
   "license": "MIT",
   "keywords": [],
   "exports": {
-    ".": "./build/main/index.js",
+    "./*": {
+      "require": "./build/main/*.js",
+      "import": "./build/module/*.js"
+    },
+    ".": {
+      "require": "./build/main/index.js",
+      "import": "./build/module/index.js"
+    },
     "./package.json": "./package.json",
     "./types": "./build/main/index.d.ts"
   },
@@ -25,7 +32,7 @@
     "build": "run-p build:*",
     "_build:main_": "tsc -p tsconfig.json",
     "build:module_types": "tsc -p tsconfig.module.json",
-    "build:module": "babel src --out-dir build/module --extensions \".ts,.tsx\" --source-maps inline",
+    "build:module": "babel src --no-babelrc --out-dir build/module --extensions \".ts,.tsx\" --source-maps inline --config-file ./.babelrc.es",
     "build:main": "babel src --out-dir build/main --extensions \".ts,.tsx\" --source-maps inline",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
@@ -80,6 +87,7 @@
     "@types/regenerator-runtime": "^0.13.1",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
+    "babel-plugin-add-module-exports": "^1.0.4",
     "codecov": "^3.5.0",
     "cspell": "^4.1.0",
     "cz-conventional-changelog": "^3.3.0",
