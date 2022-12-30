@@ -11,8 +11,8 @@
   "keywords": [],
   "exports": {
     "./*": {
-      "require": "./build/main/*.js",
-      "import": "./build/module/*.js"
+      "require": "./build/main/index.js",
+      "import": "./build/module/index.js"
     },
     ".": {
       "require": "./build/main/index.js",
