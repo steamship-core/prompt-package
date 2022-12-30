@@ -84,6 +84,6 @@ describe("Plugin Version", () => {
 
     expect(instance1.id).not.toBeUndefined()
     expect(instance2.id).not.toBeUndefined()
-    expect(instance1.id)k.toBe(instance2.id)
+    expect(instance1.id).toBe(instance2.id)
   }, 45000);
 })

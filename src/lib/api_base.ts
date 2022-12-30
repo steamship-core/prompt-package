@@ -13,34 +13,64 @@ import {
   LoadConfigParams,
   loadConfiguration,
 } from './shared/Configuration.js';
+import { GotFetchResponse } from './shared/GotFetchResponse.js';
 import { SteamshipError } from './steamship_error.js';
 import { Task } from './task.js';
 import { TaskParams, TaskState } from './types/base.js';
 import { isNode } from './utils.js';
 
-// type FetchType = (url: any, opts: any) => Promise<Response>;
-type FetchType = (opts: any) => Promise<Response>;
-type NodeFetchType = { default: FetchType };
+type FetchType = (url: any, opts: any) => Promise<Response>;
+type GotFetchType = (opts: any) => Promise<Response>;
+type NodeFetchType = { default: FetchType | GotFetchType };
 let _nodeFetch: NodeFetchType;
 
-// async function doFetch(url: any, opts: any): Promise<Response> {
-//   if (!_nodeFetch) {
-//     _nodeFetch = (await import('got-fetch')) as any as NodeFetchType;
-//   }
-//   return _nodeFetch.default(url, opts);
-// }
-
 async function doFetch(url: any, opts: any): Promise<Response> {
+  const _isNode = isNode();
   if (!_nodeFetch) {
-    _nodeFetch = (await import('got')) as any as NodeFetchType;
+    if (_isNode) {
+      // Got only works in NodeJS!
+      _nodeFetch = (await import('got')) as any as NodeFetchType;
+    } else {
+      // We'll use `fetch` which should be supported in the browser.
+      _nodeFetch = { default: fetch };
+    }
   }
-  const gotOpts = {
-    url,
-    headers: opts.headers,
-    body: opts.body,
-    method: opts.method,
-  };
-  return _nodeFetch.default(gotOpts);
+  if (_isNode) {
+    const gotOpts = {
+      url,
+      headers: opts.headers,
+      body: opts.body,
+      method: opts.method,
+    };
+    const Readable = (await import('node:stream')).Readable;
+    const response = (await (_nodeFetch.default as GotFetchType)(
+      gotOpts
+    )) as any;
+    // const buffer = await response.buffer()
+    const responseBody = Readable.from(response.body);
+
+    return new GotFetchResponse(responseBody, {
+      headers: response.headers,
+      redirected: response.redirectUrls && response.redirectUrls.length > 0,
+      status: response.statusCode,
+      statusText: response.statusMessage,
+      type: 'default',
+      // according to spec this should be the final URL, after all redirects
+      url:
+        response.redirectUrls.length > 0
+          ? // using Array.prototype.at would've been nice but it's not
+            // supported by anything below Node 16.8
+            response.redirectUrls[response.redirectUrls.length - 1].href
+          : url.href,
+    });
+  } else {
+    const fetchOpts = {
+      headers: opts.headers,
+      body: opts.body,
+      method: opts.method,
+    };
+    return (_nodeFetch.default as FetchType)(url, fetchOpts);
+  }
 }
 
 const log: Logger = getLogger('Steamship:ApiBase');
@@ -357,42 +387,6 @@ export class ApiBase implements IApiBase {
       });
     }
     return new SteamshipError({ statusMessage: 'Bad response' });
-
-    // console.log("Got error", error);
-    //
-    // let httpStatus = '';
-    // if ((error as any)?.response?.status) {
-    //   httpStatus = `[HTTP ${(error as any)?.response?.status}] `;
-    // }
-    // const origMessage = `${httpStatus}${
-    //   (error as Error).message
-    // }. When calling ${verb} ${url}`;
-    // let statusMessage = 'An unexpected error happened during your request.';
-    //
-    // if ((error as any)?.response) {
-    //   // The request was made and the server responded with a status code
-    //   // that falls out of the range of 2xx
-    //   const data = (error as any)?.response?.data;
-    //   if (data) {
-    //     if (data.status) {
-    //       statusMessage = JSON.stringify(data.status);
-    //     } else {
-    //       statusMessage = `${data}`;
-    //     }
-    //   }
-    // } else if ((error as any)?.request) {
-    //   // The request was made but no response was received
-    //   // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-    //   // http.ClientRequest in node.js
-    //   statusMessage = `A request was made to ${url} but no response was received.`;
-    // } else {
-    //   // Something happened in setting up the request that triggered an Error
-    //   statusMessage = `The request to ${url} could not be configured.`;
-    // }
-    // throw new SteamshipError({
-    //   statusMessage: statusMessage,
-    //   origMessage: origMessage,
-    // });
   }
 
   async _makeResponse<T>({
@@ -415,14 +409,14 @@ export class ApiBase implements IApiBase {
       throw err;
     }
 
-    if (rawResponse === true) {
+    if (rawResponse) {
       return response;
     }
 
     let json: any;
     try {
-      json = JSON.parse((response as any).body);
-      // json = await response.json(); // for the fetch style
+      // json = JSON.parse((response as any).body);
+      json = await response.json(); // for the fetch style
     } catch (error: any) {
       throw await this._makeError({ error });
     }
