@@ -1,3 +1,4 @@
+import axios, { AxiosResponse } from 'axios';
 import { Logger } from 'tslog';
 
 import getLogger from './log.js';
@@ -13,64 +14,18 @@ import {
   LoadConfigParams,
   loadConfiguration,
 } from './shared/Configuration.js';
-import { GotFetchResponse } from './shared/GotFetchResponse.js';
 import { SteamshipError } from './steamship_error.js';
 import { Task } from './task.js';
 import { TaskParams, TaskState } from './types/base.js';
 import { isNode } from './utils.js';
 
-type FetchType = (url: any, opts: any) => Promise<Response>;
-type GotFetchType = (opts: any) => Promise<Response>;
-type NodeFetchType = { default: FetchType | GotFetchType };
-let _nodeFetch: NodeFetchType;
-
-async function doFetch(url: any, opts: any): Promise<Response> {
-  const _isNode = isNode();
-  if (!_nodeFetch) {
-    if (_isNode) {
-      // Got only works in NodeJS!
-      _nodeFetch = (await import('got')) as any as NodeFetchType;
-    } else {
-      // We'll use `fetch` which should be supported in the browser.
-      _nodeFetch = { default: fetch };
-    }
-  }
-  if (_isNode) {
-    const gotOpts = {
-      url,
-      headers: opts.headers,
-      body: opts.body,
-      method: opts.method,
-    };
-    const Readable = (await import('node:stream')).Readable;
-    const response = (await (_nodeFetch.default as GotFetchType)(
-      gotOpts
-    )) as any;
-    // const buffer = await response.buffer()
-    const responseBody = Readable.from(response.body);
-
-    return new GotFetchResponse(responseBody, {
-      headers: response.headers,
-      redirected: response.redirectUrls && response.redirectUrls.length > 0,
-      status: response.statusCode,
-      statusText: response.statusMessage,
-      type: 'default',
-      // according to spec this should be the final URL, after all redirects
-      url:
-        response.redirectUrls.length > 0
-          ? // using Array.prototype.at would've been nice but it's not
-            // supported by anything below Node 16.8
-            response.redirectUrls[response.redirectUrls.length - 1].href
-          : url.href,
-    });
-  } else {
-    const fetchOpts = {
-      headers: opts.headers,
-      body: opts.body,
-      method: opts.method,
-    };
-    return (_nodeFetch.default as FetchType)(url, fetchOpts);
-  }
+async function doFetch(url: any, opts: any): Promise<AxiosResponse> {
+  return axios({
+    url,
+    headers: opts.headers,
+    data: opts.body,
+    method: opts.method,
+  });
 }
 
 const log: Logger = getLogger('Steamship:ApiBase');
@@ -340,7 +295,7 @@ export class ApiBase implements IApiBase {
     payload: unknown,
     config?: PostConfig<T>,
     overrideConfig?: Configuration
-  ): Promise<Response | ITask<T>> {
+  ): Promise<AxiosResponse | ITask<T>> {
     return this.call('POST', operation, payload, config, overrideConfig);
   }
 
@@ -348,7 +303,7 @@ export class ApiBase implements IApiBase {
     operation: string,
     payload: unknown,
     config?: PostConfig<T>
-  ): Promise<Response | ITask<T>> {
+  ): Promise<AxiosResponse | ITask<T>> {
     return this.call('GET', operation, payload, config);
   }
 
@@ -358,14 +313,14 @@ export class ApiBase implements IApiBase {
     task,
   }: {
     error?: Error;
-    response?: Response;
+    response?: AxiosResponse;
     task?: ITask<T>;
   }): Promise<Error> {
     if (error) {
       return error;
     } else if (response) {
       try {
-        const j = await response.json();
+        const j = await response.data;
         if (j.status) {
           return new SteamshipError({
             statusMessage: j.status.statusMessage,
@@ -395,16 +350,16 @@ export class ApiBase implements IApiBase {
     objectConstructor,
     responsePath,
   }: {
-    response: Response;
+    response: AxiosResponse;
     rawResponse?: boolean;
     responsePath?: string;
     objectConstructor?: (client: any, data: any) => T;
-  }): Promise<Task<T> | Response> {
+  }): Promise<Task<T> | AxiosResponse> {
     if (!response) {
       throw new SteamshipError({ statusMessage: 'No response.' });
     }
 
-    if (!response.ok) {
+    if (response.status != 200) {
       const err = await this._makeError({ response });
       throw err;
     }
@@ -415,8 +370,9 @@ export class ApiBase implements IApiBase {
 
     let json: any;
     try {
-      // json = JSON.parse((response as any).body);
-      json = await response.json(); // for the fetch style
+      json = response.data; // Axios
+      // json = JSON.parse((response as any).body); // Got
+      // json = await response.json(); // for the fetch style // Fetch
     } catch (error: any) {
       throw await this._makeError({ error });
     }
@@ -456,7 +412,7 @@ export class ApiBase implements IApiBase {
     payload: unknown,
     config?: PostConfig<T>,
     overrideConfig?: Configuration
-  ): Promise<Response | Task<T>> {
+  ): Promise<AxiosResponse | Task<T>> {
     // This overrideConfig var is necessary for the switch config operation at init
     const baseConfig = overrideConfig || (await this.config);
     if (!baseConfig.apiKey) {
@@ -531,7 +487,7 @@ export class ApiBase implements IApiBase {
       finalPayload = payload;
     }
 
-    let resp: Response;
+    let resp: AxiosResponse;
 
     try {
       if (verb == 'POST') {
