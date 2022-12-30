@@ -1,3 +1,5 @@
+import { AxiosResponse } from 'axios';
+
 import { TaskParams, TaskState } from '../types/base.js';
 
 import { Configuration } from './Configuration.js';
@@ -57,19 +59,19 @@ export interface IApiBase {
     payload: unknown,
     config?: PostConfig<T>,
     overrideConfig?: Configuration
-  ): Promise<Response | ITask<T>>;
+  ): Promise<AxiosResponse | ITask<T>>;
   get<T>(
     operation: string,
     payload: unknown,
     config?: PostConfig<T>
-  ): Promise<Response | ITask<T>>;
+  ): Promise<AxiosResponse | ITask<T>>;
   call<T>(
     verb: Verb,
     operation: string,
     payload: unknown,
     config?: PostConfig<T>,
     overrideConfig?: Configuration
-  ): Promise<Response | ITask<T>>;
+  ): Promise<AxiosResponse | ITask<T>>;
   _url<T>(
     baseConfig: Configuration,
     postConfig?: PostConfig<T>,

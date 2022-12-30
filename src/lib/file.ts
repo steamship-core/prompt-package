@@ -1,3 +1,5 @@
+import { AxiosResponse } from 'axios';
+
 import { IBlock } from './block.js';
 import { AllowedFileTypes, IApiBase } from './shared/BaseInterfaces.js';
 import { Configuration } from './shared/Configuration.js';
@@ -130,8 +132,8 @@ export class File {
     )) as Task<File>;
   }
 
-  async raw(config?: Configuration): Promise<Response> {
-    return (await this.client.post(
+  async raw(config?: Configuration): Promise<any> {
+    const resp = (await this.client.post(
       'file/raw',
       {
         id: this.id,
@@ -140,7 +142,8 @@ export class File {
         ...config,
         rawResponse: true,
       }
-    )) as Response;
+    )) as AxiosResponse;
+    return resp.data;
   }
 
   async clear(config?: Configuration): Promise<Task<File>> {

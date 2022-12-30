@@ -10,7 +10,7 @@ describe("File", () => {
     const resp = await File.upload(client, {content: content})
     // Now get the raw file
     const raw = await (resp as any).output.raw()
-    expect(await (raw as any).text()).toBe(content)
+    expect(raw).toBe(content)
   })
 
   test('it should be uploadable via content', async () => {
@@ -30,8 +30,8 @@ describe("File", () => {
     const files2 = await File.list(client)
 
     // Now get the raw file
-    const raw = await res.output!.raw()
-    expect(await raw.text()).toBe(content)
+    const raw = await res.output?.raw()
+    expect(raw).toBe(content)
 
     expect(files1.output?.files).not.toBeUndefined()
     expect(files2.output?.files).not.toBeUndefined()
@@ -64,7 +64,7 @@ describe("File", () => {
 
     // Now get the raw file
     const raw = await res.output!.raw()
-    expect(await raw.text()).toBe(content)
+    expect(raw).toBe(content)
   }, 20000);
 
   test('it should be uploadable via content buffer', async () => {
@@ -85,7 +85,7 @@ describe("File", () => {
 
     // Now get the raw file
     const raw = await res.output!.raw()
-    expect(await raw.text()).toBe(content)
+    expect(raw).toBe(content)
   }, 20000);
 
   test('it should be uploadable via filename', async () => {
@@ -104,7 +104,7 @@ describe("File", () => {
     expect(res.output?.mimeType).toBe("text/markdown")
 
     // Now get the raw file
-    const raw = await (await res.output!.raw()).text()
+    const raw = await (await res.output!.raw())
     expect(raw).toBe(content.toString())
     expect(res.output?.handle).not.toBeUndefined()
     expect(res.output?.handle).not.toBeNull()
