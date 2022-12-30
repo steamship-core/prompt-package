@@ -32,6 +32,7 @@ export interface PluginParams {
   id?: string;
   type?: PluginType;
   url?: string;
+  userId?: string;
   transport?: PluginTransport;
   isPublic?: boolean;
   isTrainable?: boolean;
@@ -94,6 +95,7 @@ export class Plugin {
   transport?: PluginTransport;
   isPublic?: boolean;
   isTrainable?: boolean;
+  userId?: string;
   trainingPlatform?: TrainingPlatform;
   handle?: string;
   profile?: any;
@@ -114,6 +116,7 @@ export class Plugin {
     this.url = params.url;
     this.transport = params.transport;
     this.isPublic = params.isPublic;
+    this.userId = params.userId;
     this.isTrainable = params.isTrainable;
     this.trainingPlatform = params.trainingPlatform;
     this.handle = params.handle;
