@@ -7,6 +7,8 @@ export function isNode(): boolean {
     process.release.name.search(/node|io.js/) !== -1
   ) {
     return true;
+  } else if (typeof window === 'undefined') {
+    return true;
   } else {
     return false;
   }
