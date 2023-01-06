@@ -1,8 +1,6 @@
 export { default as regeneratorRuntime } from 'regenerator-runtime';
 export { File } from './lib/file.js';
-export {
-  LogEntry,
-} from './lib/log.js';
+export { LogEntry } from './lib/log.js';
 export type {
   LogEntryList,
   LogEntryListParams,
