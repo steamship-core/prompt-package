@@ -1,5 +1,11 @@
 export { default as regeneratorRuntime } from 'regenerator-runtime';
 export { File } from './lib/file.js';
+export {
+  LogEntry,
+  LogEntryList,
+  LogEntryListParams,
+  LogEntryParams,
+} from './lib/log.js';
 export { Package } from './lib/package.js';
 export { PackageInstance } from './lib/package_instance.js';
 export type {
