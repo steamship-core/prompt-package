@@ -38,6 +38,7 @@ export interface LogEntryParams {
   invocableHandle?: string;
   invocableType?: string;
   invocableVersionHandle?: string;
+  invocableInstanceHandle?: string;
   httpMethod?: string;
   elapsedTimeSeconds?: string;
   component?: string;
@@ -54,6 +55,10 @@ export interface LogEntryParams {
 export interface LogEntryListParams {
   from?: number;
   size?: number;
+  invocableHandle?: string;
+  invocableVersionHandle?: string;
+  invocableInstanceHandle?: string;
+  invocablePath?: string;
 }
 
 export interface LogEntryList {
@@ -68,8 +73,8 @@ export class LogEntry {
     params?: LogEntryListParams,
     config?: Configuration
   ): Promise<Task<LogEntryList>> {
-    return (await client.get(
-      'logs',
+    return (await client.post(
+      'logs/list',
       { ...params },
       {
         ...config,
