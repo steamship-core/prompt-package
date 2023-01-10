@@ -42,7 +42,7 @@ const _IS_LOCAL = (base: string): boolean => {
     'host.docker.internal',
     '/test:',
     '//app.staging.steamship.com', // For the demo user proxy trick - this is the website proxy
-    '//app.steamship.com' // For the demo user proxy trick - this is the website proxy
+    '//app.steamship.com', // For the demo user proxy trick - this is the website proxy
   ]) {
     if (base.includes(s)) {
       return true;
