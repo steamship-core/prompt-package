@@ -23,6 +23,7 @@ export interface GetParams {
   id?: string;
   handle?: string;
   packageId?: string;
+  packageHandle?: string;
 }
 
 export interface PackageVersionListParams {

@@ -28,6 +28,23 @@ async function doFetch(url: any, opts: any): Promise<AxiosResponse> {
   });
 }
 
+// async function doFetch(url: any, opts: any): Promise<AxiosResponse> {
+//   return new Promise<AxiosResponse>((resolve, reject) => {
+//     axios({
+//       url,
+//       headers: opts.headers,
+//       data: opts.body,
+//       method: opts.method,
+//     }).then(resolve)
+//       .catch(
+//         (err) => {
+//           console.log(err);
+//           reject(err);
+//         }
+//       )
+//   })
+// }
+
 const log: Logger = getLogger('Steamship:ApiBase');
 
 const MAX_BODY_LENGTH = 100000 * 1000;

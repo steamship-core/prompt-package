@@ -7,7 +7,11 @@ import { isNode } from './utils.js';
 
 export default function getLogger(name: string) {
   if (isNode()) {
-    const log: Logger = new Logger({ name });
+    const log: Logger = new Logger({
+      suppressStdOutput: true,
+      type: 'json',
+      name,
+    });
     return log;
   } else {
     const log: Logger = new Logger({
