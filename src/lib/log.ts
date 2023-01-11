@@ -8,14 +8,14 @@ import { isNode } from './utils.js';
 export default function getLogger(name: string) {
   if (isNode()) {
     const log: Logger = new Logger({
-      suppressStdOutput: true,
-      type: 'json',
+      minLevel: 'warn', // WARN
       name,
     });
     return log;
   } else {
     const log: Logger = new Logger({
       suppressStdOutput: true,
+      minLevel: 'warn', // WARN
       type: 'json',
     });
     return log;
