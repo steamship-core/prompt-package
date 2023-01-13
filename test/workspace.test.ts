@@ -5,7 +5,7 @@ import {Workspace} from '../src/lib/workspace'
 
 describe("Space", () => {
   test('it should have a default space', async () => {
-    const steamship = steamshipClient();
+    const steamship = steamshipClient("default");
     const resp = await Workspace.get(steamship)
     expect(resp.output).not.toBeFalsy()
     expect(resp.output?.handle).toEqual('default')

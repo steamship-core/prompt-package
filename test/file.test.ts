@@ -18,10 +18,17 @@ describe("File", () => {
 
     const files1 = await File.list(client)
 
+    const files1a = await File.query(client, `blocktag and kind "BlockTag"`)
+    expect(files1a.output?.files.length).toBe(0)
+
+    const files1b = await File.query(client, `filetag and kind "FileTag"`)
+    expect(files1b.output?.files?.length).toBe(0)
+
     const content = 'A'
     const res = await File.upload(client, {
       content,
-      mimeType: "text/markdown"
+      mimeType: "text/markdown",
+      tags: [{kind: "FileTag"}],
     })
     expect(res.output).not.toBeUndefined()
     expect(res.output?.id).not.toBeUndefined()
@@ -37,6 +44,13 @@ describe("File", () => {
     expect(files2.output?.files).not.toBeUndefined()
     expect(files2.output?.files.length).toBeGreaterThan(0)
     expect(files2.output?.files.length).toEqual((files1.output?.files.length || 0) + 1)
+
+    // Now query the file
+    const files3 = await File.query(client, `blocktag and kind "BlockTag"`)
+    expect(files3.output?.files.length).toBe(0)
+
+    const files4 = await File.query(client, `filetag and kind "FileTag"`)
+    expect(files4.output?.files?.length).toBe(1)
   }, 30000);
 
   test('it should be uploadable via Uint8Array with tags', async () => {

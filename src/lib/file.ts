@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
 
-import { IBlock } from './block.js';
+import { Block, BlockParams } from './block.js';
 import { AllowedFileTypes, IApiBase } from './shared/BaseInterfaces.js';
 import { Configuration } from './shared/Configuration.js';
 import { GetParams } from './shared/Requests.js';
-import { ITag } from './tag.js';
+import { Tag, TagParams } from './tag.js';
 import { Task } from './task.js';
 
 const generateRandomString = (length = 6) =>
@@ -39,15 +39,15 @@ export interface FileParams {
   workspaceId?: string;
   tenantId?: string;
   userId?: string;
-  blocks?: IBlock[];
-  tags?: ITag[];
+  blocks?: BlockParams[] | Block[];
+  tags?: TagParams[] | Tag[];
 }
 
 export interface UploadParams {
   filename?: string;
   content?: AllowedFileTypes;
   type?: 'file' | 'url' | 'value';
-  tags?: ITag[];
+  tags?: TagParams[];
   handle?: string;
   mimeType?: string;
   workspaceId?: string;
@@ -59,8 +59,8 @@ export class File {
   mimeType?: string;
   userId?: string;
   workspaceId?: string;
-  blocks?: IBlock[];
-  tags?: ITag[];
+  blocks?: Block[];
+  tags?: Tag[];
   client: IApiBase;
 
   constructor(client: IApiBase, params: FileParams) {
@@ -69,9 +69,37 @@ export class File {
     this.handle = params.handle;
     this.mimeType = params.mimeType;
     this.workspaceId = params.workspaceId;
-    this.blocks = params.blocks;
-    this.tags = params.tags;
     this.userId = params.userId;
+
+    this.blocks = [];
+    if (params.blocks) {
+      for (const block of params.blocks) {
+        if (block instanceof Block) {
+          this.blocks.push(block);
+        } else {
+          this.blocks.push(new Block(client, block));
+        }
+      }
+    }
+
+    this.tags = [];
+    if (params.tags) {
+      for (const tag of params.tags) {
+        if (tag instanceof Tag) {
+          this.tags.push(tag);
+        } else {
+          this.tags.push(new Tag(client, tag));
+        }
+      }
+    }
+  }
+
+  static async create(
+    client: IApiBase,
+    params: UploadParams,
+    config?: Configuration
+  ): Promise<Task<File>> {
+    return File.upload(client, params, config);
   }
 
   static async upload(
@@ -79,7 +107,7 @@ export class File {
     params: UploadParams,
     config?: Configuration
   ): Promise<Task<File>> {
-    if (!params.content) {
+    if (typeof params.content == 'undefined') {
       throw Error('Content must be provided');
     }
 
@@ -168,6 +196,21 @@ export class File {
     return (await client.post(
       'file/list',
       { ...params },
+      {
+        expect: _EXPECT_LIST,
+        ...config,
+      }
+    )) as Task<FileList>;
+  }
+
+  static async query(
+    client: IApiBase,
+    tagFilterQuery: string,
+    config?: Configuration
+  ): Promise<Task<FileList>> {
+    return (await client.post(
+      'file/query',
+      { tagFilterQuery },
       {
         expect: _EXPECT_LIST,
         ...config,

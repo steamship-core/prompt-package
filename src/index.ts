@@ -1,5 +1,9 @@
 export { default as regeneratorRuntime } from 'regenerator-runtime';
+export { Block } from './lib/block.js';
+export type { BlockList, BlockParams } from './lib/block.js';
 export { File } from './lib/file.js';
+export type { FileList, FileParams } from './lib/file.js';
+export { KeyValueStore } from './lib/key_value_store.js';
 export { LogEntry } from './lib/log.js';
 export type {
   LogEntryList,
@@ -61,6 +65,8 @@ export type {
 } from './lib/shared/Configuration.js';
 export { Steamship } from './lib/steamship.js';
 export { SteamshipError } from './lib/steamship_error.js';
+export { Tag } from './lib/tag.js';
+export type { TagList, TagParams } from './lib/tag.js';
 export { Task } from './lib/task.js';
 export type {
   Metadata,

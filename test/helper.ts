@@ -13,7 +13,7 @@ export function randomName(): string {
 }
 
 export function steamshipClient(workspace?: string): Steamship {
-  return new Steamship({profile: 'test', workspace});
+  return new Steamship({profile: 'test', workspace: workspace || randomName()});
 }
 
 export const DEFAULT_CONFIG: Configuration = {
