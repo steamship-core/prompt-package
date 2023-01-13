@@ -75,7 +75,7 @@ export type {
   TaskParams,
   TaskState as TaskStatus,
 } from './lib/types/base.js';
-export type { MimeTypes } from './lib/types/file.js';
+export { MimeTypes } from './lib/types/file.js';
 export type {
   AddTaskCommentRequest,
   DeleteTaskCommentRequest,
