@@ -10,6 +10,7 @@ export type {
   LogEntryListParams,
   LogEntryParams,
 } from './lib/log.js';
+export type { MimeTypes } from './lib/types/file.js'
 export { Package } from './lib/package.js';
 export { PackageInstance } from './lib/package_instance.js';
 export type {
