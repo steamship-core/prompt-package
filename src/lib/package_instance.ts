@@ -181,12 +181,14 @@ export class PackageInstance {
    * @param path - The method name (HTTP path) being invoked. E.g. `greet`
    * @param params - A dictionary of parameters to provide to the method
    * @param verb? - An optional HTTP verb, either GET or POST. Default: POST.
+   * @param responseType? - An optional argument for Axios response encoding
    * @returns unknown - Depends upon method implementation
    */
   public async invoke(
     path: string,
     params?: Record<string, unknown>,
-    verb: Verb = 'POST'
+    verb: Verb = 'POST',
+    responseType: undefined | 'blob' | 'arraybuffer' = undefined
   ): Promise<unknown> {
     await this.loadMissingWorkspaceHandle();
 
@@ -206,6 +208,7 @@ export class PackageInstance {
         packageInstanceId: this.id,
         rawResponse: true,
         workspaceId: this.workspaceId,
+        responseType: responseType
       }
     );
   }
