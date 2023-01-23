@@ -1,11 +1,12 @@
 // A simple key-value store implemented atop Files and Tags.
 
+import { TextEncoder } from 'util';
+
 import { File } from './file.js';
 import { IApiBase } from './shared/BaseInterfaces.js';
 import { SteamshipError } from './steamship_error.js';
 import { Tag } from './tag.js';
 import { Task } from './task.js';
-import {TextEncoder} from "util";
 
 const KV_STORE_MARKER = '__init__';
 
@@ -59,7 +60,7 @@ export class KeyValueStore {
       return undefined;
     }
 
-    const dummyContent = ""
+    const dummyContent = '';
     const textEncoder = new TextEncoder();
     const utf8 = new Uint8Array(dummyContent.length);
     textEncoder.encodeInto(dummyContent, utf8);

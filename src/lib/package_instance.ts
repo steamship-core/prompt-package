@@ -208,7 +208,7 @@ export class PackageInstance {
         packageInstanceId: this.id,
         rawResponse: true,
         workspaceId: this.workspaceId,
-        responseType: responseType
+        responseType: responseType,
       }
     );
   }

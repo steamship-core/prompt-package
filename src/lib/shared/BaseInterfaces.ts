@@ -44,7 +44,7 @@ export interface PostConfig<T> extends Configuration {
   packageOwner?: string;
   packageId?: string;
   packageInstanceId?: string;
-  responseType?: 'blob' | 'arraybuffer' // For Axios
+  responseType?: 'blob' | 'arraybuffer'; // For Axios
 }
 
 export interface SwitchWorkspaceParams {
