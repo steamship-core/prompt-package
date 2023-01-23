@@ -1,5 +1,7 @@
 // A simple key-value store implemented atop Files and Tags.
 
+import { TextEncoder } from 'util';
+
 import { File } from './file.js';
 import { IApiBase } from './shared/BaseInterfaces.js';
 import { SteamshipError } from './steamship_error.js';
@@ -57,8 +59,15 @@ export class KeyValueStore {
     if (!orCreate) {
       return undefined;
     }
+
+    const dummyContent = '';
+    const textEncoder = new TextEncoder();
+    const utf8 = new Uint8Array(dummyContent.length);
+    textEncoder.encodeInto(dummyContent, utf8);
+    const buffer = Buffer.from(utf8);
+
     const createP = await File.create(this.client, {
-      content: 'foo',
+      content: buffer,
       tags: [{ kind: this.storeIdentifier, name: KV_STORE_MARKER }],
     });
     return createP.output;

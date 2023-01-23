@@ -25,6 +25,7 @@ async function doFetch(url: any, opts: any): Promise<AxiosResponse> {
     headers: opts.headers,
     data: opts.body,
     method: opts.method,
+    responseType: opts.responseType,
   });
 }
 
@@ -514,6 +515,7 @@ export class ApiBase implements IApiBase {
           method: verb,
           body: finalPayload as any,
           headers: reqConfig.headers,
+          responseType: config?.responseType,
         });
         // resp = await axios.post(url, finalPayload, reqConfig);
       } else if (verb == 'GET') {
@@ -524,6 +526,7 @@ export class ApiBase implements IApiBase {
         resp = await doFetch(url, {
           method: verb,
           headers: reqConfig.headers,
+          responseType: config?.responseType,
         });
         // resp = await axios.get(url, { ...reqConfig, params: finalPayload });
       } else {
