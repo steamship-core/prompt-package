@@ -50,33 +50,18 @@ const log: Logger = getLogger('Steamship:ApiBase');
 
 const MAX_BODY_LENGTH = 100000 * 1000;
 
-// const _LOCAL_API_ENDPOINTS = [
-//   'localhost',
-//   '127.0.0.1',
-//   '0:0:0:0',
-//   ':3000',
-//   'steamship.local',
-//   'host.docker.internal',
-//   '/test:',
-//   '//app.staging.steamship.com', // For the demo user proxy trick - this is the website proxy
-//   '//app.steamship.com', // For the demo user proxy trick - this is the website proxy
-//   '//www.steamship.com', // For the demo user proxy trick - this is the website proxy
-//   '//steamship.com', // For the demo user proxy trick - this is the website proxy
-// ]
-
-const _OFFICIAL_API_ENDPOINTS = [
-  '//api.steamship.com',
-  '//api.staging.steamship.com',
+const _SUBDOMAIN_REWRITING_ENDPOINTS = [
+  '//steamship.run',
+  '//apps.staging.steamship.com',
 ];
 
-const _IS_LOCAL = (base: string): boolean => {
-  // Quick exit
-  for (const s of _OFFICIAL_API_ENDPOINTS) {
+const _USE_SUBDOMAIN_REWRITING = (base: string): boolean => {
+  for (const s of _SUBDOMAIN_REWRITING_ENDPOINTS) {
     if (base.includes(s)) {
-      return false;
+      return true;
     }
   }
-  return true;
+  return false;
 };
 
 /* Should be a FormData object */
@@ -291,7 +276,7 @@ export class ApiBase implements IApiBase {
         });
       }
 
-      if (!_IS_LOCAL(base)) {
+      if (_USE_SUBDOMAIN_REWRITING(base)) {
         // Rewrite the base to be https://user.base
         const parts = base.split('//');
         if (parts.length < 2) {
