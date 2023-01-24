@@ -50,23 +50,33 @@ const log: Logger = getLogger('Steamship:ApiBase');
 
 const MAX_BODY_LENGTH = 100000 * 1000;
 
+// const _LOCAL_API_ENDPOINTS = [
+//   'localhost',
+//   '127.0.0.1',
+//   '0:0:0:0',
+//   ':3000',
+//   'steamship.local',
+//   'host.docker.internal',
+//   '/test:',
+//   '//app.staging.steamship.com', // For the demo user proxy trick - this is the website proxy
+//   '//app.steamship.com', // For the demo user proxy trick - this is the website proxy
+//   '//www.steamship.com', // For the demo user proxy trick - this is the website proxy
+//   '//steamship.com', // For the demo user proxy trick - this is the website proxy
+// ]
+
+const _OFFICIAL_API_ENDPOINTS = [
+  '//api.steamship.com',
+  '//api.staging.steamship.com',
+]
+
 const _IS_LOCAL = (base: string): boolean => {
-  for (const s of [
-    'localhost',
-    '127.0.0.1',
-    '0:0:0:0',
-    ':3000',
-    'steamship.local',
-    'host.docker.internal',
-    '/test:',
-    '//app.staging.steamship.com', // For the demo user proxy trick - this is the website proxy
-    '//app.steamship.com', // For the demo user proxy trick - this is the website proxy
-  ]) {
+  // Quick exit
+  for (const s of _OFFICIAL_API_ENDPOINTS) {
     if (base.includes(s)) {
-      return true;
+      return false;
     }
   }
-  return false;
+  return true;
 };
 
 /* Should be a FormData object */
