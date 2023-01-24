@@ -67,7 +67,7 @@ const MAX_BODY_LENGTH = 100000 * 1000;
 const _OFFICIAL_API_ENDPOINTS = [
   '//api.steamship.com',
   '//api.staging.steamship.com',
-]
+];
 
 const _IS_LOCAL = (base: string): boolean => {
   // Quick exit
